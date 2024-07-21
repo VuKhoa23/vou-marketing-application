@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: branddb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: branddb-deployment
+  template:
+    metadata:
+      labels:
+        app: branddb-deployment
+    spec:
+      containers:
+        - name: branddb-cont
+          image: mysql:8.4.1
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          volumeMounts:
+            - name: branddb-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: brand-initdb
+              mountPath: /docker-entrypoint-branddb.d
+      volumes:
+        - name: branddb-persistent-storage
+          persistentVolumeClaim:
+            claimName: branddb-pvc
+        - name: brand-initdb
+          configMap:
+            name: brand-initdb-config
