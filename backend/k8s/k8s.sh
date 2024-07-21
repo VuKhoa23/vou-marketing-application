@@ -5,5 +5,10 @@ cd admin
 
 cd ..
 
+cd admin
+./game.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh
