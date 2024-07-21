@@ -12,13 +12,13 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
     @Column(name = "imageURL")
     private String imageURL;
 
     @Column(name = "voucher_quantities")
-    private Integer voucherQuantities;
+    private int voucherQuantities;
 
     @Column(name = "start_date")
     private Date startDate;

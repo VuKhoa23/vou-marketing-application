@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brand-deployment
+  labels:
+    app: brand
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brand
+  template:
+    metadata:
+      labels:
+        app: brand
+    spec:
+      containers:
+        - name: brand
+          image: tricker14/vou_brand
+          ports:
+            - containerPort: 8080
