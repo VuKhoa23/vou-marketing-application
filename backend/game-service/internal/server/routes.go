@@ -13,6 +13,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.healthHandler)
 
+	r.POST("/api/game", s.addGameHandler)
+
+	r.GET("/api/game/:id", s.getGameHandler)
 	return r
 }
 
