@@ -29,5 +29,5 @@ public class Voucher {
     private Date endDate;
 
     @Column(name = "status")
-    private boolean status;
+    private boolean status = false;
 }

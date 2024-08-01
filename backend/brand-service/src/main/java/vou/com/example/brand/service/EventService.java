@@ -61,7 +61,7 @@ public class EventService {
         return fileURL;
     }
 
-    public void register(EventDTO eventDTO){
+    public void addEvent(EventDTO eventDTO){
         Event event = new Event();
 
         String fileURL = uploadFile(eventDTO.getImageFile());

@@ -17,8 +17,8 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("register")
-    public void register(EventDTO eventDTO){
-        eventService.register(eventDTO);
+    @PostMapping("add")
+    public void addEvent(EventDTO eventDTO){
+        eventService.addEvent(eventDTO);
     }
 }
