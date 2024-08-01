@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/controller/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/dto/AuthResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/dto/LoginDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/dto/RegisterDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/service/AuthService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/ingress/ingress.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/controller/BrandController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/dto/BrandDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/service/BrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/service/BrandService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/service/EventService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand/src/main/java/vou/com/example/brand/service/EventService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/brand/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2jZDFJi5VY0bZSfCRlaB7P4mLpE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/Documents/Code/Spring/vou-marketing-application/backend&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="backend" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="backend" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="" />
+      <created>1721585600513</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1721585600513</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
