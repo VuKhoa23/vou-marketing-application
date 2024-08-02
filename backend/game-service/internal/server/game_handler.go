@@ -47,3 +47,15 @@ func (s *Server) addGameHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, game)
 }
+
+func (s *Server) getAllGamesHandler(c *gin.Context) {
+	var games []model.Game
+	games, err := repository.GetAllGames()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot get all games",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, games)
+}
