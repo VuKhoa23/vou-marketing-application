@@ -8,7 +8,8 @@ type Question struct {
 }
 
 type Answer struct {
-	BelongTo primitive.ObjectID `json:"question_id" bson:"question_id"`
-	Content  string             `bson:"content" json:"title"`
-	Truthy   bool               `bson:"truthy" json:"truthy"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	QuestionId primitive.ObjectID `json:"question_id" bson:"question_id"`
+	Content    string             `bson:"content" json:"title"`
+	Truthy     bool               `bson:"truthy" json:"truthy"`
 }

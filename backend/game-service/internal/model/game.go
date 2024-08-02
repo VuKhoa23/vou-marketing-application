@@ -6,8 +6,7 @@ import (
 )
 
 type Game struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name      string             `bson:"name" json:"name"`
-	BrandName string             `bson:"brandName" json:"brand_name"`
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	EventId   int16              `bson:"eventId" json:"event_id"`
 	StartTime time.Time          `bson:"startTime" json:"start_time"`
 }
