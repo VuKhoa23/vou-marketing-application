@@ -1,0 +1,13 @@
+kubectl apply -f branddb-pv-pvc.yaml
+
+kubectl apply -f branddb-deployment.yaml
+
+kubectl apply -f branddb-service.yaml
+
+kubectl apply -f deployment.yaml
+
+kubectl apply -f service.yaml
+
+minikube addons enable ingress
+
+kubectl apply -f ingress.yaml
