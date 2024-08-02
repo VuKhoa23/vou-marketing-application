@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-service-deployment
+  template:
+    metadata:
+      labels:
+        app: admin-service-deployment
+    spec:
+      containers:
+      - name: admin-service-cont
+        image: vukhoa23/admin-service:test-9

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admindb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admindb-deployment
+  template:
+    metadata:
+      labels:
+        app: admindb-deployment
+    spec:
+      containers:
+      - name: admindb-cont
+        image: mysql:8.4.1
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        volumeMounts:
+        - name: admindb-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: admin-initdb
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: admindb-persistent-storage
+        persistentVolumeClaim:
+          claimName: admindb-pvc
+      - name: admin-initdb
+        configMap:
+          name: admin-initdb-config
