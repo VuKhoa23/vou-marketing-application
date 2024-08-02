@@ -8,8 +8,11 @@ import (
 	"time"
 )
 
+var (
+	dbService = database.New()
+)
+
 func CreateGame(game model.Game) (model.Game, error) {
-	dbService := database.New()
 	_, err := dbService.Client.Database("gametest").Collection("game").InsertOne(context.TODO(), game)
 	if err != nil {
 		return model.Game{}, err
@@ -18,7 +21,6 @@ func CreateGame(game model.Game) (model.Game, error) {
 }
 
 func GetAllGames() ([]model.Game, error) {
-	dbService := database.New()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
