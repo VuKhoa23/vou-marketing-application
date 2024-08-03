@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -16,7 +17,7 @@ func (s *Server) getGameHandler(c *gin.Context) {
 }
 
 type GameReq struct {
-	EventId   int16  `json:"event_id"`
+	EventId   int    `json:"event_id"`
 	StartTime string `json:"start_time"`
 }
 
@@ -48,9 +49,10 @@ func (s *Server) addGameHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, game)
 }
 
-func (s *Server) getAllGamesHandler(c *gin.Context) {
+func (s *Server) getAllGamesByEventIdHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
 	var games []model.Game
-	games, err := repository.GetAllGames()
+	games, err := repository.GetAllGamesByEventId(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Cannot get all games",

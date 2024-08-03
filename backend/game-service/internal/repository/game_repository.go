@@ -13,18 +13,22 @@ var (
 )
 
 func CreateGame(game model.Game) (model.Game, error) {
-	_, err := dbService.Client.Database("gametest").Collection("game").InsertOne(context.TODO(), game)
-	if err != nil {
-		return model.Game{}, err
-	}
-	return game, nil
-}
-
-func GetAllGames() ([]model.Game, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := dbService.Client.Database("gametest").Collection("game").Find(ctx, bson.D{})
+	_, err := dbService.Client.Database("gametest").Collection("game").InsertOne(ctx, game)
+	if err != nil {
+		return model.Game{}, err
+	}
+	
+	return game, nil
+}
+
+func GetAllGamesByEventId(eventId int) ([]model.Game, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := dbService.Client.Database("gametest").Collection("game").Find(ctx, bson.D{{"eventId", eventId}})
 	if err != nil {
 		return []model.Game{}, err
 	}
@@ -44,6 +48,8 @@ func GetAllGames() ([]model.Game, error) {
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
-
+	if len(games) == 0 {
+		return []model.Game{}, nil
+	}
 	return games, nil
 }
