@@ -15,3 +15,10 @@ spec:
             name: admin-service
             port:
               number: 8080
+      - path: /api/game
+        pathType: Prefix     
+        backend:
+          service:
+            name: game-service
+            port:
+              number: 8081
