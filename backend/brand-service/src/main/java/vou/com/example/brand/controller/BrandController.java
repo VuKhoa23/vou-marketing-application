@@ -24,4 +24,9 @@ public class BrandController {
     public List<Brand> findAll(){
         return brandService.findAll();
     }
+
+    @GetMapping("hello")
+    public String sayHello(){
+        return "hello world";
+    }
 }

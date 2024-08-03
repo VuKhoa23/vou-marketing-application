@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
+import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
+import vou.com.example.brand.exception.BrandNotFoundException;
+import vou.com.example.brand.repository.BrandRepository;
 import vou.com.example.brand.repository.EventRepository;
 
 import java.io.File;
@@ -14,12 +17,14 @@ import java.util.Date;
 
 @Service
 public class EventService {
-    private static final String VOLUME_PATH = "";
+    private static final String VOLUME_PATH = "F:/Pictures/brand/";
     EventRepository eventRepository;
+    BrandRepository brandRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository){
+    public EventService(EventRepository eventRepository, BrandRepository brandRepository){
         this.eventRepository = eventRepository;
+        this.brandRepository = brandRepository;
     }
 
     private File convertMultipartFileToFile(MultipartFile file) throws IOException {
@@ -61,15 +66,23 @@ public class EventService {
         return fileURL;
     }
 
-    public void addEvent(EventDTO eventDTO){
-        Event event = new Event();
+    public void addEvent(Long brandId, MultipartFile fileURL, EventDTO eventDTO){
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new BrandNotFoundException("Brand not found with id: " + brandId));
 
-        String fileURL = uploadFile(eventDTO.getImageFile());
-        event.setImageURL(fileURL);
+        String filePath = uploadFile(fileURL);
+
+        Event event = new Event();
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
         event.setVoucherQuantities(event.getVoucherQuantities());
+        event.setImageURL(filePath);
+        event.setBrand(brand);
 
         eventRepository.save(event);
+    }
+
+    public void updateEvent(){
+
     }
 }

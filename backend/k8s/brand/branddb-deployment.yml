@@ -22,7 +22,7 @@ spec:
             - name: branddb-persistent-storage
               mountPath: /var/lib/mysql
             - name: brand-initdb
-              mountPath: /docker-entrypoint-branddb.d
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: branddb-persistent-storage
           persistentVolumeClaim:

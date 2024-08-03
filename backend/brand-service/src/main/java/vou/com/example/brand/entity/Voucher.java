@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Entity
-@Table(name = "event")
+@Table(name = "voucher")
 @Data
 public class Voucher {
     @Id

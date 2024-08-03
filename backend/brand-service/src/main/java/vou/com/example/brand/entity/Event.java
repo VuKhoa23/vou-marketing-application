@@ -25,4 +25,8 @@ public class Event {
 
     @Column(name = "end_date")
     private Date endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 }
