@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Admin user = adminRepository.findByUsername(username).orElse(null);
         if (user == null) {
-            throw new UsernameNotFoundException("Not found");
+            return null;
         }
         return new User(user.getUsername(), user.getPassword(), user.getRoles());
     }
