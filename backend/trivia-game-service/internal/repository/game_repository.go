@@ -58,7 +58,7 @@ func EditGame(game model.Game) (model.Game, error) {
 		return model.Game{}, errors.New("Game Not Found")
 	}
 	filter := bson.D{{"_id", game.ID}}
-	update := bson.D{{"$set", bson.D{{"eventId", game.EventId``}, {"startTime", game.StartTime}}}}
+	update := bson.D{{"$set", bson.D{{"eventId", game.EventId}, {"startTime", game.StartTime}}}}
 	if game.EventId == 0 {
 		update = bson.D{{"$set", bson.D{{"startTime", game.StartTime}}}}
 	}
