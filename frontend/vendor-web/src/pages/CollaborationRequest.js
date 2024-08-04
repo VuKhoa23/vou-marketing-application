@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import BusinessForm from '../components/BusinessForm';
-import AgentForm from '../components/AgentForm';
+import VoucherForm from '../components/VoucherForm';
 import EventForm from '../components/EventForm';
 import PolicyPrivacy from '../components/PolicyPrivacy';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,12 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const StepContent = ({ step }) => {
     switch (step) {
         case 1:
-            return <BusinessForm />;
-        case 2:
-            return <AgentForm />;
-        case 3:
             return <EventForm />;
-        case 4:
+        case 2:
+            return <VoucherForm />;
+        case 3:
             return <PolicyPrivacy />;
         default:
             return null;
@@ -23,7 +20,7 @@ const StepContent = ({ step }) => {
 
 function CollaborationRequest() {
 
-    const currentStep = useSelector(state => state.currentStep);
+    const currentStep = useSelector(state => state.step.currentStep);
 
     return (
         <>
@@ -33,20 +30,15 @@ function CollaborationRequest() {
                     <li
                         className={`step ${currentStep >= 1 ? 'step-primary' : ''}`}
                     >
-                        Thông tin doanh nghiệp
+                        Thông tin sự kiện
                     </li>
                     <li
                         className={`step ${currentStep >= 2 ? 'step-primary' : ''}`}
                     >
-                        Thông tin <br/> người đại diện
+                        Chi tiết voucher
                     </li>
                     <li
-                        className={`step ${currentStep >= 3 ? 'step-primary' : ''}`}
-                    >
-                        Thông tin sự kiện
-                    </li>
-                    <li
-                        className={`step ${currentStep === 4 ? 'step-primary' : ''}`}
+                        className={`step ${currentStep === 3 ? 'step-primary' : ''}`}
                     >
                         Xác nhận và Chấp nhận
                     </li>

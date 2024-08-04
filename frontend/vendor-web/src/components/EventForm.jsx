@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setEventForm } from '../store/formsSlice';
 import { setStep } from '../store/stepSlice';
 import {
     Box,
@@ -15,9 +16,6 @@ import {
     InputGroup,
     InputRightElement,
     Icon,
-    Checkbox,
-    NumberInput,
-    NumberInputField,
     FormErrorMessage,
     HStack,
     Text
@@ -28,104 +26,44 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './custom-datepicker.css';
 import { CalendarIcon } from '@chakra-ui/icons';
 
+
 function EventForm() {
-
     const dispatch = useDispatch();
+    const formValues = useSelector(state => state.forms.eventForm);
 
-    const [formValues, setFormValues] = useState({
-        images: [],
-        eventName: '',
-        slogan: '',
-        info: '',
-        startDate: null,
-        endDate: null,
-        gameType: '',
-        vouchers: {}, // Chứa thông tin voucher và số lượng
-    });
-
-    const [errors, setErrors] = useState({
+    const [errors, setErrors] = React.useState({
         eventName: '',
         startDate: '',
         endDate: '',
         gameType: '',
-        vouchers: '',
     });
 
-
     function handleInputChange(identifier, value) {
-        setFormValues(prevValues => {
-            const updatedValues = { ...prevValues, [identifier]: value };
+        // Dispatch the update to Redux store
+        dispatch(setEventForm({
+            ...formValues,
+            [identifier]: value
+        }));
 
-            // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
-            if (identifier === 'startDate' && updatedValues.endDate && new Date(value) > new Date(updatedValues.endDate)) {
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    startDate: 'Ngày bắt đầu không thể sau ngày kết thúc.'
-                }));
-                return prevValues;
-            }
-            if (identifier === 'endDate' && updatedValues.startDate && new Date(value) < new Date(updatedValues.startDate)) {
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    endDate: 'Ngày kết thúc không thể trước ngày bắt đầu.'
-                }));
-                return prevValues;
-            }
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [identifier]: ''
+        }));
 
+        // Validation
+        if (identifier === 'startDate' && value && formValues.endDate && new Date(value) > new Date(formValues.endDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
-                [identifier]: ''
+                startDate: 'Ngày bắt đầu không thể sau ngày kết thúc.'
             }));
-
-            return updatedValues;
-        });
-    }
-
-    function handleVoucherChange(voucherType) {
-        setFormValues(prev => {
-            const newVouchers = {
-                ...prev.vouchers,
-                [voucherType]: {
-                    ...prev.vouchers[voucherType],
-                    selected: !prev.vouchers[voucherType]?.selected,
-                    quantity: !prev.vouchers[voucherType]?.selected ? 0 : prev.vouchers[voucherType]?.quantity // Reset quantity if deselected
-                }
-            };
-
-            // Clear voucher errors if voucher is selected or deselected
+        }
+        if (identifier === 'endDate' && value && formValues.startDate && new Date(value) < new Date(formValues.startDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
-                vouchers: Object.values(newVouchers).some(voucher => voucher.selected) ? '' : 'Bạn phải chọn ít nhất một loại voucher.'
+                endDate: 'Ngày kết thúc không thể trước ngày bắt đầu.'
             }));
-
-            return {
-                ...prev,
-                vouchers: newVouchers
-            };
-        });
-    }
-
-    function handleQuantityChange(voucherType, value) {
-        setFormValues(prev => {
-            const newVouchers = {
-                ...prev.vouchers,
-                [voucherType]: {
-                    ...prev.vouchers[voucherType],
-                    quantity: value
-                }
-            };
-
-            // Clear voucher quantity errors if quantity is entered
-            setErrors(prevErrors => ({
-                ...prevErrors,
-                vouchers: Object.values(newVouchers).some(voucher => voucher.selected && voucher.quantity) ? '' : 'Số lượng voucher không hợp lệ.'
-            }));
-
-            return {
-                ...prev,
-                vouchers: newVouchers
-            };
-        });
+        }
+        
     }
 
     function validateField(identifier) {
@@ -157,17 +95,6 @@ function EventForm() {
                     errorMessage = 'Bạn phải chọn loại trò chơi.';
                 }
                 break;
-            case 'vouchers':
-                const selectedVouchers = Object.values(formValues.vouchers).some(voucher => voucher.selected);
-                if (!selectedVouchers) {
-                    errorMessage = 'Bạn phải chọn ít nhất một loại voucher.';
-                } else {
-                    const invalidQuantities = Object.values(formValues.vouchers).some(voucher => voucher.selected && !voucher.quantity);
-                    if (invalidQuantities) {
-                        errorMessage = 'Số lượng voucher không hợp lệ.';
-                    }
-                }
-                break;
             default:
                 break;
         }
@@ -190,27 +117,9 @@ function EventForm() {
             }
         });
 
-        validateField('vouchers');
-        if (errors.vouchers) {
-            formIsValid = false;
-        }
-
-        if (formValues.vouchers) {
-            const invalidQuantities = Object.values(formValues.vouchers).some(voucher => voucher.selected && !voucher.quantity);
-            if (invalidQuantities) {
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    vouchers: 'Số lượng voucher không hợp lệ.'
-                }));
-                formIsValid = false;
-            }
-        }
-
         if (formIsValid) {
-            dispatch(setStep(4));
+            dispatch(setStep(2));
         }
-
-        console.log(formValues);
     };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -218,15 +127,15 @@ function EventForm() {
         multiple: true,
         onDrop: (acceptedFiles) => {
             const files = acceptedFiles.map(file => URL.createObjectURL(file));
-            setFormValues(prevValues => ({
-                ...prevValues,
-                images: [...prevValues.images, ...files]
+            dispatch(setEventForm({
+                ...formValues,
+                images: [...formValues.images, ...files]
             }));
         }
     });
 
     function handlePrev () {
-        dispatch(setStep(2));
+        dispatch(setStep(1));
     }
 
     const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
@@ -328,40 +237,6 @@ function EventForm() {
                             </Select>
                             <FormErrorMessage>{errors.gameType}</FormErrorMessage>
                         </FormControl>
-
-                        <Box>
-                            <FormControl isInvalid={!!errors.vouchers}>
-                                <FormLabel htmlFor="vouchers">
-                                    Chọn loại voucher và số lượng
-                                    <Text as="span" color="red.500" ml={1}>*</Text>
-                                </FormLabel>
-                                <Box>
-                                    {['Voucher 10%', 'Voucher 20%', 'Voucher 30%'].map((voucherType) => (
-                                        <Box className='flex justify-between ' key={voucherType} mb={4}>
-                                            <Checkbox
-                                                id={voucherType}
-                                                isChecked={formValues.vouchers[voucherType]?.selected || false}
-                                                onChange={() => handleVoucherChange(voucherType)}
-                                            >
-                                                {voucherType}
-                                            </Checkbox>
-                                            {formValues.vouchers[voucherType]?.selected && (
-                                                <NumberInput
-                                                    mt={2}
-                                                    value={formValues.vouchers[voucherType]?.quantity || ''}
-                                                    onChange={(value) => handleQuantityChange(voucherType, value)}
-                                                    min={1}
-                                                    precision={0}
-                                                >
-                                                    <NumberInputField placeholder="Nhập số lượng" />
-                                                </NumberInput>
-                                            )}
-                                        </Box>
-                                    ))}
-                                    <FormErrorMessage>{errors.vouchers}</FormErrorMessage>
-                                </Box>
-                            </FormControl>
-                        </Box>
 
                         <div className='flex'>
                             <FormControl isInvalid={!!errors.startDate}>

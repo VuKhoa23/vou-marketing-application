@@ -1,4 +1,3 @@
-// store/stepSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const stepSlice = createSlice({

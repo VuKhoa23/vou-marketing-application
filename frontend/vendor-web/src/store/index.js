@@ -1,8 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import stepReducer from './stepSlice';
+import formsReducer from './formsSlice';
 
 const store = configureStore({
-    reducer: stepReducer
+    reducer: {
+        step: stepReducer,
+        forms: formsReducer
+    }
 });
 
 
