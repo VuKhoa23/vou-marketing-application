@@ -24,9 +24,9 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO){
-        if(!registerDTO.getPassword().equals(registerDTO.getConfirmation())){
-            return new ResponseEntity<>("Password and confirmation must match!", HttpStatus.BAD_REQUEST);
-        }
+//        if(!registerDTO.getPassword().equals(registerDTO.getConfirmation())){
+//            return new ResponseEntity<>("Password and confirmation must match!", HttpStatus.BAD_REQUEST);
+//        }
         if(brandService.existsByName(registerDTO.getName())){
             return new ResponseEntity<>("Brand name is already taken", HttpStatus.BAD_REQUEST);
         }

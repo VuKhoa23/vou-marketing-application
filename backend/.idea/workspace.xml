@@ -5,8 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/vou-marketing-application.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/exception/NotFoundException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/advice/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/advice/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/EventController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/EventController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/EventDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/EventDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Event.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Voucher.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Voucher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/exception/BrandNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/repository/EventRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/repository/EventRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/security/SecurityConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/security/SecurityConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/EventService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/EventService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/VoucherService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/brand-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +51,8 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "F:/Documents/Code/Spring/vou-marketing-application"
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "F:/Documents/Code/Spring/vou-marketing-application/backend"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

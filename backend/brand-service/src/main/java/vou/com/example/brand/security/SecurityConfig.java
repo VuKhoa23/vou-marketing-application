@@ -3,6 +3,7 @@ package vou.com.example.brand.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -37,7 +38,9 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/brand/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/brand/brand").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/brand/event").authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());
 

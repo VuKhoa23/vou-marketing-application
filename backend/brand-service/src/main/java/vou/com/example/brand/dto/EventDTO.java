@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Data
 public class EventDTO {
+    private String name;
     private int voucherQuantities;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

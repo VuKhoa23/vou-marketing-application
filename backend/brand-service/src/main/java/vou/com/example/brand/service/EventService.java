@@ -1,12 +1,14 @@
 package vou.com.example.brand.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
-import vou.com.example.brand.exception.BrandNotFoundException;
+import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
 import vou.com.example.brand.repository.EventRepository;
 
@@ -68,11 +70,12 @@ public class EventService {
 
     public void addEvent(Long brandId, MultipartFile fileURL, EventDTO eventDTO){
         Brand brand = brandRepository.findById(brandId)
-                .orElseThrow(() -> new BrandNotFoundException("Brand not found with id: " + brandId));
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         String filePath = uploadFile(fileURL);
 
         Event event = new Event();
+        event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
         event.setVoucherQuantities(event.getVoucherQuantities());
@@ -82,7 +85,22 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public void updateEvent(){
+    public Page<Event> findByNameContaining(String name, Pageable pageable){
+        return eventRepository.findByNameContaining(name, pageable);
+    }
 
+    public void updateEvent(Long eventId, MultipartFile fileURL, EventDTO eventDTO){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));;
+
+        String filePath = uploadFile(fileURL);
+
+        event.setName(eventDTO.getName());
+        event.setStartDate(eventDTO.getStartDate());
+        event.setEndDate(eventDTO.getEndDate());
+        event.setVoucherQuantities(event.getVoucherQuantities());
+        event.setImageURL(filePath);
+
+        eventRepository.save(event);
     }
 }

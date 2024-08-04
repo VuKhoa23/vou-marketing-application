@@ -4,12 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import vou.com.example.brand.exception.BrandNotFoundException;
+import vou.com.example.brand.exception.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(BrandNotFoundException.class)
-    public ResponseEntity<String> handleBrandNotFoundException(BrandNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleBrandNotFoundException(NotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

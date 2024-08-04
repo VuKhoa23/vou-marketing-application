@@ -8,6 +8,8 @@ import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
+import vou.com.example.brand.exception.NotFoundException;
+import vou.com.example.brand.repository.BrandRepository;
 import vou.com.example.brand.repository.VoucherRepository;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import java.util.List;
 public class VoucherService {
     private static final String VOLUME_PATH = "";
     private VoucherRepository voucherRepository;
+    private BrandRepository brandRepository;
 
     @Autowired
     public VoucherService(VoucherRepository voucherRepository){
@@ -69,11 +72,14 @@ public class VoucherService {
         return voucherRepository.findAll();
     }
 
-    public void addVoucher(VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile imageFileQR, MultipartFile imageFile, VoucherDTO voucherDTO){
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
+
         Voucher voucher = new Voucher();
 
-        String fileURLQR = uploadFile(voucherDTO.getImageFileQR());
-        String fileURL = uploadFile(voucherDTO.getImageFile());
+        String fileURLQR = uploadFile(imageFileQR);
+        String fileURL = uploadFile(imageFile);
 
         voucher.setId(voucher.getId());
         voucher.setImageQR(fileURLQR);
@@ -81,6 +87,7 @@ public class VoucherService {
         voucher.setValue(voucher.getValue());
         voucher.setDescription(voucher.getDescription());
         voucher.setEndDate(voucher.getEndDate());
+        voucher.setBrand(brand);
 
         voucherRepository.save(voucher);
     }

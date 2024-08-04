@@ -1,10 +1,8 @@
 package vou.com.example.brand.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.service.VoucherService;
@@ -27,7 +25,10 @@ public class VoucherController {
     }
 
     @PostMapping("add")
-    public void addVoucher(VoucherDTO voucherDTO){
-        voucherService.addVoucher(voucherDTO);
+    public void addVoucher(@RequestParam Long brandId,
+                           @RequestPart(value = "fileURL") MultipartFile fileURLQR,
+                           @RequestPart(value = "fileURL") MultipartFile fileURL,
+                           @ModelAttribute VoucherDTO voucherDTO){
+        voucherService.addVoucher(brandId, fileURLQR, fileURL, voucherDTO);
     }
 }
