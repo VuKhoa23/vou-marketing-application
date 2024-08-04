@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { stepAction } from '../store';
+import { setStep } from '../store/stepSlice';
 import {
     Box,
     FormControl,
@@ -207,7 +207,7 @@ function EventForm() {
         }
 
         if (formIsValid) {
-            dispatch(stepAction.setStep(4));
+            dispatch(setStep(4));
         }
 
         console.log(formValues);
@@ -226,7 +226,7 @@ function EventForm() {
     });
 
     function handlePrev () {
-        dispatch(stepAction.setStep(2));
+        dispatch(setStep(2));
     }
 
     const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (

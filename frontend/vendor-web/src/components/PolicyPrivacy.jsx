@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Checkbox, Button, Text, VStack, HStack } from '@chakra-ui/react';
+import { setStep } from '../store/stepSlice';
+import { useDispatch } from 'react-redux';
 
 const PolicyPrivacy = () => {
+
+    const dispatch = useDispatch();
+    
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
@@ -14,6 +19,10 @@ const PolicyPrivacy = () => {
             alert('Please agree to the terms and privacy policy before submitting.');
         }
     };
+
+    function handlePrev () {
+        dispatch(setStep(3));
+    }
 
     return (
         <Box p={4} maxW="4xl" mx="auto" bg="gray.50" borderRadius="md" boxShadow="md">
@@ -64,7 +73,7 @@ const PolicyPrivacy = () => {
                     <Button
                         variant="outline"
                         bg="white"
-                        onClick={() => alert('Quay lại để chỉnh sửa thông tin')}
+                        onClick={handlePrev}
                     >
                         Quay Lại
                     </Button>

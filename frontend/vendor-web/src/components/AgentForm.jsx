@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { stepAction } from '../store';
+import { setStep } from '../store/stepSlice';
 import {
     Box,
     FormControl,
@@ -83,7 +83,7 @@ function AgentForm() {
     }
 
     function handlePrev() {
-        dispatch(stepAction.setStep(1));
+        dispatch(setStep(1));
     }
 
     function handleSubmit(event) {
@@ -98,7 +98,7 @@ function AgentForm() {
             return; // Do not submit if there are errors
         }
 
-        dispatch(stepAction.setStep(3));
+        dispatch(setStep(3));
     }
 
     return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { stepAction } from '../store/index';
+import { setStep } from '../store/stepSlice';
 import {
     Box,
     FormControl,
@@ -122,7 +122,7 @@ function BusinessForm() {
         });
 
         if (formIsValid) {
-            dispatch(stepAction.setStep(2))
+            dispatch(setStep(2))
         }
     }
 
