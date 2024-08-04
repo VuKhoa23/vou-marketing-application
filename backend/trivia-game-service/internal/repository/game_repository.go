@@ -2,14 +2,11 @@ package repository
 
 import (
 	"context"
-	"game-service/internal/database"
+	"errors"
 	"game-service/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
-)
-
-var (
-	dbService = database.New()
 )
 
 func CreateGame(game model.Game) (model.Game, error) {
@@ -20,7 +17,7 @@ func CreateGame(game model.Game) (model.Game, error) {
 	if err != nil {
 		return model.Game{}, err
 	}
-	
+
 	return game, nil
 }
 
@@ -52,4 +49,32 @@ func GetAllGamesByEventId(eventId int) ([]model.Game, error) {
 		return []model.Game{}, nil
 	}
 	return games, nil
+}
+
+func EditGame(game model.Game) (model.Game, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if !HelperCheckIsGameExist(game.ID) {
+		return model.Game{}, errors.New("Game Not Found")
+	}
+	filter := bson.D{{"_id", game.ID}}
+	update := bson.D{{"$set", bson.D{{"eventId", game.EventId``}, {"startTime", game.StartTime}}}}
+	if game.EventId == 0 {
+		update = bson.D{{"$set", bson.D{{"startTime", game.StartTime}}}}
+	}
+	_, err := dbService.Client.Database("gametest").Collection("game").UpdateOne(ctx, filter, update)
+	if err != nil {
+		return model.Game{}, err
+	}
+	return game, nil
+}
+
+func HelperCheckIsGameExist(id primitive.ObjectID) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	count, err := dbService.Client.Database("gametest").Collection("game").CountDocuments(ctx, bson.M{"_id": id})
+	if err != nil || count == 0 {
+		return false
+	}
+	return true
 }

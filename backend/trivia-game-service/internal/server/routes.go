@@ -13,12 +13,19 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/api/game/hello", s.HelloWorldHandler)
 
 	r.GET("/api/game/health", s.healthHandler)
+	// -------- GAMES APIs --------
+	r.POST("/api/game", s.createGameHandler)
 
-	r.POST("/api/game", s.addGameHandler)
+	r.PUT("/api/game", s.editGameHandler)
 
-	r.GET("/api/game/byEvent/:id", s.getAllGamesByEventIdHandler)
+	r.GET("/api/game/by-event/:eventId", s.getGameByEventIdHandler)
 
 	r.GET("/api/game/:id", s.getGameHandler)
+
+	// -------- QUESTIONS APIs --------
+	r.POST("/api/game/create-question", s.createQuestionHandler)
+
+	r.GET("/api/game/get-questions/:gameId", s.getAllQuestionsByGameIdHandler)
 	return r
 }
 

@@ -17,12 +17,13 @@ func (s *Server) getGameHandler(c *gin.Context) {
 }
 
 type GameReq struct {
-	EventId   int    `json:"event_id"`
-	StartTime string `json:"start_time"`
+	ID        primitive.ObjectID `json:"id,omitempty"`
+	EventId   int                `json:"event_id,omitempty"`
+	StartTime string             `json:"start_time,omitempty"`
 }
 
 // POST - /api/game
-func (s *Server) addGameHandler(c *gin.Context) {
+func (s *Server) createGameHandler(c *gin.Context) {
 	var req GameReq
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -31,7 +32,8 @@ func (s *Server) addGameHandler(c *gin.Context) {
 		})
 		return
 	}
-	parsed, err := time.Parse("2006-01-02", req.StartTime)
+	req.ID = primitive.NilObjectID
+	parsed, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid start time",
@@ -49,8 +51,8 @@ func (s *Server) addGameHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, game)
 }
 
-func (s *Server) getAllGamesByEventIdHandler(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+func (s *Server) getGameByEventIdHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("eventId"))
 	var games []model.Game
 	games, err := repository.GetAllGamesByEventId(id)
 	if err != nil {
@@ -60,4 +62,33 @@ func (s *Server) getAllGamesByEventIdHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, games)
+}
+
+func (s *Server) editGameHandler(c *gin.Context) {
+	var req GameReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "No data was found",
+		})
+		return
+	}
+
+	parsed, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid start time",
+		})
+		return
+	}
+
+	toBeEdit := model.Game{EventId: req.EventId, StartTime: parsed, ID: req.ID}
+	game, err := repository.EditGame(toBeEdit)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot edit game: " + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, game)
 }
