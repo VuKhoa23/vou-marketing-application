@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { stepAction } from '../store';
 import {
     Box,
     FormControl,
@@ -12,6 +14,9 @@ import {
 } from '@chakra-ui/react';
 
 function AgentForm() {
+
+    const dispatch = useDispatch();
+
     const [enteredValues, setEnteredValues] = useState({
         agentName: '',
         email: '',
@@ -77,6 +82,10 @@ function AgentForm() {
         }));
     }
 
+    function handlePrev() {
+        dispatch(stepAction.setStep(1));
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -89,6 +98,7 @@ function AgentForm() {
             return; // Do not submit if there are errors
         }
 
+        dispatch(stepAction.setStep(3));
     }
 
     return (
@@ -147,7 +157,7 @@ function AgentForm() {
                         <Button
                             variant="outline"
                             bg="white"
-                            onClick={() => alert('Quay lại để chỉnh sửa thông tin')}
+                            onClick={handlePrev}
                         >
                             Quay Lại
                         </Button>

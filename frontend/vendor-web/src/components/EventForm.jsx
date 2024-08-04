@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { stepAction } from '../store';
 import {
     Box,
     FormControl,
@@ -7,7 +9,6 @@ import {
     Textarea,
     Button,
     Grid,
-    useToast,
     VStack,
     Image,
     Select,
@@ -28,6 +29,9 @@ import './custom-datepicker.css';
 import { CalendarIcon } from '@chakra-ui/icons';
 
 function EventForm() {
+
+    const dispatch = useDispatch();
+
     const [formValues, setFormValues] = useState({
         images: [],
         eventName: '',
@@ -47,7 +51,6 @@ function EventForm() {
         vouchers: '',
     });
 
-    const toast = useToast();
 
     function handleInputChange(identifier, value) {
         setFormValues(prevValues => {
@@ -175,7 +178,7 @@ function EventForm() {
         }));
     }
 
-    const handleSubmit = (event) => {
+    const handleNavigate = (event) => {
         event.preventDefault();
         const fields = ['eventName', 'startDate', 'endDate', 'gameType'];
         let formIsValid = true;
@@ -204,13 +207,7 @@ function EventForm() {
         }
 
         if (formIsValid) {
-            toast({
-                title: "Form submitted.",
-                description: "Your form has been submitted successfully.",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
+            dispatch(stepAction.setStep(4));
         }
 
         console.log(formValues);
@@ -227,6 +224,10 @@ function EventForm() {
             }));
         }
     });
+
+    function handlePrev () {
+        dispatch(stepAction.setStep(2));
+    }
 
     const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
         <InputGroup>
@@ -246,7 +247,7 @@ function EventForm() {
 
     return (
         <Box className="p-4 max-w-4xl mx-auto" bg="gray.50" borderRadius="md" boxShadow="md">
-            <form onSubmit={handleSubmit}>
+            <form>
                 <Grid templateColumns={{ base: '1fr', md: '1fr 2fr' }} gap={6}>
                     <Box>
                         <FormControl>
@@ -411,14 +412,14 @@ function EventForm() {
                             <Button
                                 variant="outline"
                                 bg="white"
-                                onClick={() => alert('Quay lại để chỉnh sửa thông tin')}
+                                onClick={handlePrev}
                             >
                                 Quay Lại
                             </Button>
 
                             <Button
                                 colorScheme="teal"
-                                type='submit'
+                                onClick={handleNavigate}
                             >
                                 Tiếp theo
                             </Button>

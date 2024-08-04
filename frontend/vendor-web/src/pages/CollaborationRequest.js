@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import BusinessForm from '../components/BusinessForm';
 import AgentForm from '../components/AgentForm';
 import EventForm from '../components/EventForm';
@@ -8,20 +9,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 const StepContent = ({ step }) => {
     switch (step) {
         case 1:
-            return <div><BusinessForm/></div>;
+            return <BusinessForm />;
         case 2:
-            return <div><AgentForm /></div>;
+            return <AgentForm />;
         case 3:
-            return <div><EventForm /></div>;
+            return <EventForm />;
         case 4:
-            return <div><PolicyPrivacy /></div>;
+            return <PolicyPrivacy />;
         default:
             return null;
     }
 };
 
 function CollaborationRequest() {
-    const [currentStep, setCurrentStep] = useState(1);
+
+    const currentStep = useSelector(state => state.currentStep);
 
     return (
         <>
@@ -30,25 +32,21 @@ function CollaborationRequest() {
                 <ul className="steps">
                     <li
                         className={`step ${currentStep >= 1 ? 'step-primary' : ''}`}
-                        onClick={() => setCurrentStep(1)}
                     >
                         Thông tin doanh nghiệp
                     </li>
                     <li
                         className={`step ${currentStep >= 2 ? 'step-primary' : ''}`}
-                        onClick={() => setCurrentStep(2)}
                     >
                         Thông tin <br/> người đại diện
                     </li>
                     <li
                         className={`step ${currentStep >= 3 ? 'step-primary' : ''}`}
-                        onClick={() => setCurrentStep(3)}
                     >
                         Thông tin sự kiện
                     </li>
                     <li
                         className={`step ${currentStep === 4 ? 'step-primary' : ''}`}
-                        onClick={() => setCurrentStep(4)}
                     >
                         Xác nhận và Chấp nhận
                     </li>
@@ -64,7 +62,7 @@ function CollaborationRequest() {
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         className="relative"
                     >
-                        <StepContent step={currentStep} />
+                        <StepContent step={currentStep}/>
                     </motion.div>
                 </AnimatePresence>
             </div>

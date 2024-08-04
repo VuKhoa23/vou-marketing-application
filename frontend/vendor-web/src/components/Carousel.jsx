@@ -1,7 +1,7 @@
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { NextArrow, PrevArrow } from './slickBtn'; 
+import { NextArrow, PrevArrow } from './slickBtn';
 
 const Carousel = ({ images, slidesToShow, slidesToScroll, dots }) => {
     const settings = {

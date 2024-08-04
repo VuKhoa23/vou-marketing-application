@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { stepAction } from '../store/index';
 import {
     Box,
     FormControl,
@@ -7,7 +9,6 @@ import {
     Textarea,
     Button,
     Grid,
-    useToast,
     VStack,
     HStack,
     FormErrorMessage,
@@ -17,6 +18,9 @@ import {
 import { useDropzone } from 'react-dropzone';
 
 function BusinessForm() {
+
+    const dispatch = useDispatch();
+
     const [formValues, setFormValues] = useState({
         image: null,
         brandName: '',
@@ -33,7 +37,6 @@ function BusinessForm() {
         email: ''
     });
 
-    const toast = useToast();
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'image/*',
@@ -106,7 +109,7 @@ function BusinessForm() {
         }));
     }
 
-    function handleSubmit(event) {
+    function handleNavigate(event) {
         event.preventDefault();
         const fields = ['brandName', 'address', 'phone', 'email'];
         let formIsValid = true;
@@ -119,19 +122,13 @@ function BusinessForm() {
         });
 
         if (formIsValid) {
-            toast({
-                title: "Form submitted.",
-                description: "Your form has been submitted successfully.",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
+            dispatch(stepAction.setStep(2))
         }
     }
 
     return (
         <Box className="p-4 max-w-4xl mx-auto" bg="gray.50" borderRadius="md" boxShadow="md">
-            <form onSubmit={handleSubmit}>
+            <form>
                 <Grid templateColumns={{ base: '1fr', md: '1fr 2fr' }} gap={6}>
                     <Box>
                         <FormControl>
@@ -245,7 +242,7 @@ function BusinessForm() {
 
                             <Button
                                 colorScheme="teal"
-                                type='submit'
+                                onClick={handleNavigate}
                             >
                                 Tiếp theo
                             </Button>
