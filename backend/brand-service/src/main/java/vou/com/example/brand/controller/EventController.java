@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.entity.Event;
+import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.service.EventService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/brand/event")
@@ -24,6 +27,11 @@ public class EventController {
     @GetMapping("hello")
     public void sayHello(){
         System.out.println("Hello my friend");
+    }
+
+    @GetMapping("findAll")
+    public List<Event> findAll(){
+        return eventService.findAll();
     }
 
     @PostMapping("add")

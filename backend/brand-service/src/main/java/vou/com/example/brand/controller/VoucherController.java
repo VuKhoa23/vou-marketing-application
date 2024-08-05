@@ -26,7 +26,7 @@ public class VoucherController {
 
     @PostMapping("add")
     public void addVoucher(@RequestParam Long brandId,
-                           @RequestPart(value = "fileURL") MultipartFile fileURLQR,
+                           @RequestPart(value = "fileURLQR") MultipartFile fileURLQR,
                            @RequestPart(value = "fileURL") MultipartFile fileURL,
                            @ModelAttribute VoucherDTO voucherDTO){
         voucherService.addVoucher(brandId, fileURLQR, fileURL, voucherDTO);

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class EventService {
@@ -102,5 +103,9 @@ public class EventService {
         event.setImageURL(filePath);
 
         eventRepository.save(event);
+    }
+
+    public List<Event> findAll(){
+        return eventRepository.findAll();
     }
 }
