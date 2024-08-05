@@ -8,14 +8,19 @@ import (
 	"time"
 )
 
+var (
+	questionColl = dbService.Client.Database("gametest").Collection("question")
+)
+
 func CreateQuestion(question model.Question) (model.Question, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := dbService.Client.Database("gametest").Collection("question").InsertOne(ctx, question)
+	res, err := questionColl.InsertOne(ctx, question)
 	if err != nil {
 		return model.Question{}, err
 	}
+	question.ID = res.InsertedID.(primitive.ObjectID)
 	return question, nil
 }
 
@@ -23,7 +28,7 @@ func GetQuestionsByGameId(gameId primitive.ObjectID) ([]model.Question, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := dbService.Client.Database("gametest").Collection("question").Find(ctx, bson.D{{"gameId", gameId}})
+	cursor, err := questionColl.Find(ctx, bson.D{{"gameId", gameId}})
 
 	if err != nil {
 		return []model.Question{}, err
