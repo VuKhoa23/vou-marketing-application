@@ -10,3 +10,9 @@
 - GET/api/game/:id
   - Get a specific game
 ## For questions
+- POST/api/game/create-question - Request : {game_id: $, title: $}
+  - Create a question (return question id use for create answers)
+- POST/api/game/create-answers - Request : {question_id: $, answers: [{content: $string, truthy: $boolean},...]}
+  - Create answers for a question
+- GET/api/game/get-questions/:gameId
+  - Get all questions and answers of a game

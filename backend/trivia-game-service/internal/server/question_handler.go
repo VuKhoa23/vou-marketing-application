@@ -3,6 +3,7 @@ package server
 import (
 	"game-service/internal/model"
 	"game-service/internal/repository"
+	"game-service/internal/response"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -38,13 +39,13 @@ func (s *Server) createQuestionHandler(c *gin.Context) {
 
 func (s *Server) getAllQuestionsByGameIdHandler(c *gin.Context) {
 	id, _ := primitive.ObjectIDFromHex(c.Param("gameId"))
-	var question []model.Question
-	question, err := repository.GetQuestionsByGameId(id)
+	var questions []response.QuestionRep
+	questions, err := repository.GetQuestionsByGameId(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Cannot get all question",
 		})
 		return
 	}
-	c.JSON(http.StatusOK, question)
+	c.JSON(http.StatusOK, questions)
 }

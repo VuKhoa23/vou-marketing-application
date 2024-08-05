@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"game-service/internal/model"
 	"game-service/internal/repository"
 	"github.com/gin-gonic/gin"
@@ -26,9 +27,10 @@ type GameReq struct {
 func (s *Server) createGameHandler(c *gin.Context) {
 	var req GameReq
 	err := c.ShouldBindJSON(&req)
+	fmt.Println(req.StartTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "No data was found",
+			"message": "No data was found: " + err.Error(),
 		})
 		return
 	}

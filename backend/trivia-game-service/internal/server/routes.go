@@ -26,6 +26,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.POST("/api/game/create-question", s.createQuestionHandler)
 
 	r.GET("/api/game/get-questions/:gameId", s.getAllQuestionsByGameIdHandler)
+
+	// -------- ANSWER APIs ---------
+
+	r.POST("/api/game/create-answers", s.createAnswersHandler)
+
 	return r
 }
 
