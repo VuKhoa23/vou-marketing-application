@@ -6,6 +6,7 @@ import StatisticsPage from './pages/Stats';
 import RootLayout from './pages/Root';
 import EventDetailPage from './pages/EventDetail';
 import NewEventPage from './pages/NewEvent';
+import CollaborationRequest from './pages/CollaborationRequest';
 
 
 const router = createBrowserRouter([
@@ -14,8 +15,13 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'events', element: <EventsPage /> },
-      { path: 'events/:eventId', element: <EventDetailPage /> },
+      { path: 'events',
+        children: [
+          { index: true, element: <EventsPage /> },
+          { path: ':eventId', element: <EventDetailPage /> },
+          { path: 'form', element: <CollaborationRequest /> },
+        ],
+      },
       { path: 'stats', element: <StatisticsPage /> },
       { path: 'newEvent', element: <NewEventPage /> },
     ],

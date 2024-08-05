@@ -1,21 +1,13 @@
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import stepReducer from './stepSlice';
+import formsReducer from './formsSlice';
 
-const counterReducer = (state = {counter: 0}, action) => {
-    if (action.type === 'increment') {
-        return {
-            counter: state.counter + 1,
-        };
+const store = configureStore({
+    reducer: {
+        step: stepReducer,
+        forms: formsReducer
     }
+});
 
-    if (action.type === 'decrement') {
-        return {
-            counter: state.counter - 1,
-        };
-    }
 
-    return state;
-};
-
-const store = createStore(counterReducer);
-
-export default store;
+export default store; 

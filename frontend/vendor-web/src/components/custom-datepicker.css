@@ -1,0 +1,21 @@
+.custom-datepicker .react-datepicker__triangle {
+    display: none;
+}
+
+.custom-datepicker .react-datepicker__header {
+    background-color: #2D3748; /* Ví dụ về màu nền của header */
+    border-bottom: none;
+}
+
+.custom-datepicker .react-datepicker__current-month {
+    color: #ffffff; /* Màu văn bản của tháng hiện tại */
+}
+
+.custom-datepicker .react-datepicker__day {
+    border-radius: 0; /* Ví dụ về border-radius cho các ngày */
+}
+
+.custom-datepicker .react-datepicker__day--selected {
+    background-color: #38A169; /* Màu nền cho ngày được chọn */
+    color: #ffffff; /* Màu văn bản cho ngày được chọn */
+}

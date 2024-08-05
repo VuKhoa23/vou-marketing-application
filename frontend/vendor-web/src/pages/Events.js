@@ -1,6 +1,6 @@
 import { DUMMY_EVENTS } from '../dummy-events.js';
 import Event from '../components/Event';
-
+import { NavLink } from 'react-router-dom';
 
 function EventsPage() {
     return (
@@ -24,9 +24,9 @@ function EventsPage() {
 
             <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
                 {DUMMY_EVENTS.map((event) => (
-                    <li key={event.id} className='m-4 hover:shadow-lg'>
+                    <NavLink to={event.id} key={event.id} className='m-4 hover:shadow-lg'>
                         <Event {...event} />
-                    </li>
+                    </NavLink>
                 ))}
             </ul>
             <div className="hero bg-base-200 p-20">
@@ -40,11 +40,10 @@ function EventsPage() {
                         <p className="py-6">
                             Chúng tôi cung cấp dịch vụ tạo sự kiện trò chơi sáng tạo giúp bạn thu hút sự chú ý và kết nối sâu sắc với khách hàng. Đừng bỏ lỡ cơ hội để làm nổi bật thương hiệu và sản phẩm của bạn thông qua các trải nghiệm tương tác đầy ấn tượng. Hãy hợp tác với chúng tôi và biến mỗi sự kiện thành một chiến lược quảng cáo hiệu quả!
                         </p>
-                        <button className="btn btn-primary">Đăng ký ngay</button>
+                        <NavLink to='form' className="btn btn-primary">Đăng ký ngay</NavLink>
                     </div>
                 </div>
             </div>
-
         </>
     );
 }
