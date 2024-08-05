@@ -1,26 +1,48 @@
 import React, { useState } from 'react';
-import { Box, Checkbox, Button, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Checkbox, Button, Text, VStack, HStack, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { setStep } from '../store/stepSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitAllForms } from '../store/actions';
 
 const PolicyPrivacy = () => {
 
     const dispatch = useDispatch();
-    
+    const eventForm = useSelector(state => state.forms.eventForm);
+    const voucherForm = useSelector(state => state.forms.voucherForm);
+
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = () => {
         if (termsAccepted && privacyAccepted) {
-            // Handle form submission
-            console.log('Form submitted');
+            const allFormsData = {
+                eventForm,
+                voucherForm
+            };
+            dispatch(submitAllForms(allFormsData));
+            console.log(allFormsData);
+            setError('');
         } else {
-            // Handle validation error
-            alert('Please agree to the terms and privacy policy before submitting.');
+            setError('Vui lòng đồng ý với các điều khoản và chính sách bảo mật trước khi đăng ký.');
         }
     };
 
-    function handlePrev () {
+    const handleTermsChange = (e) => {
+        setTermsAccepted(e.target.checked);
+        if (e.target.checked && privacyAccepted) {
+            setError('');
+        }
+    };
+
+    const handlePrivacyChange = (e) => {
+        setPrivacyAccepted(e.target.checked);
+        if (e.target.checked && termsAccepted) {
+            setError('');
+        }
+    };
+
+    function handlePrev() {
         dispatch(setStep(2));
     }
 
@@ -56,18 +78,22 @@ const PolicyPrivacy = () => {
                 <Text>• Bảo Mật Dữ Liệu: Các biện pháp bảo mật mà chúng tôi áp dụng để bảo vệ dữ liệu cá nhân của bạn.</Text>
                 <Text>• Chia Sẻ Dữ Liệu: Các trường hợp mà chúng tôi có thể chia sẻ dữ liệu cá nhân của bạn với bên thứ ba.</Text>
 
-                <Checkbox
-                    isChecked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                >
-                    Tôi đồng ý với các điều khoản và điều kiện của nền tảng.
-                </Checkbox>
-                <Checkbox
-                    isChecked={privacyAccepted}
-                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                >
-                    Tôi đồng ý với chính sách bảo mật và cách thức xử lý dữ liệu cá nhân.
-                </Checkbox>
+                <FormControl isInvalid={!!error} mb={4}>
+                    <Checkbox
+                        isChecked={termsAccepted}
+                        onChange={handleTermsChange}
+                        
+                    >
+                        Tôi đồng ý với các điều khoản và điều kiện của nền tảng.
+                    </Checkbox>
+                    <Checkbox
+                        isChecked={privacyAccepted}
+                        onChange={handlePrivacyChange}
+                    >
+                        Tôi đồng ý với chính sách bảo mật và cách thức xử lý dữ liệu cá nhân.
+                    </Checkbox>
+                    <FormErrorMessage>{error}</FormErrorMessage>
+                </FormControl>
 
                 <HStack w="full" spacing={4} mt={4} justify="space-between">
                     <Button
