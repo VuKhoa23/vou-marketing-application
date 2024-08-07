@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVoucherForm, updateVoucherSelection, updateVoucherQuantity } from '../store/formsSlice';
+import { setVoucherForm, updateVoucherQuantity } from '../store/formsSlice';
 import { setStep } from '../store/stepSlice';
 import {
     Box,
@@ -12,7 +12,8 @@ import {
     HStack,
     Text,
     FormErrorMessage,
-    Checkbox,
+    Radio,
+    RadioGroup,
     NumberInput,
     NumberInputField,
     Image,
@@ -36,8 +37,19 @@ function VoucherForm() {
     });
 
     function handleVoucherChange(voucherType) {
-        const selected = !formValues.vouchers[voucherType].selected;
-        dispatch(updateVoucherSelection({ voucherType, selected }));
+        // Update voucher selection and clear quantities of non-selected vouchers
+        const updatedVouchers = Object.keys(formValues.vouchers).reduce((acc, type) => {
+            acc[type] = {
+                selected: type === voucherType ? true : false,
+                quantity: type === voucherType ? formValues.vouchers[voucherType]?.quantity || 0 : 0
+            };
+            return acc;
+        }, {});
+
+        dispatch(setVoucherForm({
+            ...formValues,
+            vouchers: updatedVouchers
+        }));
     }
 
     function handleQuantityChange(voucherType, value) {
@@ -88,14 +100,11 @@ function VoucherForm() {
                 }
                 break;
             case 'vouchers':
-                const selectedVouchers = Object.values(formValues.vouchers).some(voucher => voucher.selected);
-                if (!selectedVouchers) {
-                    errorMessage = 'Bạn phải chọn ít nhất một loại voucher.';
-                } else {
-                    const invalidQuantities = Object.values(formValues.vouchers).some(voucher => voucher.selected && !voucher.quantity);
-                    if (invalidQuantities) {
-                        errorMessage = 'Số lượng voucher không hợp lệ.';
-                    }
+                const selectedVoucher = Object.values(formValues.vouchers).find(voucher => voucher.selected);
+                if (!selectedVoucher) {
+                    errorMessage = 'Bạn phải chọn một loại voucher.';
+                } else if (selectedVoucher && !selectedVoucher.quantity) {
+                    errorMessage = 'Số lượng voucher không hợp lệ.';
                 }
                 break;
             default:
@@ -147,8 +156,8 @@ function VoucherForm() {
         }
 
         if (formValues.vouchers) {
-            const invalidQuantities = Object.values(formValues.vouchers).some(voucher => voucher.selected && !voucher.quantity);
-            if (invalidQuantities) {
+            const selectedVoucher = Object.values(formValues.vouchers).find(voucher => voucher.selected);
+            if (selectedVoucher && !selectedVoucher.quantity) {
                 setErrors(prevErrors => ({
                     ...prevErrors,
                     vouchers: 'Số lượng voucher không hợp lệ.'
@@ -218,31 +227,32 @@ function VoucherForm() {
                                     Chọn loại voucher và số lượng
                                     <Text as="span" color="red.500" ml={1}>*</Text>
                                 </FormLabel>
-                                <Box>
-                                    {['Voucher 10%', 'Voucher 20%', 'Voucher 30%'].map((voucherType) => (
-                                        <Box className='flex justify-between ' key={voucherType} mb={4}>
-                                            <Checkbox
-                                                id={voucherType}
-                                                isChecked={formValues.vouchers[voucherType]?.selected || false}
-                                                onChange={() => handleVoucherChange(voucherType)}
-                                            >
-                                                {voucherType}
-                                            </Checkbox>
-                                            {formValues.vouchers[voucherType]?.selected && (
-                                                <NumberInput
-                                                    mt={2}
-                                                    value={formValues.vouchers[voucherType]?.quantity || ''}
-                                                    onChange={(value) => handleQuantityChange(voucherType, value)}
-                                                    min={1}
-                                                    precision={0}
-                                                >
-                                                    <NumberInputField placeholder="Nhập số lượng" />
-                                                </NumberInput>
-                                            )}
-                                        </Box>
-                                    ))}
-                                    <FormErrorMessage>{errors.vouchers}</FormErrorMessage>
-                                </Box>
+                                <RadioGroup
+                                    onChange={handleVoucherChange}
+                                    value={Object.keys(formValues.vouchers).find(voucherType => formValues.vouchers[voucherType]?.selected)}
+                                >
+                                    <Box>
+                                        {['Voucher 10%', 'Voucher 20%', 'Voucher 30%'].map((voucherType) => (
+                                            <Box className='flex justify-between' key={voucherType} mb={4}>
+                                                <Radio value={voucherType}>
+                                                    {voucherType}
+                                                </Radio>
+                                                {formValues.vouchers[voucherType]?.selected && (
+                                                    <NumberInput
+                                                        mt={2}
+                                                        value={formValues.vouchers[voucherType]?.quantity || ''}
+                                                        onChange={(value) => handleQuantityChange(voucherType, value)}
+                                                        min={1}
+                                                        precision={0}
+                                                    >
+                                                        <NumberInputField placeholder="Nhập số lượng" />
+                                                    </NumberInput>
+                                                )}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </RadioGroup>
+                                <FormErrorMessage>{errors.vouchers}</FormErrorMessage>
                             </FormControl>
                         </Box>
 
