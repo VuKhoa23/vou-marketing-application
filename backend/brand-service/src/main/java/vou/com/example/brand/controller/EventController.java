@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
+import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.service.EventService;
@@ -43,6 +44,17 @@ public class EventController {
         System.out.println("Received eventDTO: " + eventDTO);
         eventService.addEvent(brandId, fileURL, eventDTO);
         return ResponseEntity.ok("Event added successfully!");
+    }
+
+    @PostMapping("add/EventAndVoucher")
+    public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
+                                           @RequestPart(value = "eventImage") MultipartFile eventImage,
+                                           @ModelAttribute (value = "eventDTO")  EventDTO eventDTO,
+                                             @RequestPart(value = "voucherQR") MultipartFile voucherQR,
+                                             @RequestPart(value = "voucherImage") MultipartFile voucherImage,
+                                             @ModelAttribute VoucherDTO voucherDTO){
+        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherQR, voucherImage, voucherDTO);
+        return ResponseEntity.ok("Event and voucher added successfully!");
     }
 
     @PostMapping("update")

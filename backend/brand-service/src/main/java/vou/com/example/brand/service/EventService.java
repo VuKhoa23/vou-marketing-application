@@ -6,11 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
+import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
+import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
 import vou.com.example.brand.repository.EventRepository;
+import vou.com.example.brand.repository.VoucherRepository;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +26,7 @@ public class EventService {
     private static final String VOLUME_PATH = "F:/Pictures/brand/";
     EventRepository eventRepository;
     BrandRepository brandRepository;
+    VoucherRepository voucherRepository;
 
     @Autowired
     public EventService(EventRepository eventRepository, BrandRepository brandRepository){
@@ -84,6 +88,32 @@ public class EventService {
         event.setBrand(brand);
 
         eventRepository.save(event);
+    }
+
+    public void addVoucher(Long brandId, MultipartFile imageFileQR, MultipartFile imageFile, VoucherDTO voucherDTO){
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
+
+        Voucher voucher = new Voucher();
+
+        String fileURLQR = uploadFile(imageFileQR);
+        String fileURL = uploadFile(imageFile);
+
+        voucher.setId(voucherDTO.getId());
+        voucher.setImageQR(fileURLQR);
+        voucher.setImageURL(fileURL);
+        voucher.setValue(voucherDTO.getValue());
+        voucher.setDescription(voucherDTO.getDescription());
+        voucher.setEndDate(voucherDTO.getEndDate());
+        voucher.setBrand(brand);
+
+        voucherRepository.save(voucher);
+    }
+
+    public void addEventAndVoucher(Long brandId, MultipartFile eventImage, EventDTO eventDTO,
+                                   MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+        addEvent(brandId, eventImage, eventDTO);
+        addVoucher(brandId, voucherQR, voucherImage, voucherDTO);
     }
 
     public Page<Event> findByNameContaining(String name, Pageable pageable){

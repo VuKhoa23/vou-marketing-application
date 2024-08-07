@@ -81,12 +81,12 @@ public class VoucherService {
         String fileURLQR = uploadFile(imageFileQR);
         String fileURL = uploadFile(imageFile);
 
-        voucher.setId(voucher.getId());
+        voucher.setId(voucherDTO.getId());
         voucher.setImageQR(fileURLQR);
         voucher.setImageURL(fileURL);
-        voucher.setValue(voucher.getValue());
-        voucher.setDescription(voucher.getDescription());
-        voucher.setEndDate(voucher.getEndDate());
+        voucher.setValue(voucherDTO.getValue());
+        voucher.setDescription(voucherDTO.getDescription());
+        voucher.setEndDate(voucherDTO.getEndDate());
         voucher.setBrand(brand);
 
         voucherRepository.save(voucher);
