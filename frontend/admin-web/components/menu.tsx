@@ -7,7 +7,7 @@ export default function Menu() {
     const pathname = usePathname();
 
     return (
-        <ul className="menu py-6 bg-blue-500 text-white rounded-box m-4 w-56">
+        <ul className="menu py-6 bg-blue-500 text-white rounded-box m-2 w-56 min-w-56 max-w-56">
             <h1 className="menu-title text-white text-xl">VOU Admin</h1>
             <li className={pathname === "/" || pathname === "/dashboard" ? "focus" : ""}>
                 <Link href="/">
@@ -118,7 +118,7 @@ export default function Menu() {
                     </ul>
                 </details>
             </li>
-            <li className="logout">
+            <li className="mt-auto justify-self-end">
                 <a href="/login">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
