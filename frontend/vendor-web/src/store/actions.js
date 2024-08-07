@@ -11,7 +11,7 @@ export const submitAllForms = (data) => {
             
             if (response.ok) {
                 const result = await response.json();
-                console.log('Submit successful:', result);
+                console.log('Submit successful:', result); 
             } else {
                 console.error('Submit failed');
             }

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "DOOKKI KHAI TRƯƠNG CỬA HÀNG MỚI",
+    "quantity": 3000,
+    "startDate": "15-02-2023",
+    "endDate": "30-04-2023",
+    "participants": 50
+  },
+  {
+    "name": "SỰ KIỆN ĐẶC BIỆT CỦA HIGHLANDS COFFEE",
+    "quantity": 1200,
+    "startDate": "01-05-2023",
+    "endDate": "01-06-2023",
+    "participants": 25
+  },
+  {
+    "name": "KHUYẾN MÃI GIẢM GIÁ CỦA BOBAPOP",
+    "quantity": 2000,
+    "startDate": "10-06-2023",
+    "endDate": "25-08-2023",
+    "participants": 45
+  },
+  {
+    "name": "RA MẮT SẢN PHẨM MỚI TỪ KFC",
+    "quantity": 1500,
+    "startDate": "20-07-2024",
+    "endDate": "01-09-2024",
+    "participants": 30
+  },
+  {
+    "name": "HỘI CHỢ THƯƠNG MẠI NFT",
+    "quantity": 800,
+    "startDate": "15-08-2023",
+    "endDate": "31-08-2023",
+    "participants": 35
+  }
+]

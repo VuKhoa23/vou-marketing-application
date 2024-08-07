@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/Home';
 import EventsPage from './pages/Events';
-import StatisticsPage from './pages/Stats';
+import Dashboard from './pages/dashboard/default';
 import RootLayout from './pages/Root';
 import EventDetailPage from './pages/EventDetail';
 import NewEventPage from './pages/NewEvent';
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
           { path: 'form', element: <CollaborationRequest /> },
         ],
       },
-      { path: 'stats', element: <StatisticsPage /> },
+      { path: 'stats', element: <Dashboard /> },
       { path: 'newEvent', element: <NewEventPage /> },
     ],
   },
