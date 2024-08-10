@@ -6,19 +6,26 @@ metadata:
     ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - http:
-        paths:
-#          - path: /api/admin
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: admin-service
-#                port:
-#                  number: 8080
-          - path: /api/brand
-            pathType: Prefix
-            backend:
-              service:
-                name: brand-service
-                port:
-                  number: 8080
+  - http:
+      paths:
+      - path: /api/admin
+        pathType: Prefix     
+        backend:
+          service:
+            name: admin-service
+            port:
+              number: 8080
+      - path: /api/game
+        pathType: Prefix     
+        backend:
+          service:
+            name: game-service
+            port:
+              number: 8081
+      - path: /api/brand
+        pathType: Prefix
+        backend:
+          service:
+            name: brand-service
+            port:
+              number: 8080

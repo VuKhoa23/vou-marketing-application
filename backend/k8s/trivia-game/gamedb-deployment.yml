@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamedb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gamedb-deployment
+  template:
+    metadata:
+      labels:
+        app: gamedb-deployment
+    spec:
+      containers:
+      - name: gamedb-cont
+        image: mongo:latest
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: root
+        volumeMounts:
+        - name: gamedb-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: gamedb-persistent-storage
+        persistentVolumeClaim:
+          claimName: gamedb-pvc

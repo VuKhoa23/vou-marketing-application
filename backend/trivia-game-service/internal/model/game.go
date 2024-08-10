@@ -7,6 +7,6 @@ import (
 
 type Game struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	EventId   int16              `bson:"eventId" json:"event_id"`
+	EventId   int                `bson:"eventId" json:"event_id"`
 	StartTime time.Time          `bson:"startTime" json:"start_time"`
 }

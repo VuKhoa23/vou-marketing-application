@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-service-deployment
+  template:
+    metadata:
+      labels:
+        app: game-service-deployment
+    spec:
+      containers:
+      - name: game-service-cont
+        image: vukhoa23/trivia-game-service:test-3
+        env:
+        - name: PORT
+          value: "8081"
+        - name: DB_HOST
+          value: "gamedb-service.default"
+        - name: DB_PORT
+          value: "27017"
+        - name: DB_USERNAME
+          value: root
+        - name: DB_ROOT_PASSWORD
+          value: root
