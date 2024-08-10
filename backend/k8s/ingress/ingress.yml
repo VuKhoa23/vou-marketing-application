@@ -22,3 +22,10 @@ spec:
             name: game-service
             port:
               number: 8081
+      - path: /api/brand
+        pathType: Prefix
+        backend:
+          service:
+            name: brand-service
+            port:
+              number: 8080

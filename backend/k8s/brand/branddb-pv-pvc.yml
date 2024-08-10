@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: branddb-pv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brand-initdb-config
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS vouBrand;
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: branddb-pvc
+spec:
+  volumeName: branddb-pv
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
