@@ -32,7 +32,7 @@ func (s *Server) createAnswersHandler(c *gin.Context) {
 		_, err := repository.CreateAnswer(answer)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Cannot create answers",
+				"message": "Cannot create answers: " + err.Error(),
 			})
 			return
 		}

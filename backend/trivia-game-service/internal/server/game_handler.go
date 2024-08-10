@@ -38,7 +38,7 @@ func (s *Server) createGameHandler(c *gin.Context) {
 	parsed, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid start time",
+			"message": "Invalid start time " + err.Error(),
 		})
 		return
 	}

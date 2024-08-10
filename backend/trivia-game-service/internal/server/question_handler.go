@@ -43,7 +43,7 @@ func (s *Server) getAllQuestionsByGameIdHandler(c *gin.Context) {
 	questions, err := repository.GetQuestionsByGameId(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Cannot get all question",
+			"message": "Cannot get all question: " + err.Error(),
 		})
 		return
 	}
