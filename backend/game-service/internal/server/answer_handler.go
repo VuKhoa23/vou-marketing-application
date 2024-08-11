@@ -23,7 +23,7 @@ func (s *Server) createAnswersHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "No data was found",
+			"message": "No data was found: " + err.Error(),
 		})
 		return
 	}

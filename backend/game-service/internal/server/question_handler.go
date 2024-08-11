@@ -20,7 +20,7 @@ func (s *Server) createQuestionHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "No data was found",
+			"message": "No data was found: " + err.Error(),
 		})
 		return
 	}
@@ -46,6 +46,9 @@ func (s *Server) getAllQuestionsByGameIdHandler(c *gin.Context) {
 			"message": "Cannot get all question: " + err.Error(),
 		})
 		return
+	}
+	if len(questions) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
 	}
 	c.JSON(http.StatusOK, questions)
 }

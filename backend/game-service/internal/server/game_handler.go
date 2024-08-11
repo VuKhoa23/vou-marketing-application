@@ -20,7 +20,8 @@ func (s *Server) getGameHandler(c *gin.Context) {
 type GameReq struct {
 	ID        primitive.ObjectID `json:"id,omitempty"`
 	EventId   int                `json:"event_id,omitempty"`
-	StartTime string             `json:"start_time,omitempty"`
+	StartTime *string            `json:"start_time"`
+	Type      *string            `json:"type"`
 }
 
 // POST - /api/game
@@ -35,14 +36,22 @@ func (s *Server) createGameHandler(c *gin.Context) {
 		return
 	}
 	req.ID = primitive.NilObjectID
-	parsed, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
+	parsed, err := time.Parse("2006-01-02 15:04:05", *req.StartTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid start time " + err.Error(),
 		})
 		return
 	}
-	toBeAdded := model.Game{EventId: req.EventId, StartTime: parsed, ID: primitive.NilObjectID}
+
+	if req.Type == nil || (*req.Type != "trivia" && *req.Type != "coin") {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid type",
+		})
+		return
+	}
+
+	toBeAdded := model.Game{EventId: req.EventId, StartTime: parsed, ID: primitive.NilObjectID, Type: *req.Type}
 	game, err := repository.CreateGame(toBeAdded)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -59,9 +68,12 @@ func (s *Server) getGameByEventIdHandler(c *gin.Context) {
 	games, err := repository.GetAllGamesByEventId(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Cannot get all games",
+			"message": "Cannot get all games: " + err.Error(),
 		})
 		return
+	}
+	if len(games) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
 	}
 	c.JSON(http.StatusOK, games)
 }
@@ -71,15 +83,15 @@ func (s *Server) editGameHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "No data was found",
+			"message": "No data was found: " + err.Error(),
 		})
 		return
 	}
 
-	parsed, err := time.Parse("2006-01-02 15:04:05", req.StartTime)
+	parsed, err := time.Parse("2006-01-02 15:04:05", *req.StartTime)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid start time",
+			"message": "Invalid start time: " + err.Error(),
 		})
 		return
 	}

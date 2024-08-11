@@ -11,6 +11,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/", s.HelloWorldHandler)
 
+	r.GET("/api/brand-management/get-all", s.getAllBrandHandler)
+
+	r.POST("/api/brand-management/create", s.createBrandHandler)
+
 	return r
 }
 

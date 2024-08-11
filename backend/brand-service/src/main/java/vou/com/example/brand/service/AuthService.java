@@ -34,18 +34,16 @@ public class AuthService {
     }
 
     public void register(RegisterDTO registerDTO){
-        String name = registerDTO.getName();
+        String name = registerDTO.getUsername();
         String password = registerDTO.getPassword();
         String category = registerDTO.getCategory();
         double longitude = registerDTO.getLongitude();
         double latitude = registerDTO.getLatitude();
 
         Brand brand = new Brand();
-        brand.setName(name);
+        brand.setUsername(name);
         brand.setPassword(passwordEncoder.encode(password));
         brand.setCategory(category);
-        brand.setLongitude(longitude);
-        brand.setLatitude(latitude);
 
         brandRepository.save(brand);
     }
@@ -53,7 +51,7 @@ public class AuthService {
     public AuthResponseDTO login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDTO.getName(),
+                        loginDTO.getUsername(),
                         loginDTO.getPassword()
                 ));
         SecurityContextHolder.getContext().setAuthentication(authentication);

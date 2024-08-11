@@ -12,20 +12,14 @@ public class Brand {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "username", unique = true)
+    private String username;
 
     @Column(name = "password")
     private String password;
 
     @Column(name = "category")
     private String category;
-
-    @Column(name = "longitude")
-    private double longitude;
-
-    @Column(name = "latitude")
-    private double latitude;
 
     @Column(name = "state")
     private boolean state = false;
