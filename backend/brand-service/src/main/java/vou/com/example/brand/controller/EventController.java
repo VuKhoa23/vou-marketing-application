@@ -3,14 +3,12 @@ package vou.com.example.brand.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Event;
-import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.service.EventService;
 
 import java.util.List;
@@ -30,23 +28,23 @@ public class EventController {
         System.out.println("Hello my friend");
     }
 
-    @GetMapping("findAll")
+    @GetMapping("find-all")
     public List<Event> findAll(){
         return eventService.findAll();
     }
 
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
-                                           @RequestPart(value = "fileURL") MultipartFile fileURL,
+                                           @RequestPart(value = "eventImage") MultipartFile eventImage,
                                            @ModelAttribute (value = "eventDTO")  EventDTO eventDTO){
         System.out.println("Received brandId: " + brandId);
-        System.out.println("Received file: " + fileURL.getOriginalFilename());
+        System.out.println("Received file: " + eventImage.getOriginalFilename());
         System.out.println("Received eventDTO: " + eventDTO);
-        eventService.addEvent(brandId, fileURL, eventDTO);
+        eventService.addEvent(brandId, eventImage, eventDTO);
         return ResponseEntity.ok("Event added successfully!");
     }
 
-    @PostMapping("add/EventAndVoucher")
+    @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
                                            @RequestPart(value = "eventImage") MultipartFile eventImage,
                                            @ModelAttribute (value = "eventDTO")  EventDTO eventDTO,
@@ -65,7 +63,7 @@ public class EventController {
         return ResponseEntity.ok("Event updated successfully!");
     }
 
-    @GetMapping("search/findByNameContaining")
+    @GetMapping("search/find-by-name-containing")
     public Page<Event> findByNameContaining(@RequestParam("name") String name, Pageable pageable){
         return eventService.findByNameContaining(name, pageable);
     }

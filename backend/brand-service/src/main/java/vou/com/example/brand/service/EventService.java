@@ -73,31 +73,36 @@ public class EventService {
         return fileURL;
     }
 
-    public void addEvent(Long brandId, MultipartFile fileURL, EventDTO eventDTO){
+    public void addEvent(Long brandId, MultipartFile eventImage, EventDTO eventDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        String filePath = uploadFile(fileURL);
+        String filePath = uploadFile(eventImage);
 
         Event event = new Event();
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setVoucherQuantities(event.getVoucherQuantities());
         event.setImageURL(filePath);
         event.setBrand(brand);
+        if(eventDTO.isTrivia()){
+            event.setTrivia(true);
+        }
+        if(eventDTO.isShaking()){
+            event.setShaking(true);
+        }
 
         eventRepository.save(event);
     }
 
-    public void addVoucher(Long brandId, MultipartFile imageFileQR, MultipartFile imageFile, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         Voucher voucher = new Voucher();
 
-        String fileURLQR = uploadFile(imageFileQR);
-        String fileURL = uploadFile(imageFile);
+        String fileURLQR = uploadFile(voucherQR);
+        String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());
         voucher.setImageQR(fileURLQR);
@@ -129,7 +134,6 @@ public class EventService {
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setVoucherQuantities(event.getVoucherQuantities());
         event.setImageURL(filePath);
 
         eventRepository.save(event);
