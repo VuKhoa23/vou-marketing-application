@@ -15,6 +15,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.POST("/api/brand-management/create", s.createBrandHandler)
 
+	r.PATCH("/api/brand-management/disable/:brandId", s.disableBrandHandler)
+
+	r.PATCH("/api/brand-management/enable/:brandId", s.enableBrandHandler)
+
 	return r
 }
 

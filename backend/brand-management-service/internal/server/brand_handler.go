@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strconv"
 )
 
 type BrandReq struct {
@@ -66,5 +67,41 @@ func (s *Server) createBrandHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully created brand",
+	})
+}
+
+func (s *Server) disableBrandHandler(c *gin.Context) {
+	brandId, err := strconv.Atoi(c.Param("brandId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot disable brand: " + err.Error(),
+		})
+	}
+	err = repository.DisableBrand(brandId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully disabled brand: " + c.Param("brandId"),
+	})
+}
+
+func (s *Server) enableBrandHandler(c *gin.Context) {
+	brandId, err := strconv.Atoi(c.Param("brandId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot enable brand: " + err.Error(),
+		})
+	}
+	err = repository.EnableBrand(brandId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully enabled brand: " + c.Param("brandId"),
 	})
 }

@@ -49,3 +49,21 @@ func CreateBrand(brand model.Brand) (model.Brand, error) {
 	}
 	return brand, nil
 }
+
+func DisableBrand(id int) error {
+	query := "UPDATE brand SET state = ? WHERE id = ?"
+	_, err := db.Exec(query, 0, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func EnableBrand(id int) error {
+	query := "UPDATE brand SET state = ? WHERE id = ?"
+	_, err := db.Exec(query, 1, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
