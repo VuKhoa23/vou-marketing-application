@@ -29,7 +29,7 @@ const MiniCard = ({ icon: Icon, content }) => {
           <Box fontSize="sm" color="gray.500">
             {content.title}
           </Box>
-          <Box fontSize="lg" fontWeight="semibold">
+          <Box fontSize="2xl" fontWeight="bold">
             {content.data}
           </Box>
         </Box>

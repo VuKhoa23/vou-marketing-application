@@ -6,16 +6,18 @@ class LineChart extends React.Component {
     super(props);
 
     this.state = {
-      chartData: [],
+      chartData: props.chartData,
       chartOptions: {},
     };
   }
 
-  componentDidMount() {
-    this.setState({
-      chartData: this.props.chartData,
-      chartOptions: this.props.chartOptions,
-    });
+  componentDidUpdate(prevProps) {
+    if (prevProps.chartData !== this.props.chartData || prevProps.chartOptions !== this.props.chartOptions) {
+      this.setState({
+        chartData: this.props.chartData,
+        chartOptions: this.props.chartOptions,
+      });
+    }
   }
 
   render() {

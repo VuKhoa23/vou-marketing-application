@@ -6,13 +6,13 @@ import {
 import MiniCard from "../components/card/MiniCard";
 import React from "react";
 import { FaCalendarAlt, FaUsers, FaDollarSign, FaTag, FaClock, FaMoneyBillWave } from 'react-icons/fa';
-import CheckTable from '../components/CheckTable';
+import EventList from '../components/EventList';
 import { columnsDataCheck } from "../components/variables/columnsData";
 import tableDataCheck from "../components/variables/tableDataCheck.json";
-import PieCard from "../components/PieCard";
-import DailyTraffic from "../components/DailyTraffic";
-import TotalSpent from "../components/TotalSpent";
-import WeeklyRevenue from "../components/WeeklyRevenue";
+import PieCard from "../components/Reachability";
+import NumberOfParticipants from "../components/NumberOfParticipants";
+import TotalSpent from "../components/RevenueNProfit";
+import ParticipantsInfo from "../components/ParticipantsInfo";
 
 export default function Dashboard() {
     const pageBg = "gray.100";
@@ -72,13 +72,14 @@ export default function Dashboard() {
                 />
             </SimpleGrid>
             <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap='20px' mb='20px'>
-                <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
+                <EventList columnsData={columnsDataCheck} tableData={tableDataCheck} />
             </SimpleGrid>
             <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
-                <WeeklyRevenue />
+                <ParticipantsInfo />
+                
                 <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
                     <PieCard />
-                    <DailyTraffic />
+                    <NumberOfParticipants />
                 </SimpleGrid>
             </SimpleGrid>
 

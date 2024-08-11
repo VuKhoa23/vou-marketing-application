@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Chart from "react-apexcharts";
 
-class ColumnChart extends Component {
+class ColumnChart1 extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,15 +21,18 @@ class ColumnChart extends Component {
 
   render() {
     return (
-      <Chart
-        options={this.state.chartOptions}
-        series={this.state.chartData}
-        type='bar'
-        width='100%'
-        height='100%'
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ minWidth: '1000px' }}>
+          <Chart
+            options={this.state.chartOptions}
+            series={this.state.chartData}
+            type="bar"
+            height={340}
+          />
+        </div>
+      </div>
     );
   }
 }
 
-export default ColumnChart;
+export default ColumnChart1;

@@ -6,16 +6,19 @@ class PieChart extends React.Component {
     super(props);
 
     this.state = {
-      chartData: [],
-      chartOptions: {},
+      chartData: props.chartData,
+      chartOptions: props.chartOptions,
     };
   }
 
-  componentDidMount() {
-    this.setState({
-      chartData: this.props.chartData,
-      chartOptions: this.props.chartOptions,
-    });
+  componentDidUpdate(prevProps) {
+    // Kiểm tra nếu props đã thay đổi
+    if (prevProps.chartData !== this.props.chartData || prevProps.chartOptions !== this.props.chartOptions) {
+      this.setState({
+        chartData: this.props.chartData,
+        chartOptions: this.props.chartOptions,
+      });
+    }
   }
 
   render() {
@@ -25,7 +28,7 @@ class PieChart extends React.Component {
         series={this.state.chartData}
         type='pie'
         width='100%'
-        height='55%'
+        height='100%'
       />
     );
   }
