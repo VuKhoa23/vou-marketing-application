@@ -5,10 +5,9 @@ import com.vou.user.dto.brandmanagement.request.BrandRequestDTO;
 import com.vou.user.dto.brandmanagement.response.BrandResponseDTO;
 import org.hibernate.jdbc.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -27,8 +26,25 @@ public class BrandManagementController {
         if (brandRequestDTO == null || brandRequestDTO.getUsername().isEmpty() || brandRequestDTO.getPassword().isEmpty() || brandRequestDTO.getCategory().isEmpty() || brandRequestDTO.getState() == null) {
             return new ResponseEntity<>(ResponseDTO.builder().message("Missing informations").build(), HttpStatus.BAD_REQUEST);
         }
-        System.out.println(brandRequestDTO);
-        return new ResponseEntity<>(ResponseDTO.builder().message("Create brand").build(), HttpStatus.OK);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<BrandRequestDTO> requestEntity = new HttpEntity<>(brandRequestDTO, headers);
+
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    brandUrl + "/create",
+                    HttpMethod.POST,
+                    requestEntity,
+                    Void.class
+            );
+            if (response.getStatusCode().is2xxSuccessful()){
+                return new ResponseEntity<>(ResponseDTO.builder().message("Create brand succeed").build(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseDTO.builder().message("Create brand failed").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(ResponseDTO.builder().message("Create brand failed: " + e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("enable/{brandId}")

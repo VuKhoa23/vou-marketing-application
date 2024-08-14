@@ -27,12 +27,12 @@
     &quot;assignee&quot;: &quot;VuKhoa23&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/VuKhoa23/vou-marketing-application.git&quot;,
-    &quot;accountId&quot;: &quot;9102fed3-629c-4cf2-be4f-cb5b095886fd&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/VuKhoa23/vou-marketing-application.git",
+    "accountId": "0bb8b384-5f37-45c7-8f3e-83b6adb4ff58"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
