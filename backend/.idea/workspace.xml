@@ -5,27 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/config/AppConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/GameDTORequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/GameDTOResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/admin/admin.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/brand/brand.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/ingress/ingress.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/k8s.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/trivia-game/game.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/AnswerDTORequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/QuestionDTORequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/QuestionWithAnswerDTORequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/QuestionDTOResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/BrandController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/EventController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/EventController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/VoucherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/VoucherController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/EventDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/EventDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Event.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Voucher.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Voucher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/GameDTOResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/GameDTOResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/BrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/BrandService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/EventService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/EventService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/VoucherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/VoucherService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/brand/deployment.yml" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/brand/deployment.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +57,7 @@
   <component name="RunManager">
     <configuration name="admin" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="F:\Documents\Code\Spring\vou-marketing-application\backend\k8s\admin" />
+      <option name="WORKING_DIRECTORY" value="./k8s/admin" />
       <option name="PARENT_ENVS" value="true" />
       <module name="" />
       <option name="SCRIPT_NAME" value="admin.bat" />
@@ -81,7 +68,7 @@
     </configuration>
     <configuration name="game" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="F:\Documents\Code\Spring\vou-marketing-application\backend\k8s\trivia-game" />
+      <option name="WORKING_DIRECTORY" value="./k8s/trivia-game" />
       <option name="PARENT_ENVS" value="true" />
       <module name="" />
       <option name="SCRIPT_NAME" value="game.bat" />
@@ -92,7 +79,7 @@
     </configuration>
     <configuration name="k8s" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="F:\Documents\Code\Spring\vou-marketing-application\backend\k8s" />
+      <option name="WORKING_DIRECTORY" value="./k8s" />
       <option name="PARENT_ENVS" value="true" />
       <module name="" />
       <option name="SCRIPT_NAME" value="k8s.bat" />

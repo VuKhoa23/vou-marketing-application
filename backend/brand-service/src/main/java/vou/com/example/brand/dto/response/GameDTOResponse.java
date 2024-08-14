@@ -9,6 +9,5 @@ import java.time.LocalDateTime;
 public class GameDTOResponse {
     private String id;
     private Long event_id;
-
     private String start_time;
 }
