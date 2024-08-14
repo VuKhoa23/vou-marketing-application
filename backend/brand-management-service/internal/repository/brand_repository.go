@@ -7,7 +7,7 @@ import (
 
 func GetAllBrands() ([]model.Brand, error) {
 	var brands []model.Brand
-	rows, err := db.Query("SELECT id, name, category, state FROM brand")
+	rows, err := db.Query("SELECT id, username, category, state FROM brand")
 	if err != nil {
 		return []model.Brand{}, err
 	}

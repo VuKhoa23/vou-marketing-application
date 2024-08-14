@@ -5,8 +5,18 @@ cd admin
 
 cd .. 
 
-cd trivia-game
+cd game
 ./game.sh
+
+cd ..
+
+cd brand
+./brand.sh
+
+cd ..
+
+cd brand-management
+./brand-management.sh
 
 cd ..
 
