@@ -29,4 +29,10 @@ public class Brand {
 
     @Column(name = "state")
     private boolean state = false;
+
+    @Column(name = "is_shaking")
+    private boolean isShaking = false;
+
+    @Column(name = "is_trivia")
+    private boolean isTrivia = false;
 }

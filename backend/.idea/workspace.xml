@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/AnswerDTORequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/QuestionDTORequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/request/QuestionWithAnswerDTORequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/QuestionDTOResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/BrandController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/GameDTOResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/response/GameDTOResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/BrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/service/BrandService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/RegisterDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/RegisterDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Brand.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Brand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +49,7 @@
     &quot;last_opened_file_path&quot;: &quot;F:/Documents/Code/Spring/vou-marketing-application/backend&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Batch.admin">
     <configuration name="admin" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="WORKING_DIRECTORY" value="./k8s/admin" />

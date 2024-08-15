@@ -39,6 +39,8 @@ public class AuthService {
         String category = registerDTO.getCategory();
         double longitude = registerDTO.getLongitude();
         double latitude = registerDTO.getLatitude();
+        boolean isShaking = registerDTO.isShaking();
+        boolean isTrivia = registerDTO.isTrivia();
 
         Brand brand = new Brand();
         brand.setName(name);
@@ -46,6 +48,8 @@ public class AuthService {
         brand.setCategory(category);
         brand.setLongitude(longitude);
         brand.setLatitude(latitude);
+        brand.setShaking(isShaking);
+        brand.setTrivia(isTrivia);
 
         brandRepository.save(brand);
     }
