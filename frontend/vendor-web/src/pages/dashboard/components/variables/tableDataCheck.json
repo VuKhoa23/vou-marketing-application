@@ -1,9 +1,12 @@
 [
   {
     "name": "DOOKKI KHAI TRƯƠNG CỬA HÀNG MỚI",
+    "slogan": "Tưng bừng khai trương - Ăn sung mặc sướng",
     "quantity": 3000,
+    "gameType": "trivia",
     "startDate": "15-02-2023",
     "endDate": "30-04-2023",
+    "info": "Sự kiện chào mừng chi nhánh mới tại TPHCM",
     "participants": 50
   },
   {

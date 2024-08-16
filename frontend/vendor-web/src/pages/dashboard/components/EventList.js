@@ -1,33 +1,12 @@
-import {
-  Flex,
-  Box,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  Button,
-  Input,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  FormControl, 
-  FormErrorMessage
+import { Flex, Box, Table, Tbody, Td, Text, Th, Thead, Tr, Button, Input,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
+  FormControl, FormErrorMessage, FormLabel, Textarea, Select, InputGroup, InputRightElement, Icon
 } from '@chakra-ui/react';
+import { createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { CalendarIcon } from '@chakra-ui/icons';
+import DatePicker from 'react-datepicker';
 import * as React from 'react';
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+
 
 const columnHelper = createColumnHelper();
 
@@ -36,14 +15,106 @@ export default function EventList(props) {
   const [sorting, setSorting] = React.useState([]);
   const [pageIndex, setPageIndex] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
-  const [modalData, setModalData] = React.useState(null);
+  const [voucherModalData, setVoucherModalData] = React.useState(null);
+  const [eventModalData, setEventModalData] = React.useState(null);
   const [newQuantity, setNewQuantity] = React.useState(0);
   const [totalQuantity, setTotalQuantity] = React.useState(0);
   const [error, setError] = React.useState('');
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const voucherModalDisclosure = useDisclosure();
+  const eventModalDisclosure = useDisclosure();
 
   const textColor = 'black';
   const borderColor = 'gray.200';
+
+  const [errors, setErrors] = React.useState({
+    eventName: '',
+    startDate: '',
+    endDate: '',
+    gameType: '',
+  });
+
+  function handleInputChange(identifier, value) {
+    // Dispatch the update to Redux store
+    setEventModalData({
+      ...eventModalData,
+      [identifier]: value
+    });
+
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [identifier]: ''
+    }));
+
+    // Validation
+    if (identifier === 'startDate' && value && eventModalData.endDate && new Date(value) > new Date(eventModalData.endDate)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        startDate: 'Ngày bắt đầu không thể sau ngày kết thúc.'
+      }));
+    }
+    if (identifier === 'endDate' && value && eventModalData.startDate && new Date(value) < new Date(eventModalData.startDate)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        endDate: 'Ngày kết thúc không thể trước ngày bắt đầu.'
+      }));
+    }
+
+  }
+
+  function validateField(identifier) {
+    const value = eventModalData[identifier];
+    let errorMessage = '';
+
+    switch (identifier) {
+      case 'eventName':
+        if (!value) {
+          errorMessage = 'Tên sự kiện không được bỏ trống.';
+        }
+        break;
+      case 'startDate':
+        if (!value) {
+          errorMessage = 'Ngày bắt đầu không được bỏ trống.';
+        } else if (eventModalData.endDate && new Date(value) > new Date(eventModalData.endDate)) {
+          errorMessage = 'Ngày bắt đầu không thể sau ngày kết thúc.';
+        }
+        break;
+      case 'endDate':
+        if (!value) {
+          errorMessage = 'Ngày kết thúc không được bỏ trống.';
+        } else if (eventModalData.startDate && new Date(value) < new Date(eventModalData.startDate)) {
+          errorMessage = 'Ngày kết thúc không thể trước ngày bắt đầu.';
+        }
+        break;
+      case 'gameType':
+        if (!value) {
+          errorMessage = 'Bạn phải chọn loại trò chơi.';
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [identifier]: errorMessage
+    }));
+  }
+
+  const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
+    <InputGroup>
+        <InputRightElement pointerEvents="none">
+            <Icon as={CalendarIcon} color="gray.500" />
+        </InputRightElement>
+        <Input
+            ref={ref}
+            value={value}
+            onClick={onClick}
+            onBlur={onBlur}
+            placeholder="Chọn ngày"
+            readOnly
+        />
+    </InputGroup>
+));
 
   const columns = [
     columnHelper.accessor('name', {
@@ -105,13 +176,13 @@ export default function EventList(props) {
             colorScheme="gray"
             size="sm"
             onClick={() => {
-              setModalData({
+              setVoucherModalData({
                 name: info.row.original.name,
                 quantity: info.getValue(),
               });
               setTotalQuantity(info.getValue());
               setNewQuantity('');
-              onOpen();
+              voucherModalDisclosure.onOpen();
             }}
           >
             +
@@ -155,6 +226,39 @@ export default function EventList(props) {
         </Text>
       ),
     }),
+    columnHelper.accessor('manipulate', {
+      id: 'manipulate',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          THAO TÁC
+        </Text>
+      ),
+      cell: (info) => (
+        <Button
+          colorScheme="gray"
+          size="md"
+          fontWeight="700"
+          onClick={() => {
+            setEventModalData({
+              name: info.row.original.name,
+              slogan: info.row.original.slogan,
+              gameType: info.row.original.gameType,
+              participants: info.row.original.participants,
+              startDate: info.row.original.startDate,
+              endDate: info.row.original.endDate,
+              info: info.row.original.info
+            });
+            eventModalDisclosure.onOpen();
+          }}>
+          Chỉnh sửa
+        </Button>
+      ),
+    }),
   ];
 
   const [data, setData] = React.useState(() => [...tableData]);
@@ -186,28 +290,25 @@ export default function EventList(props) {
     const value = e.target.value;
     setError('');
     setNewQuantity(value);
-    setTotalQuantity(modalData.quantity + Number(value));
+    setTotalQuantity(voucherModalData.quantity + Number(value));
   };
 
-  const handleClose = () => {
+  const handleClose = (modalType) => {
     setError('');
-    onClose();
-  }
+    const closeFunction = modalType === 'voucher' ? voucherModalDisclosure.onClose : eventModalDisclosure.onClose;
+    closeFunction();
+  };
 
   const handleSubmit = () => {
     const quantity = Number(newQuantity);
-
     if (!newQuantity || quantity <= 0) {
       setError('Vui lòng nhập số lượng voucher hợp lệ.');
       return;
     }
-
     setError('');
-
-    console.log(`Added ${newQuantity} vouchers to ${modalData.name}`);
-    onClose();
+    console.log(`Added ${newQuantity} vouchers to ${voucherModalData.name}`);
+    handleClose("voucher");
   };
-
 
   return (
     <Box overflowX="auto" p="5" bg="white" borderRadius="xl">
@@ -290,8 +391,8 @@ export default function EventList(props) {
       </Flex>
 
       {/* Modal */}
-      {modalData && (
-        <Modal isOpen={isOpen} onClose={onClose}>
+      {voucherModalData && (
+        <Modal isOpen={voucherModalDisclosure.isOpen} onClose={() => handleClose("voucher")}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader
@@ -301,17 +402,17 @@ export default function EventList(props) {
               THÊM SỐ LƯỢNG VOUCHER
             </ModalHeader>
             <ModalBody>
-              <Text>Sự kiện: <b>{modalData.name}</b></Text>
-              <Text>Số lượng voucher hiện tại: <b>{modalData.quantity}</b></Text>
+              <Text>Sự kiện: <b>{voucherModalData.name}</b></Text>
+              <Text>Số lượng voucher hiện tại: <b>{voucherModalData.quantity}</b></Text>
               <Flex direction="column" mt="4">
-              <FormControl isInvalid={!!error}>
+                <FormControl isInvalid={!!error}>
                   <Input
                     type="number"
                     value={newQuantity}
                     onChange={handleQuantityChange}
                     placeholder="Nhập số lượng voucher thêm"
                   />
-                    <FormErrorMessage>{error}</FormErrorMessage>
+                  <FormErrorMessage>{error}</FormErrorMessage>
                 </FormControl>
                 <Text mt="2">Tổng số lượng voucher sau khi thêm: <b>{totalQuantity}</b></Text>
               </Flex>
@@ -320,6 +421,109 @@ export default function EventList(props) {
               <Button colorScheme="blue" mr="3" onClick={handleSubmit}>
                 Thêm
               </Button>
+              <Button onClick={handleClose}>Hủy</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+
+      {eventModalData && (
+        <Modal isOpen={eventModalDisclosure.isOpen} onClose={() => handleClose("event")}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader textAlign="center" fontSize="lg" fontWeight="bold"> CHỈNH SỬA THÔNG TIN SỰ KIỆN </ModalHeader>
+            <ModalBody>
+              <FormControl>
+                <FormLabel htmlFor="eventName">
+                  Tên sự kiện
+                  <Text as="span" color="red.500" ml={1}>*</Text>
+                </FormLabel>
+                <Input
+                  id="eventName"
+                  type="text"
+                  value={eventModalData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onBlur={() => validateField('name')}
+                  placeholder='Tên sự kiện'
+                />
+              </FormControl>
+
+              <FormControl>
+                  <FormLabel htmlFor="slogan">Khẩu hiệu sự kiện</FormLabel>
+                  <Input
+                    id="slogan"
+                    type="text"
+                    value={eventModalData.slogan}
+                    onChange={(e) => handleInputChange('slogan', e.target.value)}
+                    placeholder='Khẩu hiệu sự kiện'
+                  />
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.gameType}>
+                  <FormLabel htmlFor="gameType">
+                    Loại trò chơi
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <Select
+                    id="gameType"
+                    value={eventModalData.gameType}
+                    onChange={(e) => handleInputChange('gameType', e.target.value)}
+                    onBlur={() => validateField('gameType')}
+                  >
+                    <option value="">Chọn loại trò chơi</option>
+                    <option value="trivia">Trivia (Câu hỏi trắc nghiệm)</option>
+                    <option value="shake">Lắc xu</option>
+                  </Select>
+                  <FormErrorMessage>{errors.gameType}</FormErrorMessage>
+                </FormControl>
+
+                <div className='flex'>
+                  <FormControl isInvalid={!!errors.startDate}>
+                    <FormLabel htmlFor="startDate">
+                      Ngày bắt đầu
+                      <Text as="span" color="red.500" ml={1}>*</Text>
+                    </FormLabel>
+                    <DatePicker
+                      selected={new Date(eventModalData.startDate.split("-").reverse().join("-"))}
+                      onChange={(date) => handleInputChange('startDate', date)}
+                      onBlur={() => validateField('startDate')}
+                      dateFormat="dd-MM-yyyy"
+                      customInput={<CustomInput />}
+                      minDate={new Date()}
+                      className="custom-datepicker"
+                    />
+                    <FormErrorMessage>{errors.startDate}</FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!errors.endDate}>
+                    <FormLabel htmlFor="endDate">
+                      Ngày kết thúc
+                      <Text as="span" color="red.500" ml={1}>*</Text>
+                    </FormLabel>
+                    <DatePicker
+                      selected={new Date(eventModalData.endDate.split("-").reverse().join("-"))}
+                      onChange={(date) => handleInputChange('endDate', date)}
+                      onBlur={() => validateField('endDate')}
+                      dateFormat="dd-MM-yyyy"
+                      customInput={<CustomInput />}
+                      minDate={new Date()}
+                      className="custom-datepicker"
+                    />
+                    <FormErrorMessage>{errors.endDate}</FormErrorMessage>
+                  </FormControl>
+                </div>
+
+              <FormControl>
+                <FormLabel htmlFor="info">Mô tả ngắn về sự kiện</FormLabel>
+                <Textarea
+                  id="info"
+                  value={eventModalData.info}
+                // onChange={(e) => handleInputChange('info', e.target.value)}
+                />
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" mr="3" onClick={handleSubmit}> Cập nhật </Button>
               <Button onClick={handleClose}>Hủy</Button>
             </ModalFooter>
           </ModalContent>

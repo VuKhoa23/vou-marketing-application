@@ -19,6 +19,10 @@ export const columnsDataCheck = [
     Header: "ENDDATE",
     accessor: "endDate",
   },
+  {
+    Header: "MANIPULATE",
+    accessor: "manipulate",
+  },
 ];
 export const columnsDataComplex = [
   {

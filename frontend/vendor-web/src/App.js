@@ -7,6 +7,7 @@ import RootLayout from './pages/Root';
 import EventDetailPage from './pages/EventDetail';
 import NewEventPage from './pages/NewEvent';
 import CollaborationRequest from './pages/CollaborationRequest';
+import UserProfile from './pages/UserProfile';
 
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       },
       { path: 'stats', element: <Dashboard /> },
       { path: 'newEvent', element: <NewEventPage /> },
+      { path: 'profile',  element: <UserProfile />},
     ],
   },
 ]);
