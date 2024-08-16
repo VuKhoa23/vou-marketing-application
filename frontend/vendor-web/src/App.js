@@ -4,10 +4,9 @@ import HomePage from './pages/Home';
 import EventsPage from './pages/Events';
 import Dashboard from './pages/dashboard/default';
 import RootLayout from './pages/Root';
-import EventDetailPage from './pages/EventDetail';
 import NewEventPage from './pages/NewEvent';
 import CollaborationRequest from './pages/CollaborationRequest';
-import UserProfile from './pages/UserProfile';
+import VendorProfile from './pages/VendorProfile';
 
 
 const router = createBrowserRouter([
@@ -19,13 +18,12 @@ const router = createBrowserRouter([
       { path: 'events',
         children: [
           { index: true, element: <EventsPage /> },
-          { path: ':eventId', element: <EventDetailPage /> },
           { path: 'form', element: <CollaborationRequest /> },
         ],
       },
       { path: 'stats', element: <Dashboard /> },
       { path: 'newEvent', element: <NewEventPage /> },
-      { path: 'profile',  element: <UserProfile />},
+      { path: 'profile',  element: <VendorProfile />},
     ],
   },
 ]);
