@@ -17,7 +17,7 @@
 - POST/api/brand/event/add - Request: {brandId: long, fileURL: multipart file, name: string, voucherQuantities: int, startDate: Date, endDate: Date}
 - POST/api/brand/event/update - Request: {eventId: long, fileURL: multipart file, name: string, voucherQuantities: int, startDate: Date, endDate: Date}
 - GET/api/brand/event/update/search/findByNameContaining?name={$name}&page={$page}&size={$size}
-- POST/api/brand/event/add - Request: {brandId: long, eventImage: multipart file, eventDTO: {name: string, voucherQuantities: int, startDate: Date, endDate: Date, isTrivia: bool, isShaking: bool}, voucherImage: multipart file, voucherDTO: {id: string, value: int, description: string, endDate: Date}}
+- POST/api/brand/event/add - Request: {brandId: long, eventImage: multipart file, eventDTO: {name: string, startDate: Date, endDate: Date, isTrivia: bool, isShaking: bool}, voucherImage: multipart file, voucherDTO: {id: string, voucherQuantities: int, value: int, description: string, endDate: Date}}
 
 ## Voucher API
 - GET/api/brand/event/findAll
