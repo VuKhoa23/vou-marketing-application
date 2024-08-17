@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import VoucherForm from '../components/VoucherForm';
-import EventForm from '../components/EventForm';
-import PolicyPrivacy from '../components/PolicyPrivacy';
+import VoucherForm from './components/VoucherForm'
+import EventForm from './components/EventForm';
+import PolicyPrivacy from './components/PolicyPrivacy';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StepContent = ({ step }) => {

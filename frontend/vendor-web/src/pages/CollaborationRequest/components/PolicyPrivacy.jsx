@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Checkbox, Button, Text, VStack, HStack, FormControl, FormErrorMessage } from '@chakra-ui/react';
-import { setStep } from '../store/stepSlice';
+import { setStep } from '../../../store/stepSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { submitAllForms } from '../store/actions';
+import { submitAllForms } from '../../../store/actions';
 
 const PolicyPrivacy = () => {
 

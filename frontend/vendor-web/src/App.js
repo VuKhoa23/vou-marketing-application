@@ -2,9 +2,8 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/Home';
 import EventsPage from './pages/Events';
-import Dashboard from './pages/dashboard/default';
+import Dashboard from './pages/dashboard';
 import RootLayout from './pages/Root';
-import NewEventPage from './pages/NewEvent';
 import CollaborationRequest from './pages/CollaborationRequest';
 import VendorProfile from './pages/VendorProfile';
 
@@ -22,7 +21,6 @@ const router = createBrowserRouter([
         ],
       },
       { path: 'stats', element: <Dashboard /> },
-      { path: 'newEvent', element: <NewEventPage /> },
       { path: 'profile',  element: <VendorProfile />},
     ],
   },

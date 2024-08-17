@@ -3,16 +3,16 @@ import {
     Heading,
     SimpleGrid
 } from "@chakra-ui/react";
-import MiniCard from "../components/card/MiniCard";
+import MiniCard from "./components/card/MiniCard";
 import React from "react";
 import { FaCalendarAlt, FaUsers, FaDollarSign, FaTag, FaClock, FaMoneyBillWave } from 'react-icons/fa';
-import EventList from '../components/EventList';
-import { columnsDataCheck } from "../components/variables/columnsData";
-import tableDataCheck from "../components/variables/tableDataCheck.json";
-import PieCard from "../components/Reachability";
-import NumberOfParticipants from "../components/NumberOfParticipants";
-import TotalSpent from "../components/RevenueNProfit";
-import ParticipantsInfo from "../components/ParticipantsInfo";
+import EventList from './components/EventList';
+import { columnsDataCheck } from "./components/variables/columnsData";
+import tableDataCheck from "./components/variables/tableDataCheck.json";
+import PieCard from "./components/Reachability";
+import NumberOfParticipants from "./components/NumberOfParticipants";
+import TotalSpent from "./components/RevenueNProfit";
+import ParticipantsInfo from "./components/ParticipantsInfo";
 
 export default function Dashboard() {
     const pageBg = "gray.100";

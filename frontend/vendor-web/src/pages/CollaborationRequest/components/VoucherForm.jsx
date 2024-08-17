@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVoucherForm, updateVoucherQuantity } from '../store/formsSlice';
-import { setStep } from '../store/stepSlice';
+import { setVoucherForm, updateVoucherQuantity } from '../../../store/formsSlice';
+import { setStep } from '../../../store/stepSlice';
 import {
     Box,
     FormControl,

@@ -15,6 +15,7 @@ import {
     Flex,
     useDisclosure,
 } from '@chakra-ui/react';
+import CollabImg from '../../assets/collab.jpg';
 
 function EventsPage() {
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -55,9 +56,9 @@ function EventsPage() {
             <div className="hero bg-base-200 p-20">
                 <div className="hero-content flex-col lg:flex-row">
                     <img
-                        src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+                        src={CollabImg}
                         alt='abc'
-                        className="max-w-sm rounded-lg shadow-2xl" />
+                        className="max-w-sm rounded-lg" />
                     <div>
                         <h1 className="text-5xl font-bold">Đăng ký sự kiện!</h1>
                         <p className="py-6">

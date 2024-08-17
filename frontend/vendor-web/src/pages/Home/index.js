@@ -1,7 +1,7 @@
-import { DUMMY_GAMES } from '../dummy-games.js';
-import Game from '../components/Game.jsx';
-import Carousel from '../components/Carousel.jsx';
-import { BRANDS_LOGO } from "../brands-logo.js";
+import { DUMMY_GAMES } from '../../dummy-games.js';
+import Game from './components/Game.jsx';
+import Carousel from './components/Carousel.jsx';
+import { BRANDS_LOGO } from '../../brands-logo.js';
 
 function HomePage() {
     return (
