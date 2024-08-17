@@ -29,9 +29,10 @@ public class EventService {
     VoucherRepository voucherRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository, BrandRepository brandRepository){
+    public EventService(EventRepository eventRepository, BrandRepository brandRepository, VoucherRepository voucherRepository){
         this.eventRepository = eventRepository;
         this.brandRepository = brandRepository;
+        this.voucherRepository = voucherRepository;
     }
 
     private File convertMultipartFileToFile(MultipartFile file) throws IOException {
@@ -77,6 +78,8 @@ public class EventService {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
+        System.out.println("eventDTO " + eventDTO);
+
         String filePath = uploadFile(eventImage);
 
         Event event = new Event();
@@ -99,8 +102,9 @@ public class EventService {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        Voucher voucher = new Voucher();
+        System.out.println("voucherDTO " + voucherDTO);
 
+        Voucher voucher = new Voucher();
         String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());

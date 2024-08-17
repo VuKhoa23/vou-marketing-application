@@ -35,8 +35,8 @@ public class EventController {
 
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
-                                           @RequestPart(value = "eventImage") MultipartFile eventImage,
-                                           @ModelAttribute (value = "eventDTO")  EventDTO eventDTO){
+                                           @RequestPart("eventImage") MultipartFile eventImage,
+                                           @RequestPart("eventDTO") EventDTO eventDTO){
         System.out.println("Received brandId: " + brandId);
         System.out.println("Received file: " + eventImage.getOriginalFilename());
         System.out.println("Received eventDTO: " + eventDTO);
@@ -46,10 +46,10 @@ public class EventController {
 
     @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-                                           @RequestPart(value = "eventImage") MultipartFile eventImage,
-                                           @ModelAttribute (value = "eventDTO")  EventDTO eventDTO,
-                                             @RequestPart(value = "voucherImage") MultipartFile voucherImage,
-                                             @ModelAttribute VoucherDTO voucherDTO){
+                                           @RequestPart("eventImage") MultipartFile eventImage,
+                                           @RequestPart ("eventDTO") EventDTO eventDTO,
+                                           @RequestPart("voucherImage") MultipartFile voucherImage,
+                                           @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
         eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
         return ResponseEntity.ok("Event and voucher added successfully!");
     }
