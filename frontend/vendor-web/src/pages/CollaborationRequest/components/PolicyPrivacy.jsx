@@ -7,26 +7,58 @@ import { submitAllForms } from '../../../store/actions';
 const PolicyPrivacy = () => {
 
     const dispatch = useDispatch();
-    const eventForm = useSelector(state => state.forms.eventForm);
-    const voucherForm = useSelector(state => state.forms.voucherForm);
+    const {
+        eventImage,
+        eventDTO: { name, startDate, endDate, isShaking, isTrivia }
+    } = useSelector(state => state.forms.eventForm);
+    
+    const {
+        voucherImage,
+        voucherDTO: { description, endDate: voucherEndDate, voucherQuantities, value }
+    } = useSelector(state => state.forms.voucherForm);
 
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
-            const allFormsData = {
-                eventForm,
-                voucherForm
-            };
-            dispatch(submitAllForms(allFormsData));
-            console.log(allFormsData);
-            setError('');
+            // Create a new FormData object
+            const formData = new FormData();
+            
+            // Append form data to FormData object
+            formData.append('eventImage', eventImage);
+            formData.append('voucherImage', voucherImage);
+            formData.append('eventDTO', JSON.stringify({
+                name,
+                startDate,
+                endDate,
+                isShaking,
+                isTrivia
+            }));
+            formData.append('voucherDTO', JSON.stringify({
+                id: "1",
+                description,
+                endDate: voucherEndDate,
+                voucherQuantities,
+                value
+            }));
+        
+            console.log(formData.get('eventDTO'));
+            setError('');  
+            
+            try {
+                await dispatch(submitAllForms(formData)).unwrap();
+                console.log('Form submitted successfully');
+            } catch (error) {
+                console.error('Form submission error:', error);
+            }
         } else {
             setError('Vui lòng đồng ý với các điều khoản và chính sách bảo mật trước khi đăng ký.');
         }
     };
+    
+    
 
     const handleTermsChange = (e) => {
         setTermsAccepted(e.target.checked);

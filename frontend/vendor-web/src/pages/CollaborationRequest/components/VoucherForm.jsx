@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVoucherForm, updateVoucherQuantity } from '../../../store/formsSlice';
+import { setVoucherForm } from '../../../store/formsSlice';
 import { setStep } from '../../../store/stepSlice';
 import {
     Box,
@@ -12,8 +12,7 @@ import {
     HStack,
     Text,
     FormErrorMessage,
-    Radio,
-    RadioGroup,
+    Select,
     NumberInput,
     NumberInputField,
     Image,
@@ -32,34 +31,19 @@ function VoucherForm() {
 
     const [errors, setErrors] = React.useState({
         description: '',
-        vouchers: '',
+        value: '',
+        voucherQuantities: '',
         endDate: ''
     });
 
-    function handleVoucherChange(voucherType) {
-        // Update voucher selection and clear quantities of non-selected vouchers
-        const updatedVouchers = Object.keys(formValues.vouchers).reduce((acc, type) => {
-            acc[type] = {
-                selected: type === voucherType ? true : false,
-                quantity: type === voucherType ? formValues.vouchers[voucherType]?.quantity || 0 : 0
-            };
-            return acc;
-        }, {});
-
-        dispatch(setVoucherForm({
-            ...formValues,
-            vouchers: updatedVouchers
-        }));
-    }
-
-    function handleQuantityChange(voucherType, value) {
-        dispatch(updateVoucherQuantity({ voucherType, quantity: value }));
-    }
-
     function handleInputChange(identifier, value) {
+        // Dispatch the update to Redux store
         dispatch(setVoucherForm({
             ...formValues,
-            [identifier]: value
+            voucherDTO: {
+                ...formValues.voucherDTO,
+                [identifier]: value
+            }
         }));
 
         setErrors(prevErrors => ({
@@ -70,22 +54,27 @@ function VoucherForm() {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'image/*',
-        multiple: true,
+        multiple: false, 
         onDrop: (acceptedFiles) => {
-            const files = acceptedFiles.map(file => URL.createObjectURL(file));
-            dispatch(setVoucherForm({
-                ...formValues,
-                images: [...formValues.images, ...files]
-            }));
+            if (acceptedFiles.length > 0) {
+                const file = acceptedFiles[0]; 
+
+                dispatch(setVoucherForm({
+                    ...formValues,
+                    voucherImage: file 
+                }));
+            }
         }
     });
+
+
 
     function handleInputBlur(identifier) {
         validateField(identifier);
     }
 
     function validateField(identifier) {
-        const value = formValues[identifier];
+        const value = formValues.voucherDTO[identifier];
         let errorMessage = '';
 
         switch (identifier) {
@@ -99,12 +88,14 @@ function VoucherForm() {
                     errorMessage = 'Hạn sử dụng không được bỏ trống.';
                 }
                 break;
-            case 'vouchers':
-                const selectedVoucher = Object.values(formValues.vouchers).find(voucher => voucher.selected);
-                if (!selectedVoucher) {
-                    errorMessage = 'Bạn phải chọn một loại voucher.';
-                } else if (selectedVoucher && !selectedVoucher.quantity) {
-                    errorMessage = 'Số lượng voucher không hợp lệ.';
+            case 'value':
+                if (!value) {
+                    errorMessage = 'Bạn phải chọn loại voucher.';
+                }
+                break;
+            case 'voucherQuantities':
+                if (!value || value <= 0) {
+                    errorMessage = 'Số lượng voucher phải lớn hơn 0.';
                 }
                 break;
             default:
@@ -140,30 +131,23 @@ function VoucherForm() {
     function handleNavigate(event) {
         event.preventDefault();
 
-        const fields = ['description', 'endDate'];
+
+        const fields = ['description', 'endDate', 'value', 'voucherQuantities'];
         let formIsValid = true;
 
         fields.forEach(field => {
-            if (!formValues[field]) {
+            if (!formValues.voucherDTO[field]) {
                 validateField(field);
                 formIsValid = false;
             }
         });
 
-        validateField('vouchers');
-        if (errors.vouchers) {
+        if (formValues.voucherDTO.voucherQuantities <= 0) {
+            setErrors(prevErrors => ({
+                ...prevErrors,
+                voucherQuantities: 'Số lượng voucher không hợp lệ.'
+            }));
             formIsValid = false;
-        }
-
-        if (formValues.vouchers) {
-            const selectedVoucher = Object.values(formValues.vouchers).find(voucher => voucher.selected);
-            if (selectedVoucher && !selectedVoucher.quantity) {
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    vouchers: 'Số lượng voucher không hợp lệ.'
-                }));
-                formIsValid = false;
-            }
         }
 
         if (formIsValid) {
@@ -194,15 +178,19 @@ function VoucherForm() {
                                     <p>Nhấp hoặc kéo và thả ảnh vào đây để tải lên</p>
                                 )}
                             </Box>
-                            {formValues.images.length > 0 && (
+                            {formValues.voucherImage && (
                                 <Box mt={2}>
-                                    {formValues.images.map((img, index) => (
-                                        <Image key={index} src={img} alt={`Preview ${index}`} boxSize="full" objectFit="contain" />
-                                    ))}
+                                    <Image
+                                        src={URL.createObjectURL(formValues.voucherImage)}
+                                        alt="Preview"
+                                        boxSize="full"
+                                        objectFit="contain"
+                                    />
                                 </Box>
                             )}
                         </FormControl>
                     </Box>
+
 
                     <VStack spacing={4} align="stretch">
                         <FormControl isInvalid={!!errors.description}>
@@ -221,40 +209,41 @@ function VoucherForm() {
                             {errors.description && <FormErrorMessage>{errors.description}</FormErrorMessage>}
                         </FormControl>
 
-                        <Box>
-                            <FormControl isInvalid={!!errors.vouchers}>
-                                <FormLabel htmlFor="vouchers">
-                                    Chọn loại voucher và số lượng
-                                    <Text as="span" color="red.500" ml={1}>*</Text>
-                                </FormLabel>
-                                <RadioGroup
-                                    onChange={handleVoucherChange}
-                                    value={Object.keys(formValues.vouchers).find(voucherType => formValues.vouchers[voucherType]?.selected)}
-                                >
-                                    <Box>
-                                        {['Voucher 10%', 'Voucher 20%', 'Voucher 30%'].map((voucherType) => (
-                                            <Box className='flex justify-between' key={voucherType} mb={4}>
-                                                <Radio value={voucherType}>
-                                                    {voucherType}
-                                                </Radio>
-                                                {formValues.vouchers[voucherType]?.selected && (
-                                                    <NumberInput
-                                                        mt={2}
-                                                        value={formValues.vouchers[voucherType]?.quantity || ''}
-                                                        onChange={(value) => handleQuantityChange(voucherType, value)}
-                                                        min={1}
-                                                        precision={0}
-                                                    >
-                                                        <NumberInputField placeholder="Nhập số lượng" />
-                                                    </NumberInput>
-                                                )}
-                                            </Box>
-                                        ))}
-                                    </Box>
-                                </RadioGroup>
-                                <FormErrorMessage>{errors.vouchers}</FormErrorMessage>
-                            </FormControl>
-                        </Box>
+                        <FormControl isInvalid={!!errors.value}>
+                            <FormLabel htmlFor="value">
+                                Loại voucher
+                                <Text as="span" color="red.500" ml={1}>*</Text>
+                            </FormLabel>
+                            <Select
+                                id="value"
+                                value={formValues.voucherDTO.value}
+                                onChange={(event) => handleInputChange('value', Number(event.target.value))}
+                                onBlur={() => handleInputBlur('value')}
+                            >
+                                <option value="">Chọn loại voucher</option>
+                                <option value="10">Voucher 10%</option>
+                                <option value="20">Voucher 20%</option>
+                                <option value="30">Voucher 30%</option>
+                            </Select>
+                            {errors.value && <FormErrorMessage>{errors.value}</FormErrorMessage>}
+                        </FormControl>
+
+                        <FormControl isInvalid={!!errors.voucherQuantities}>
+                            <FormLabel htmlFor="voucherQuantities">
+                                Số lượng
+                                <Text as="span" color="red.500" ml={1}>*</Text>
+                            </FormLabel>
+                            <NumberInput
+                                id="voucherQuantities"
+                                value={formValues.voucherDTO.voucherQuantities}
+                                onChange={(valueString) => handleInputChange('voucherQuantities', Number(valueString))}
+                                onBlur={() => handleInputBlur('voucherQuantities')}
+                                min={1}
+                            >
+                                <NumberInputField placeholder="Nhập số lượng" />
+                            </NumberInput>
+                            {errors.voucherQuantities && <FormErrorMessage>{errors.voucherQuantities}</FormErrorMessage>}
+                        </FormControl>
 
                         <FormControl isInvalid={!!errors.endDate}>
                             <FormLabel htmlFor="endDate">
@@ -262,7 +251,7 @@ function VoucherForm() {
                                 <Text as="span" color="red.500" ml={1}>*</Text>
                             </FormLabel>
                             <DatePicker
-                                selected={formValues.endDate}
+                                selected={formValues.voucherDTO.endDate}
                                 onChange={(date) => handleInputChange('endDate', date)}
                                 onBlur={() => validateField('endDate')}
                                 dateFormat="dd/MM/yyyy"

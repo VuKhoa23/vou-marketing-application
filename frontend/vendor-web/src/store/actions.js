@@ -1,22 +1,24 @@
-export const submitAllForms = (data) => {
-    return async (dispatch) => {
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
+export const submitAllForms = createAsyncThunk(
+    'forms/submitAllForms',
+    async (formData, { rejectWithValue }) => {
         try {
-            const response = await fetch('api/brand/event/add', {
+            const response = await fetch('http://localhost:8080/api/brand/event/add?brandId=1', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: formData,
             });
-            
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Submit successful:', result); 
-            } else {
-                console.error('Submit failed');
+
+            if (!response.ok) {
+                const errorText = await response.text(); 
+                console.error('Error response:', errorText);
+                throw new Error(`Network response was not ok. Status: ${response.status}`);
             }
+
+            return await response.json();
         } catch (error) {
-            console.error('Error submitting forms:', error);
+            console.error('Submission error:', error);
+            return rejectWithValue(error.message);
         }
-    };
-};
+    }
+);
