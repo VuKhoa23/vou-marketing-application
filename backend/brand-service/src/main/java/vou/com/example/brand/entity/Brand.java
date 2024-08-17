@@ -21,11 +21,8 @@ public class Brand {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "longitude")
-    private double longitude;
-
-    @Column(name = "latitude")
-    private double latitude;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "state")
     private boolean state = false;
