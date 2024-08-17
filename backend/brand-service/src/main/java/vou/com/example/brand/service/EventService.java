@@ -95,17 +95,16 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherImage, VoucherDTO voucherDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         Voucher voucher = new Voucher();
 
-        String fileURLQR = uploadFile(voucherQR);
         String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());
-        voucher.setImageQR(fileURLQR);
+        voucher.setVoucherQuantities(voucher.getVoucherQuantities());
         voucher.setImageURL(fileURL);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
@@ -116,9 +115,9 @@ public class EventService {
     }
 
     public void addEventAndVoucher(Long brandId, MultipartFile eventImage, EventDTO eventDTO,
-                                   MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+                                   MultipartFile voucherImage, VoucherDTO voucherDTO){
         addEvent(brandId, eventImage, eventDTO);
-        addVoucher(brandId, voucherQR, voucherImage, voucherDTO);
+        addVoucher(brandId, voucherImage, voucherDTO);
     }
 
     public Page<Event> findByNameContaining(String name, Pageable pageable){

@@ -48,10 +48,9 @@ public class EventController {
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
                                            @RequestPart(value = "eventImage") MultipartFile eventImage,
                                            @ModelAttribute (value = "eventDTO")  EventDTO eventDTO,
-                                             @RequestPart(value = "voucherQR") MultipartFile voucherQR,
                                              @RequestPart(value = "voucherImage") MultipartFile voucherImage,
                                              @ModelAttribute VoucherDTO voucherDTO){
-        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherQR, voucherImage, voucherDTO);
+        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
         return ResponseEntity.ok("Event and voucher added successfully!");
     }
 
