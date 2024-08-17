@@ -53,8 +53,14 @@ public class EventController {
                                              @RequestPart(value = "voucherQR") MultipartFile voucherQR,
                                              @RequestPart(value = "voucherImage") MultipartFile voucherImage,
                                              @ModelAttribute VoucherDTO voucherDTO){
-        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherQR, voucherImage, voucherDTO);
-        return ResponseEntity.ok("Event and voucher added successfully!");
+        try{
+            eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherQR, voucherImage, voucherDTO);
+            return ResponseEntity.ok("Event and voucher added successfully!");
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("An error occurred while adding the event and voucher: " + e.getMessage());
+        }
     }
 
     @PostMapping("update")

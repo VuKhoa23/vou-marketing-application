@@ -40,4 +40,16 @@ public class AdminController {
                     .body("An error occurred while updating the admin account: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("delete-admin")
+    public ResponseEntity<String> deleteAdminAccount(@RequestParam Integer adminId){
+        try{
+            this.adminService.deleteAdminAccount(adminId);
+            return ResponseEntity.status(HttpStatus.OK).body("Admin account deleted successfully.");
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("An error occurred while deleting the admin account: " + e.getMessage());
+        }
+    }
 }
