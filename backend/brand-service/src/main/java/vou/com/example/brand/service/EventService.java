@@ -108,7 +108,7 @@ public class EventService {
         String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());
-        voucher.setVoucherQuantities(voucher.getVoucherQuantities());
+        voucher.setVoucherQuantities(voucherDTO.getVoucherQuantities());
         voucher.setImageURL(fileURL);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
