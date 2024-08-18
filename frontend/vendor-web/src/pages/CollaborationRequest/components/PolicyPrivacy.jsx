@@ -23,19 +23,17 @@ const PolicyPrivacy = () => {
 
     const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
-            // Create a new FormData object
             const formData = new FormData();
             
-            // Append form data to FormData object
             formData.append('eventImage', eventImage);
-            formData.append('voucherImage', voucherImage);
             formData.append('eventDTO', JSON.stringify({
                 name,
                 startDate,
                 endDate,
-                isShaking,
-                isTrivia
+                "trivia": isTrivia,
+                "shaking": isShaking
             }));
+            formData.append('voucherImage', voucherImage);
             formData.append('voucherDTO', JSON.stringify({
                 id: "1",
                 description,
@@ -43,10 +41,8 @@ const PolicyPrivacy = () => {
                 voucherQuantities,
                 value
             }));
-        
-            console.log(formData.get('eventDTO'));
+    
             setError('');  
-            
             try {
                 await dispatch(submitAllForms(formData)).unwrap();
                 console.log('Form submitted successfully');

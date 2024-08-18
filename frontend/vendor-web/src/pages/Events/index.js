@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { DUMMY_EVENTS } from '../../dummy-events'
 import Event from './components/Event';
-import { NavLink } from 'react-router-dom';
+import { NavLink, json, useLoaderData, defer, Await } from 'react-router-dom';
 import {
     Modal,
     ModalOverlay,
@@ -20,6 +20,7 @@ import CollabImg from '../../assets/collab.jpg';
 function EventsPage() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { events } = useLoaderData();
 
     const openModal = (event) => {
         setSelectedEvent(event);
@@ -44,14 +45,24 @@ function EventsPage() {
                     </svg>
                 </label>
             </div>
+            <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
+                <Await resolve={events}>
+                    {(resolvedEvents) => (
+                        <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
+                            {resolvedEvents.map((event) => (
+                                <li key={event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                    <Event
+                                        id={event.id}
+                                        name={event.name}
+                                        startDate={formatDate(event.startDate)}
+                                        endDate={formatDate(event.endDate)} />
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </Await>
+            </Suspense>
 
-            <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
-                {DUMMY_EVENTS.map((event) => (
-                    <li key={event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
-                        <Event {...event} />
-                    </li>
-                ))}
-            </ul>
 
             <div className="hero bg-base-200 p-20">
                 <div className="hero-content flex-col lg:flex-row">
@@ -89,12 +100,12 @@ function EventsPage() {
                                 </Box>
                                 <Box flex="1" p={4}>
                                     <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.name}</Text>
-                                    <Text fontSize="md" mb={4}>{selectedEvent.description}</Text>
+                                    {/* <Text fontSize="md" mb={4}>{selectedEvent.description}</Text>
                                     <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucher}</Text>
-                                    <Text fontSize="sm" mb={2}>Loại trò chơi: {selectedEvent.gameType}</Text>
-                                    <Text fontSize="sm" mb={2}>Ngày bắt đầu: {selectedEvent.startDate}</Text>
-                                    <Text fontSize="sm" mb={2}>Ngày kết thúc: {selectedEvent.endDate}</Text>
-                                    <Text fontSize="sm">Thương hiệu: {selectedEvent.brand}</Text>
+                                    <Text fontSize="sm" mb={2}>Loại trò chơi: {selectedEvent.gameType}</Text> */}
+                                    <Text fontSize="sm" mb={2}>Ngày bắt đầu: {formatDate(selectedEvent.startDate)}</Text>
+                                    <Text fontSize="sm" mb={2}>Ngày kết thúc: {formatDate(selectedEvent.endDate)}</Text>
+                                    {/* <Text fontSize="sm">Thương hiệu: {selectedEvent.brand}</Text> */}
                                 </Box>
                             </Flex>
                         </ModalBody>
@@ -109,3 +120,31 @@ function EventsPage() {
 }
 
 export default EventsPage;
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+async function loadEvents() {
+    const response = await fetch('http://localhost:8080/api/brand/event/find-all');
+    if (!response.ok) {
+        throw json(
+            { message: 'Could not fetch events.' },
+            { status: 500 },
+        );
+    }
+    else {
+        const resData = await response.json();
+        return resData;
+    }
+}
+
+export function loader() {
+    return defer({
+        events: loadEvents(),
+    });
+}

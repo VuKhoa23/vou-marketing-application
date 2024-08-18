@@ -37,20 +37,24 @@ function VoucherForm() {
     });
 
     function handleInputChange(identifier, value) {
+        let processedValue = value;
+    
+    
         // Dispatch the update to Redux store
         dispatch(setVoucherForm({
             ...formValues,
             voucherDTO: {
                 ...formValues.voucherDTO,
-                [identifier]: value
+                [identifier]: processedValue
             }
         }));
-
+    
         setErrors(prevErrors => ({
             ...prevErrors,
             [identifier]: ''
         }));
     }
+    
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'image/*',

@@ -38,34 +38,36 @@ function EventForm() {
     });
 
     function handleInputChange(identifier, value) {
-        // Dispatch the update to Redux store
+        let processedValue = value;
+
+    
         dispatch(setEventForm({
             ...formValues,
             eventDTO: {
                 ...formValues.eventDTO,
-                [identifier]: value
+                [identifier]: processedValue
             }
         }));
-
+    
         setErrors(prevErrors => ({
             ...prevErrors,
             [identifier]: ''
         }));
-
-        // Validation
-        if (identifier === 'startDate' && value && formValues.eventDTO.endDate && new Date(value) > new Date(formValues.eventDTO.endDate)) {
+    
+        if (identifier === 'startDate' && processedValue && formValues.eventDTO.endDate && new Date(processedValue) > new Date(formValues.eventDTO.endDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
                 startDate: 'Ngày bắt đầu không thể sau ngày kết thúc.'
             }));
         }
-        if (identifier === 'endDate' && value && formValues.eventDTO.startDate && new Date(value) < new Date(formValues.eventDTO.startDate)) {
+        if (identifier === 'endDate' && processedValue && formValues.eventDTO.startDate && new Date(processedValue) < new Date(formValues.eventDTO.startDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
                 endDate: 'Ngày kết thúc không thể trước ngày bắt đầu.'
             }));
         }
     }
+    
 
 
     function handleGameTypeChange(gameType, selected) {

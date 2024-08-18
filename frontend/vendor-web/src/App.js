@@ -1,7 +1,7 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/Home';
-import EventsPage from './pages/Events';
+import EventsPage, { loader as eventsLoader } from './pages/Events';
 import Dashboard from './pages/dashboard';
 import RootLayout from './pages/Root';
 import CollaborationRequest from './pages/CollaborationRequest';
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'events',
         children: [
-          { index: true, element: <EventsPage /> },
+          { index: true, element: <EventsPage />, loader: eventsLoader },
           { path: 'form', element: <CollaborationRequest /> },
         ],
       },
