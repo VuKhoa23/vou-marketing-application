@@ -1,5 +1,7 @@
 package vou.com.example.brand.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,14 +46,30 @@ public class EventController {
         return ResponseEntity.ok("Event added successfully!");
     }
 
+//    @PostMapping("add/event-and-voucher")
+//    public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
+//                                           @RequestPart("eventImage") MultipartFile eventImage,
+//                                           @RequestPart ("eventDTO") EventDTO eventDTO,
+//                                           @RequestPart("voucherImage") MultipartFile voucherImage,
+//                                           @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
+//        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
+//        return ResponseEntity.ok("Event and voucher added successfully!");
+//    }
+
     @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-                                           @RequestPart("eventImage") MultipartFile eventImage,
-                                           @RequestPart ("eventDTO") EventDTO eventDTO,
-                                           @RequestPart("voucherImage") MultipartFile voucherImage,
-                                           @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
+                                                     @RequestPart("eventImage") MultipartFile eventImage,
+                                                     @RequestPart ("eventDTO") String eventDTOString,
+                                                     @RequestPart("voucherImage") MultipartFile voucherImage,
+                                                     @RequestPart ("voucherDTO") String voucherDTOString) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        EventDTO eventDTO = objectMapper.readValue(eventDTOString, EventDTO.class);
+        VoucherDTO voucherDTO = objectMapper.readValue(voucherDTOString, VoucherDTO.class);
+        System.out.println("Received brandId: " + brandId);
+        System.out.println("Received file: " + eventImage.getOriginalFilename());
+        System.out.println("Received eventDTO: " + eventDTO);
         eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
-        return ResponseEntity.ok("Event and voucher added successfully!");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("update")
