@@ -27,6 +27,21 @@ function EventsPage() {
         onOpen();
     };
 
+    function getGameType(event) {
+        let gameType = "";
+        if (event.shaking) {
+            gameType += "Lắc xu";
+        }
+        if (event.trivia) {
+            if (gameType !== "") {
+                gameType += ", ";
+            }
+            gameType += "Trivia (câu hỏi trắc nghiệm)";
+        }
+        return gameType;
+    }
+    
+
     return (
         <>
             <div className='flex flex-col md:flex-row justify-center items-center m-10'>
@@ -55,7 +70,8 @@ function EventsPage() {
                                         id={event.id}
                                         name={event.name}
                                         startDate={formatDate(event.startDate)}
-                                        endDate={formatDate(event.endDate)} />
+                                        endDate={formatDate(event.endDate)}
+                                        brand={event.brand.name}/>
                                 </li>
                             ))}
                         </ul>
@@ -100,12 +116,12 @@ function EventsPage() {
                                 </Box>
                                 <Box flex="1" p={4}>
                                     <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.name}</Text>
-                                    {/* <Text fontSize="md" mb={4}>{selectedEvent.description}</Text>
-                                    <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucher}</Text>
-                                    <Text fontSize="sm" mb={2}>Loại trò chơi: {selectedEvent.gameType}</Text> */}
+                                    {/* <Text fontSize="md" mb={4}>{selectedEvent.description}</Text> */}
+                                    {/* <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucherQuantities}</Text> */}
+                                    <Text fontSize="sm" mb={2}>Loại trò chơi: {getGameType(selectedEvent)}</Text>
                                     <Text fontSize="sm" mb={2}>Ngày bắt đầu: {formatDate(selectedEvent.startDate)}</Text>
                                     <Text fontSize="sm" mb={2}>Ngày kết thúc: {formatDate(selectedEvent.endDate)}</Text>
-                                    {/* <Text fontSize="sm">Thương hiệu: {selectedEvent.brand}</Text> */}
+                                    <Text fontSize="sm">Thương hiệu: {selectedEvent.brand.name}</Text>
                                 </Box>
                             </Flex>
                         </ModalBody>
