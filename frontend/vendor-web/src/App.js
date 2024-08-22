@@ -1,12 +1,11 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/Home';
-import EventsPage from './pages/Events';
-import StatisticsPage from './pages/Stats';
+import EventsPage, { loader as eventsLoader } from './pages/Events';
+import Dashboard from './pages/dashboard';
 import RootLayout from './pages/Root';
-import EventDetailPage from './pages/EventDetail';
-import NewEventPage from './pages/NewEvent';
 import CollaborationRequest from './pages/CollaborationRequest';
+import VendorProfile from './pages/VendorProfile';
 
 
 const router = createBrowserRouter([
@@ -17,13 +16,12 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'events',
         children: [
-          { index: true, element: <EventsPage /> },
-          { path: ':eventId', element: <EventDetailPage /> },
+          { index: true, element: <EventsPage />, loader: eventsLoader },
           { path: 'form', element: <CollaborationRequest /> },
         ],
       },
-      { path: 'stats', element: <StatisticsPage /> },
-      { path: 'newEvent', element: <NewEventPage /> },
+      { path: 'stats', element: <Dashboard /> },
+      { path: 'profile',  element: <VendorProfile />},
     ],
   },
 ]);

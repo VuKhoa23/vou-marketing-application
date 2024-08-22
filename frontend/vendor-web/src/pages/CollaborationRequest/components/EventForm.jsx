@@ -1,24 +1,24 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventForm } from '../store/formsSlice';
-import { setStep } from '../store/stepSlice';
+import { setEventForm, updateGameTypeSelection } from '../../../store/formsSlice';
+import { setStep } from '../../../store/stepSlice';
 import {
     Box,
     FormControl,
     FormLabel,
     Input,
-    Textarea,
     Button,
     Grid,
     VStack,
     Image,
-    Select,
+    Checkbox,
     InputGroup,
     InputRightElement,
     Icon,
     FormErrorMessage,
     HStack,
-    Text
+    Text,
+    Flex
 } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
 import DatePicker from 'react-datepicker';
@@ -26,52 +26,75 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './custom-datepicker.css';
 import { CalendarIcon } from '@chakra-ui/icons';
 
-
 function EventForm() {
     const dispatch = useDispatch();
     const formValues = useSelector(state => state.forms.eventForm);
 
     const [errors, setErrors] = React.useState({
-        eventName: '',
+        name: '',
         startDate: '',
         endDate: '',
         gameType: '',
     });
 
     function handleInputChange(identifier, value) {
-        // Dispatch the update to Redux store
+        let processedValue = value;
+
+    
         dispatch(setEventForm({
             ...formValues,
-            [identifier]: value
+            eventDTO: {
+                ...formValues.eventDTO,
+                [identifier]: processedValue
+            }
         }));
-
+    
         setErrors(prevErrors => ({
             ...prevErrors,
             [identifier]: ''
         }));
-
-        // Validation
-        if (identifier === 'startDate' && value && formValues.endDate && new Date(value) > new Date(formValues.endDate)) {
+    
+        if (identifier === 'startDate' && processedValue && formValues.eventDTO.endDate && new Date(processedValue) > new Date(formValues.eventDTO.endDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
                 startDate: 'Ngày bắt đầu không thể sau ngày kết thúc.'
             }));
         }
-        if (identifier === 'endDate' && value && formValues.startDate && new Date(value) < new Date(formValues.startDate)) {
+        if (identifier === 'endDate' && processedValue && formValues.eventDTO.startDate && new Date(processedValue) < new Date(formValues.eventDTO.startDate)) {
             setErrors(prevErrors => ({
                 ...prevErrors,
                 endDate: 'Ngày kết thúc không thể trước ngày bắt đầu.'
             }));
         }
-        
+    }
+    
+
+
+    function handleGameTypeChange(gameType, selected) {
+        dispatch(updateGameTypeSelection({ gameType, selected }));
+
+        const updatedEventDTO = {
+            ...formValues.eventDTO,
+            [gameType]: selected
+        };
+
+        const isAnySelected = ['isShaking', 'isTrivia'].some(type => updatedEventDTO[type]);
+
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            gameType: isAnySelected ? '' : 'Bạn phải chọn ít nhất một loại trò chơi.'
+        }));
     }
 
+
+
+
     function validateField(identifier) {
-        const value = formValues[identifier];
+        const value = formValues.eventDTO[identifier];
         let errorMessage = '';
 
         switch (identifier) {
-            case 'eventName':
+            case 'name':
                 if (!value) {
                     errorMessage = 'Tên sự kiện không được bỏ trống.';
                 }
@@ -79,20 +102,15 @@ function EventForm() {
             case 'startDate':
                 if (!value) {
                     errorMessage = 'Ngày bắt đầu không được bỏ trống.';
-                } else if (formValues.endDate && new Date(value) > new Date(formValues.endDate)) {
+                } else if (formValues.eventDTO.endDate && new Date(value) > new Date(formValues.eventDTO.endDate)) {
                     errorMessage = 'Ngày bắt đầu không thể sau ngày kết thúc.';
                 }
                 break;
             case 'endDate':
                 if (!value) {
                     errorMessage = 'Ngày kết thúc không được bỏ trống.';
-                } else if (formValues.startDate && new Date(value) < new Date(formValues.startDate)) {
+                } else if (formValues.eventDTO.startDate && new Date(value) < new Date(formValues.eventDTO.startDate)) {
                     errorMessage = 'Ngày kết thúc không thể trước ngày bắt đầu.';
-                }
-                break;
-            case 'gameType':
-                if (!value) {
-                    errorMessage = 'Bạn phải chọn loại trò chơi.';
                 }
                 break;
             default:
@@ -107,15 +125,28 @@ function EventForm() {
 
     const handleNavigate = (event) => {
         event.preventDefault();
-        const fields = ['eventName', 'startDate', 'endDate', 'gameType'];
+        console.log(formValues.eventImage);
+        const fields = ['name', 'startDate', 'endDate'];
         let formIsValid = true;
 
         fields.forEach(field => {
-            if (!formValues[field]) {
+            if (!formValues.eventDTO[field]) {
                 validateField(field);
                 formIsValid = false;
             }
         });
+
+        const isAnySelected = ['isShaking', 'isTrivia'].some(
+            type => formValues.eventDTO[type]
+        );
+
+        if (!isAnySelected) {
+            setErrors(prevErrors => ({
+                ...prevErrors,
+                gameType: 'Bạn phải chọn ít nhất một loại trò chơi.'
+            }));
+            formIsValid = false;
+        }
 
         if (formIsValid) {
             dispatch(setStep(2));
@@ -124,19 +155,18 @@ function EventForm() {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'image/*',
-        multiple: true,
+        multiple: false,
         onDrop: (acceptedFiles) => {
-            const files = acceptedFiles.map(file => URL.createObjectURL(file));
-            dispatch(setEventForm({
-                ...formValues,
-                images: [...formValues.images, ...files]
-            }));
+            if (acceptedFiles.length > 0) {
+                const file = acceptedFiles[0]; 
+                dispatch(setEventForm({
+                    ...formValues,
+                    eventImage: file 
+                }));
+            }
         }
     });
 
-    function handlePrev () {
-        dispatch(setStep(1));
-    }
 
     const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
         <InputGroup>
@@ -160,7 +190,7 @@ function EventForm() {
                 <Grid templateColumns={{ base: '1fr', md: '1fr 2fr' }} gap={6}>
                     <Box>
                         <FormControl>
-                            <FormLabel htmlFor="images">Hình ảnh cho sự kiện</FormLabel>
+                            <FormLabel htmlFor="eventImage">Hình ảnh cho sự kiện</FormLabel>
                             <Box
                                 {...getRootProps()}
                                 border="2px dashed"
@@ -170,88 +200,80 @@ function EventForm() {
                                 cursor="pointer"
                                 textAlign="center"
                             >
-                                <input {...getInputProps()} id="images" />
+                                <input {...getInputProps()} id="eventImage" />
                                 {isDragActive ? (
                                     <p>Kéo và thả ảnh vào đây...</p>
                                 ) : (
                                     <p>Nhấp hoặc kéo và thả ảnh vào đây để tải lên</p>
                                 )}
                             </Box>
-                            <Box mt={2} display="flex" flexWrap="wrap" gap={2}>
-                                {formValues.images.map((src, index) => (
+                            {formValues.eventImage && (
+                                <Box mt={2}>
                                     <Image
-                                        key={index}
-                                        src={src}
-                                        alt={`Preview ${index}`}
-                                        boxSize="100px"
-                                        objectFit="cover"
-                                        borderRadius="md"
+                                        src={URL.createObjectURL(formValues.eventImage)}
+                                        alt="Preview"
+                                        boxSize="full"
+                                        objectFit="contain"
                                     />
-                                ))}
-                            </Box>
+                                </Box>
+                            )}
                         </FormControl>
                     </Box>
 
                     <VStack spacing={4} align="stretch">
-                        <FormControl isInvalid={!!errors.eventName}>
-                            <FormLabel htmlFor="eventName">
+                        <FormControl isInvalid={!!errors.name}>
+                            <FormLabel htmlFor="name">
                                 Tên sự kiện
                                 <Text as="span" color="red.500" ml={1}>*</Text>
                             </FormLabel>
                             <Input
-                                id="eventName"
+                                id="name"
                                 type="text"
-                                value={formValues.eventName}
-                                onChange={(e) => handleInputChange('eventName', e.target.value)}
-                                onBlur={() => validateField('eventName')}
+                                value={formValues.eventDTO.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                onBlur={() => validateField('name')}
                                 placeholder='Tên sự kiện'
                             />
-                            <FormErrorMessage>{errors.eventName}</FormErrorMessage>
-                        </FormControl>
-
-                        <FormControl>
-                            <FormLabel htmlFor="slogan">Khẩu hiệu sự kiện</FormLabel>
-                            <Input
-                                id="slogan"
-                                type="text"
-                                value={formValues.slogan}
-                                onChange={(e) => handleInputChange('slogan', e.target.value)}
-                                placeholder='Khẩu hiệu sự kiện'
-                            />
+                            <FormErrorMessage>{errors.name}</FormErrorMessage>
                         </FormControl>
 
                         <FormControl isInvalid={!!errors.gameType}>
-                            <FormLabel htmlFor="gameType">
+                            <FormLabel>
                                 Loại trò chơi
                                 <Text as="span" color="red.500" ml={1}>*</Text>
                             </FormLabel>
-                            <Select
-                                id="gameType"
-                                value={formValues.gameType}
-                                onChange={(e) => handleInputChange('gameType', e.target.value)}
-                                onBlur={() => validateField('gameType')}
-                            >
-                                <option value="">Chọn loại trò chơi</option>
-                                <option value="trivia">Trivia (Câu hỏi trắc nghiệm)</option>
-                                <option value="shake">Lắc xu</option>
-                            </Select>
+                            <VStack align="left">
+                                <Checkbox
+                                    isChecked={formValues.eventDTO.isShaking}
+                                    onChange={(e) => handleGameTypeChange('isShaking', e.target.checked)}
+                                >
+                                    Lắc xu
+                                </Checkbox>
+                                <Checkbox
+                                    isChecked={formValues.eventDTO.isTrivia}
+                                    onChange={(e) => handleGameTypeChange('isTrivia', e.target.checked)}
+                                >
+                                    Trivia (câu hỏi trắc nghiệm)
+                                </Checkbox>
+                            </VStack>
+
                             <FormErrorMessage>{errors.gameType}</FormErrorMessage>
                         </FormControl>
 
-                        <div className='flex'>
+                        <Flex>
                             <FormControl isInvalid={!!errors.startDate}>
                                 <FormLabel htmlFor="startDate">
                                     Ngày bắt đầu
                                     <Text as="span" color="red.500" ml={1}>*</Text>
                                 </FormLabel>
                                 <DatePicker
-                                    selected={formValues.startDate}
+                                    id="startDate"
+                                    selected={formValues.eventDTO.startDate ? new Date(formValues.eventDTO.startDate) : null}
                                     onChange={(date) => handleInputChange('startDate', date)}
-                                    onBlur={() => validateField('startDate')}
                                     dateFormat="dd/MM/yyyy"
                                     customInput={<CustomInput />}
+                                    placeholderText="Chọn ngày bắt đầu"
                                     minDate={new Date()}
-                                    className="custom-datepicker"
                                 />
                                 <FormErrorMessage>{errors.startDate}</FormErrorMessage>
                             </FormControl>
@@ -262,45 +284,23 @@ function EventForm() {
                                     <Text as="span" color="red.500" ml={1}>*</Text>
                                 </FormLabel>
                                 <DatePicker
-                                    selected={formValues.endDate}
+                                    id="endDate"
+                                    selected={formValues.eventDTO.endDate ? new Date(formValues.eventDTO.endDate) : null}
                                     onChange={(date) => handleInputChange('endDate', date)}
-                                    onBlur={() => validateField('endDate')}
                                     dateFormat="dd/MM/yyyy"
                                     customInput={<CustomInput />}
+                                    placeholderText="Chọn ngày kết thúc"
                                     minDate={new Date()}
-                                    className="custom-datepicker"
                                 />
                                 <FormErrorMessage>{errors.endDate}</FormErrorMessage>
                             </FormControl>
-                        </div>
+                        </Flex>
 
-                        <FormControl>
-                            <FormLabel htmlFor="info">Mô tả ngắn về sự kiện</FormLabel>
-                            <Textarea
-                                id="info"
-                                value={formValues.info}
-                                onChange={(e) => handleInputChange('info', e.target.value)}
-                            />
-                        </FormControl>
-
-                        <HStack w="full" spacing={4} mt={4} justify="space-between">
-                            <Button
-                                variant="outline"
-                                bg="white"
-                                onClick={handlePrev}
-                            >
-                                Quay Lại
-                            </Button>
-
-                            <Button
-                                colorScheme="teal"
-                                onClick={handleNavigate}
-                            >
-                                Tiếp theo
-                            </Button>
-                        </HStack>
                     </VStack>
                 </Grid>
+                <HStack mt={4} justify="flex-end">
+                    <Button colorScheme="blue" onClick={handleNavigate}>Tiếp theo</Button>
+                </HStack>
             </form>
         </Box>
     );

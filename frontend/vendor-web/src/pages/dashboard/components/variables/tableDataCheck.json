@@ -1,0 +1,110 @@
+[
+  {
+    "name": "DOOKKI KHAI TRƯƠNG CỬA HÀNG MỚI",
+    "slogan": "Tưng bừng khai trương - Ăn sung mặc sướng",
+    "quantity": 3000,
+    "gameType": "trivia",
+    "startDate": "15-02-2023",
+    "endDate": "30-04-2023",
+    "info": "Sự kiện chào mừng chi nhánh mới tại TPHCM",
+    "participants": 50
+  },
+  {
+    "name": "SỰ KIỆN ĐẶC BIỆT CỦA HIGHLANDS COFFEE",
+    "quantity": 1200,
+    "startDate": "01-05-2023",
+    "endDate": "01-06-2023",
+    "participants": 25
+  },
+  {
+    "name": "KHUYẾN MÃI GIẢM GIÁ CỦA BOBAPOP",
+    "quantity": 2000,
+    "startDate": "10-06-2023",
+    "endDate": "25-08-2023",
+    "participants": 45
+  },
+  {
+    "name": "RA MẮT SẢN PHẨM MỚI TỪ KFC",
+    "quantity": 1500,
+    "startDate": "20-07-2024",
+    "endDate": "01-09-2024",
+    "participants": 30
+  },
+  {
+    "name": "HỘI CHỢ THƯƠNG MẠI NFT",
+    "quantity": 800,
+    "startDate": "15-08-2023",
+    "endDate": "31-08-2023",
+    "participants": 35
+  },
+  {
+    "name": "CHƯƠNG TRÌNH KHUYẾN MÃI GIẢM GIÁ TẠI LOTTE MART",
+    "quantity": 2500,
+    "startDate": "01-09-2024",
+    "endDate": "15-10-2024",
+    "participants": 40
+  },
+  {
+    "name": "LỄ HỘI ẨM THỰC TẠI SÀI GÒN",
+    "quantity": 1800,
+    "startDate": "10-09-2024",
+    "endDate": "25-09-2024",
+    "participants": 50
+  },
+  {
+    "name": "CÁC BUỔI HỘI THẢO KINH DOANH CỦA VIETNAM BUSINESS FORUM",
+    "quantity": 1000,
+    "startDate": "01-10-2024",
+    "endDate": "15-10-2024",
+    "participants": 60
+  },
+  {
+    "name": "ĐẠI NHẠC HỘI MUSIC FESTIVAL 2024",
+    "quantity": 3000,
+    "startDate": "01-11-2024",
+    "endDate": "10-11-2024",
+    "participants": 70
+  },
+  {
+    "name": "TRIỂN LÃM CÔNG NGHỆ 2024",
+    "quantity": 2000,
+    "startDate": "15-11-2024",
+    "endDate": "30-11-2024",
+    "participants": 80
+  },
+  {
+    "name": "CHƯƠNG TRÌNH HỌC BỔNG HÈ",
+    "quantity": 1200,
+    "startDate": "01-12-2024",
+    "endDate": "31-12-2024",
+    "participants": 45
+  },
+  {
+    "name": "HỘI THẢO ĐÀO TẠO KỸ NĂNG MỀM",
+    "quantity": 1500,
+    "startDate": "05-12-2024",
+    "endDate": "20-12-2024",
+    "participants": 35
+  },
+  {
+    "name": "GALA DINNER CHÚC MỪNG NĂM MỚI 2025",
+    "quantity": 2200,
+    "startDate": "25-12-2024",
+    "endDate": "01-01-2025",
+    "participants": 50
+  },
+  {
+    "name": "HỘI NGHỊ KHOA HỌC QUỐC TẾ",
+    "quantity": 3000,
+    "startDate": "10-01-2025",
+    "endDate": "25-01-2025",
+    "participants": 60
+  },
+  {
+    "name": "LỄ KHAI TRƯƠNG SIÊU THỊ MỚI",
+    "quantity": 2000,
+    "startDate": "01-02-2025",
+    "endDate": "15-02-2025",
+    "participants": 40
+  }
+]
