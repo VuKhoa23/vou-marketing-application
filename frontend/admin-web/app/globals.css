@@ -23,3 +23,8 @@ h2 {
 .logout {
     @apply mt-auto justify-self-end;
 }
+
+.form-error-msg {
+    color: #9f1239;
+    font-size: 0.75rem;
+}
