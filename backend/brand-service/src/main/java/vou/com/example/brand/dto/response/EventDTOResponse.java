@@ -13,4 +13,6 @@ public class EventDTOResponse {
     Date eventStartDate;
     Date eventEndDate;
     Brand brand;
+    boolean isTrivia;
+    boolean isShaking;
 }

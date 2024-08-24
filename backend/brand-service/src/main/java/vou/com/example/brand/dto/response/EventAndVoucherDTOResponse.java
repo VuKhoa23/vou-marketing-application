@@ -8,6 +8,6 @@ import java.util.Date;
 
 @Data
 public class EventAndVoucherDTOResponse {
-    private EventDTOResponse event;
-    private VoucherDTOResponse voucher;
+    EventDTOResponse event;
+    VoucherDTOResponse voucher;
 }
