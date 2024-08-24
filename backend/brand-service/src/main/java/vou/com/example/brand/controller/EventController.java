@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.dto.VoucherDTO;
+import vou.com.example.brand.dto.response.EventAndVoucherResponseDTO;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.service.EventService;
 
@@ -69,7 +70,7 @@ public class EventController {
         System.out.println("Received file: " + eventImage.getOriginalFilename());
         System.out.println("Received eventDTO: " + eventDTO);
         eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("{\"message\": \"Add event and voucher successfully!\"}");
     }
 
     @PostMapping("update")
@@ -83,5 +84,11 @@ public class EventController {
     @GetMapping("search/find-by-name-containing")
     public Page<Event> findByNameContaining(@RequestParam("name") String name, Pageable pageable){
         return eventService.findByNameContaining(name, pageable);
+    }
+
+    @GetMapping("/events-and-vouchers")
+    public ResponseEntity<EventAndVoucherResponseDTO> getEventsAndVouchersByBrandId(@RequestParam Long brandId) {
+        EventAndVoucherResponseDTO result = eventService.findAllByBrandId(brandId);
+        return ResponseEntity.ok(result);
     }
 }

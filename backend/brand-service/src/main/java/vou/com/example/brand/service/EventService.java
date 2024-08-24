@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.dto.VoucherDTO;
+import vou.com.example.brand.dto.response.EventAndVoucherResponseDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
@@ -144,5 +145,14 @@ public class EventService {
 
     public List<Event> findAll(){
         return eventRepository.findAll();
+    }
+
+    public EventAndVoucherResponseDTO findAllByBrandId(Long brandId) {
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));;
+        List<Event> events = eventRepository.findByBrandId(brandId);
+        List<Voucher> vouchers = voucherRepository.findByBrandId(brandId);
+
+        return new EventAndVoucherResponseDTO(events, vouchers);
     }
 }
