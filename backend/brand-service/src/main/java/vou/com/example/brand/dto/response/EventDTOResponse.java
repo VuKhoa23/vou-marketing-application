@@ -1,6 +1,7 @@
 package vou.com.example.brand.dto.response;
 
 import lombok.Data;
+import vou.com.example.brand.entity.Brand;
 
 import java.util.Date;
 
@@ -11,4 +12,5 @@ public class EventDTOResponse {
     String eventImageURL;
     Date eventStartDate;
     Date eventEndDate;
+    Brand brand;
 }

@@ -154,6 +154,8 @@ public class EventService {
 
     public List<EventAndVoucherDTOResponse> findAllByBrandId(Long brandId) {
         List<EventAndVoucherDTOResponse> responseDTOList = new ArrayList<>();
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         List<Event> events = eventRepository.findAllByBrandId(brandId);
 
@@ -165,6 +167,7 @@ public class EventService {
             eventDTO.setEventImageURL(event.getImageURL());
             eventDTO.setEventStartDate(event.getStartDate());
             eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setBrand(brand);
 
             VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
             Voucher voucher = voucherRepository.findByEvent(event);
