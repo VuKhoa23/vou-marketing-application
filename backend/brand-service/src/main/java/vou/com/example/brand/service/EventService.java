@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.dto.VoucherDTO;
+import vou.com.example.brand.dto.response.EventAndVoucherResponseDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
@@ -29,9 +30,10 @@ public class EventService {
     VoucherRepository voucherRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository, BrandRepository brandRepository){
+    public EventService(EventRepository eventRepository, BrandRepository brandRepository, VoucherRepository voucherRepository){
         this.eventRepository = eventRepository;
         this.brandRepository = brandRepository;
+        this.voucherRepository = voucherRepository;
     }
 
     private File convertMultipartFileToFile(MultipartFile file) throws IOException {
@@ -73,34 +75,41 @@ public class EventService {
         return fileURL;
     }
 
-    public void addEvent(Long brandId, MultipartFile fileURL, EventDTO eventDTO){
+    public void addEvent(Long brandId, MultipartFile eventImage, EventDTO eventDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        String filePath = uploadFile(fileURL);
+        System.out.println("eventDTO " + eventDTO);
+
+        String filePath = uploadFile(eventImage);
 
         Event event = new Event();
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setVoucherQuantities(event.getVoucherQuantities());
         event.setImageURL(filePath);
         event.setBrand(brand);
+        if(eventDTO.isTrivia()){
+            event.setTrivia(true);
+        }
+        if(eventDTO.isShaking()){
+            event.setShaking(true);
+        }
 
         eventRepository.save(event);
     }
 
-    public void addVoucher(Long brandId, MultipartFile imageFileQR, MultipartFile imageFile, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherImage, VoucherDTO voucherDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        Voucher voucher = new Voucher();
+        System.out.println("voucherDTO " + voucherDTO);
 
-        String fileURLQR = uploadFile(imageFileQR);
-        String fileURL = uploadFile(imageFile);
+        Voucher voucher = new Voucher();
+        String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());
-        voucher.setImageQR(fileURLQR);
+        voucher.setVoucherQuantities(voucherDTO.getVoucherQuantities());
         voucher.setImageURL(fileURL);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
@@ -111,9 +120,9 @@ public class EventService {
     }
 
     public void addEventAndVoucher(Long brandId, MultipartFile eventImage, EventDTO eventDTO,
-                                   MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+                                   MultipartFile voucherImage, VoucherDTO voucherDTO){
         addEvent(brandId, eventImage, eventDTO);
-        addVoucher(brandId, voucherQR, voucherImage, voucherDTO);
+        addVoucher(brandId, voucherImage, voucherDTO);
     }
 
     public Page<Event> findByNameContaining(String name, Pageable pageable){
@@ -129,7 +138,6 @@ public class EventService {
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setVoucherQuantities(event.getVoucherQuantities());
         event.setImageURL(filePath);
 
         eventRepository.save(event);
@@ -137,5 +145,14 @@ public class EventService {
 
     public List<Event> findAll(){
         return eventRepository.findAll();
+    }
+
+    public EventAndVoucherResponseDTO findAllByBrandId(Long brandId) {
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));;
+        List<Event> events = eventRepository.findByBrandId(brandId);
+        List<Voucher> vouchers = voucherRepository.findByBrandId(brandId);
+
+        return new EventAndVoucherResponseDTO(events, vouchers);
     }
 }

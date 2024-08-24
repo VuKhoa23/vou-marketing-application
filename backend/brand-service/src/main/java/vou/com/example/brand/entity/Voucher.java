@@ -25,6 +25,9 @@ public class Voucher {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "voucher_quantities")
+    private int voucherQuantities;
+
     @Column(name = "end_date")
     private Date endDate;
 
