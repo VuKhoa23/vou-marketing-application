@@ -37,7 +37,6 @@ const PolicyPrivacy = () => {
             }));
             formData.append('voucherImage', voucherImage);
             formData.append('voucherDTO', JSON.stringify({
-                id: "1",
                 description,
                 endDate: voucherEndDate,
                 voucherQuantities,
@@ -47,7 +46,7 @@ const PolicyPrivacy = () => {
             setError('');
             try {
                 await dispatch(submitAllForms(formData)).unwrap();
-                navigate('/events', { replace: true });
+                //navigate('/events', { replace: true });
 
             } catch (error) {
                 console.error('Form submission error:', error);

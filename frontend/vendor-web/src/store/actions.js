@@ -10,14 +10,14 @@ export const submitAllForms = createAsyncThunk(
             });
 
             if (!response.ok) {
-                const errorText = await response.text(); 
+                const errorText = await response.text();
                 console.error('Error response:', errorText);
                 throw new Error(`Network response was not ok. Status: ${response.status}`);
             }
             //return await response.json();
         } catch (error) {
             console.error('Submission error:', error);
-            return rejectWithValue(error.message);
+            //return rejectWithValue(error.message);
         }
     }
 );
