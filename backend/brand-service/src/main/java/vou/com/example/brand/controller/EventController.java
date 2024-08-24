@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
 import vou.com.example.brand.dto.VoucherDTO;
-import vou.com.example.brand.dto.response.EventAndVoucherResponseDTO;
+import vou.com.example.brand.dto.response.EventAndVoucherDTOResponse;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.service.EventService;
 
@@ -87,8 +87,8 @@ public class EventController {
     }
 
     @GetMapping("/events-and-vouchers")
-    public ResponseEntity<EventAndVoucherResponseDTO> getEventsAndVouchersByBrandId(@RequestParam Long brandId) {
-        EventAndVoucherResponseDTO result = eventService.findAllByBrandId(brandId);
+    public ResponseEntity<List<EventAndVoucherDTOResponse>> getEventsAndVouchersByBrandId(@RequestParam Long brandId) {
+        List<EventAndVoucherDTOResponse> result = eventService.findAllByBrandId(brandId);
         return ResponseEntity.ok(result);
     }
 }

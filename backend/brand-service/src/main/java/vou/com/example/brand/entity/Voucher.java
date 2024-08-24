@@ -34,7 +34,7 @@ public class Voucher {
     @Column(name = "status")
     private boolean status = false;
 
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    @OneToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }

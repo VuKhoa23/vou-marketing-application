@@ -87,7 +87,6 @@ public class VoucherService {
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
         voucher.setEndDate(voucherDTO.getEndDate());
-        voucher.setBrand(brand);
 
         voucherRepository.save(voucher);
     }
