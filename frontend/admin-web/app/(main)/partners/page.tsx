@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -9,9 +9,14 @@ import { Partner } from "@/lib/types/Partner";
 import partnerData from "@/lib/mock_data/partners.json";
 import Modal from "@/components/Modal";
 
+// duplicate data & get current max ID to generate new iD when adding users
+// TODO: REMOVE WHEN CONNECTED TO BACKEND)
+let data = [...partnerData];
+let maxId: number = Math.max(...data.map((item) => item.id));
+
 // add form validation schema
 export const addSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền tên doanh nghiệp"),
+    name: yup.string().required("Vui lòng điền tên thương hiệu"),
     industry: yup.string().required("Vui lòng điền tên lĩnh vực"),
     address: yup.string().required("Vui lòng điền địa chỉ"),
     long: yup
@@ -26,7 +31,7 @@ export const addSchema = yup.object().shape({
 
 // edit form validation schema
 export const editSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền tên doanh nghiệp"),
+    name: yup.string().required("Vui lòng điền tên thương hiệu"),
     industry: yup.string().required("Vui lòng điền tên lĩnh vực"),
     address: yup.string().required("Vui lòng điền địa chỉ"),
     long: yup
@@ -43,11 +48,30 @@ export default function Partners() {
     const [addOpen, setAddOpen] = useState(false);
     const handleToggleAdd = () => setAddOpen((prev) => !prev);
 
+    const [editingPartner, setEditingPartner] = useState<Partner>();
+
     const [editOpen, setEditOpen] = useState(false);
     const handleToggleEdit = () => setEditOpen((prev) => !prev);
 
     const [deleteOpen, setDeleteOpen] = useState(false);
     const handleToggleDelete = () => setDeleteOpen((prev) => !prev);
+
+    const [tableData, setTableData] = useState(data);
+
+    // update the edit form whenever the selected partner changes
+    useEffect(() => {
+        if (editingPartner) {
+            editFormik.setValues({
+                id: editingPartner.id,
+                name: editingPartner.name,
+                industry: editingPartner.industry,
+                address: editingPartner.address,
+                long: editingPartner.long,
+                lat: editingPartner.lat,
+                isActivated: editingPartner.isActivated,
+            });
+        }
+    }, [editingPartner]);
 
     // define columns for user table
     const columnHelper = createColumnHelper<Partner>();
@@ -61,7 +85,7 @@ export default function Partners() {
         columnHelper.accessor((row) => row.name, {
             id: "name",
             cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Tên doanh nghiệp</span>,
+            header: () => <span>Tên thương hiệu</span>,
         }),
         columnHelper.accessor((row) => row.industry, {
             id: "industry",
@@ -74,21 +98,35 @@ export default function Partners() {
             header: () => <span>Địa chỉ</span>,
         }),
         columnHelper.accessor((row) => `${row.long}, ${row.lat}`, {
-            id: "gpd",
+            id: "gps",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Tọa độ GPS</span>,
         }),
         columnHelper.accessor((row) => row.isActivated, {
             id: "active-status",
-            cell: (info) => <span>{info.getValue() === true ? "Đã kích hoạt" : "Bị khóa"}</span>,
-            header: () => <span>Trạng thái</span>,
+            cell: (info) => (
+                <input
+                    type="checkbox"
+                    className="checkbox checkbox-sm"
+                    disabled
+                    checked={info.getValue()}
+                />
+            ),
+            header: () => <span>Đã kích hoạt?</span>,
         }),
-        columnHelper.accessor((row) => row.id, {
+        columnHelper.accessor((row) => row, {
             id: "edit-del",
             cell: (info) => (
                 <div className="flex justify-between">
                     {/* edit button */}
-                    <button className="btn btn-square btn-sm" onClick={handleToggleEdit}>
+                    <button
+                        className="btn btn-square btn-sm"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setEditingPartner(info.getValue());
+                            handleToggleEdit();
+                        }}
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -108,7 +146,11 @@ export default function Partners() {
                     {/* delete button */}
                     <button
                         className="btn btn-error btn-square btn-sm"
-                        onClick={handleToggleDelete}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setEditingPartner(info.getValue());
+                            handleToggleDelete();
+                        }}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -143,6 +185,21 @@ export default function Partners() {
         },
         validationSchema: addSchema,
         onSubmit: async (values) => {
+            const newPartner: Partner = {
+                id: maxId ? ++maxId : 1,
+                name: values.name!,
+                industry: values.industry!,
+                address: values.address!,
+                long: values.long!,
+                lat: values.lat!,
+                isActivated: values.isActivated!,
+            };
+
+            data = [...data, newPartner];
+
+            setTableData(data);
+            addFormik.resetForm();
+
             handleToggleAdd();
         },
     });
@@ -150,43 +207,53 @@ export default function Partners() {
     // edit form
     const editFormik = useFormik({
         initialValues: {
-            name: "",
-            industry: "",
-            address: "",
-            long: "",
-            lat: "",
-            isActivated: false,
+            id: editingPartner?.id,
+            name: editingPartner?.name,
+            industry: editingPartner?.industry,
+            address: editingPartner?.address,
+            long: editingPartner?.long,
+            lat: editingPartner?.lat,
+            isActivated: editingPartner?.isActivated,
         },
         validationSchema: editSchema,
         onSubmit: async (values) => {
+            const newPartner: Partner = {
+                id: values.id!,
+                name: values.name!,
+                industry: values.industry!,
+                address: values.address!,
+                long: values.long!,
+                lat: values.lat!,
+                isActivated: values.isActivated!,
+            };
+
+            data = data.map((p) => (p.id === newPartner.id ? { ...newPartner } : p));
+
+            setTableData(data);
+
             handleToggleEdit();
         },
     });
 
     return (
         <div className="flex-col">
-            <h1>Quản lý doanh nghiệp</h1>
+            <h1>Quản lý thương hiệu</h1>
 
             <div className="flex justify-end mb-4">
                 <button className="btn btn-primary" onClick={handleToggleAdd}>
-                    Thêm doanh nghiệp
+                    Thêm thương hiệu
                 </button>
             </div>
 
             <div className="card bg-base-100 shadow w-full overflow-x-auto">
                 <div className="card-body">
-                    <Table columnDef={partnerColumns} data={partnerData} />
+                    <Table columnDef={partnerColumns} data={tableData} />
                 </div>
             </div>
 
             {/* add modal */}
-            <Modal
-                open={addOpen}
-                onClose={() => {
-                    addFormik.resetForm();
-                }}
-            >
-                <h3 className="font-bold text-lg">Thêm doanh nghiệp</h3>
+            <Modal open={addOpen}>
+                <h3 className="font-bold text-lg">Thêm thương hiệu</h3>
                 <form
                     method="dialog"
                     onSubmit={(e) => {
@@ -194,15 +261,15 @@ export default function Partners() {
                     }}
                 >
                     <div>
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Tên doanh nghiệp</span>
+                                <span className="label-text font-bold">Tên thương hiệu</span>
                             </div>
                             <input
                                 name="name"
                                 type="text"
-                                placeholder="Tên doanh nghiệp"
-                                className="input input-bordered w-full max-w-xs"
+                                placeholder="Tên thương hiệu"
+                                className="input input-bordered w-full"
                                 value={addFormik.values.name}
                                 onChange={addFormik.handleChange}
                             />
@@ -211,15 +278,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Tên lĩnh vực</span>
+                                <span className="label-text font-bold">Tên lĩnh vực</span>
                             </div>
                             <input
                                 name="industry"
                                 type="text"
                                 placeholder="Tên lĩnh vực"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={addFormik.values.industry}
                                 onChange={addFormik.handleChange}
                             />
@@ -228,15 +295,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Địa chỉ</span>
+                                <span className="label-text font-bold">Địa chỉ</span>
                             </div>
                             <input
                                 name="address"
                                 type="text"
                                 placeholder="Địa chỉ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={addFormik.values.address}
                                 onChange={addFormik.handleChange}
                             />
@@ -245,15 +312,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Kinh độ</span>
+                                <span className="label-text font-bold">Kinh độ</span>
                             </div>
                             <input
                                 name="long"
                                 type="text"
                                 placeholder="Kinh độ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={addFormik.values.long}
                                 onChange={addFormik.handleChange}
                             />
@@ -262,15 +329,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Vĩ độ</span>
+                                <span className="label-text font-bold">Vĩ độ</span>
                             </div>
                             <input
                                 name="lat"
                                 type="text"
                                 placeholder="Vĩ độ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={addFormik.values.lat}
                                 onChange={addFormik.handleChange}
                             />
@@ -278,6 +345,18 @@ export default function Partners() {
                                 <div className="form-error-msg">{addFormik.errors.lat}</div>
                             )}
                         </label>
+
+                        <div className="form-control w-full mt-3">
+                            <label className="label cursor-pointer">
+                                <span className="label-text font-bold">Kích hoạt tài khoản</span>
+                                <input
+                                    type="checkbox"
+                                    name="isActivated"
+                                    onChange={addFormik.handleChange}
+                                    className="checkbox"
+                                />
+                            </label>
+                        </div>
                     </div>
 
                     <div className="modal-action">
@@ -299,13 +378,8 @@ export default function Partners() {
             </Modal>
 
             {/* edit modal */}
-            <Modal
-                open={editOpen}
-                onClose={() => {
-                    editFormik.resetForm();
-                }}
-            >
-                <h3 className="font-bold text-lg">Cập nhật thông tin doanh nghiệp</h3>
+            <Modal open={editOpen}>
+                <h3 className="font-bold text-lg">Cập nhật thông tin thương hiệu</h3>
                 <form
                     method="dialog"
                     onSubmit={(e) => {
@@ -313,15 +387,28 @@ export default function Partners() {
                     }}
                 >
                     <div>
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Tên doanh nghiệp</span>
+                                <span className="label-text font-bold">ID</span>
+                            </div>
+                            <input
+                                name="id"
+                                type="text"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.id}
+                                disabled
+                            />
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Tên thương hiệu</span>
                             </div>
                             <input
                                 name="name"
                                 type="text"
-                                placeholder="Tên doanh nghiệp"
-                                className="input input-bordered w-full max-w-xs"
+                                placeholder="Tên thương hiệu"
+                                className="input input-bordered w-full"
                                 value={editFormik.values.name}
                                 onChange={editFormik.handleChange}
                             />
@@ -330,15 +417,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Tên lĩnh vực</span>
+                                <span className="label-text font-bold">Tên lĩnh vực</span>
                             </div>
                             <input
                                 name="industry"
                                 type="text"
                                 placeholder="Tên lĩnh vực"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={editFormik.values.industry}
                                 onChange={editFormik.handleChange}
                             />
@@ -347,15 +434,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Địa chỉ</span>
+                                <span className="label-text font-bold">Địa chỉ</span>
                             </div>
                             <input
                                 name="address"
                                 type="text"
                                 placeholder="Địa chỉ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={editFormik.values.address}
                                 onChange={editFormik.handleChange}
                             />
@@ -364,15 +451,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Kinh độ</span>
+                                <span className="label-text font-bold">Kinh độ</span>
                             </div>
                             <input
                                 name="long"
                                 type="text"
                                 placeholder="Kinh độ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={editFormik.values.long}
                                 onChange={editFormik.handleChange}
                             />
@@ -381,15 +468,15 @@ export default function Partners() {
                             )}
                         </label>
 
-                        <label className="form-control w-full max-w-xs">
+                        <label className="form-control w-full mt-3">
                             <div className="label">
-                                <span className="label-text">Vĩ độ</span>
+                                <span className="label-text font-bold">Vĩ độ</span>
                             </div>
                             <input
                                 name="lat"
                                 type="text"
                                 placeholder="Vĩ độ"
-                                className="input input-bordered w-full max-w-xs"
+                                className="input input-bordered w-full"
                                 value={editFormik.values.lat}
                                 onChange={editFormik.handleChange}
                             />
@@ -397,6 +484,19 @@ export default function Partners() {
                                 <div className="form-error-msg">{editFormik.errors.lat}</div>
                             )}
                         </label>
+
+                        <div className="form-control w-full mt-3">
+                            <label className="label cursor-pointer">
+                                <span className="label-text font-bold">Kích hoạt tài khoản</span>
+                                <input
+                                    type="checkbox"
+                                    name="isActivated"
+                                    onChange={editFormik.handleChange}
+                                    checked={editFormik.values.isActivated}
+                                    className="checkbox"
+                                />
+                            </label>
+                        </div>
                     </div>
 
                     <div className="modal-action">
@@ -419,13 +519,26 @@ export default function Partners() {
 
             {/* delete modal */}
             <Modal open={deleteOpen}>
-                <h3 className="font-bold text-lg">Xóa doanh nghiệp</h3>
-                <p className="py-4">Bạn có chắc chắn muốn xóa doanh nghiệp này?</p>
+                <h3 className="font-bold text-lg">Xóa thương hiệu</h3>
+                <p className="py-4">Bạn có chắc chắn muốn xóa thương hiệu này?</p>
                 <div className="modal-action">
                     <label className="btn btn-secondary" onClick={handleToggleDelete}>
                         Hủy
                     </label>
-                    <label className="btn btn-error" onClick={handleToggleDelete}>
+                    <label
+                        className="btn btn-error"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            data = data.filter((u) => {
+                                if (editingPartner) {
+                                    return u.id != editingPartner.id;
+                                }
+                            });
+
+                            setTableData(data);
+                            handleToggleDelete();
+                        }}
+                    >
                         Xóa
                     </label>
                 </div>
