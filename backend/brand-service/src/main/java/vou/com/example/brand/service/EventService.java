@@ -27,7 +27,7 @@ import java.util.List;
 
 @Service
 public class EventService {
-    private static final String VOLUME_PATH = "D:/Pictures/";
+    private static final String VOLUME_PATH = "F:/Pictures/brand/";
     EventRepository eventRepository;
     BrandRepository brandRepository;
     VoucherRepository voucherRepository;
@@ -168,8 +168,8 @@ public class EventService {
             eventDTO.setEventStartDate(event.getStartDate());
             eventDTO.setEventEndDate(event.getEndDate());
             eventDTO.setBrand(brand);
-            eventDTO.setTrivia(eventDTO.isTrivia());
-            eventDTO.setShaking(eventDTO.isShaking());
+            eventDTO.setTrivia(event.isTrivia());
+            eventDTO.setShaking(event.isShaking());
 
             VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
             Voucher voucher = voucherRepository.findByEvent(event);
