@@ -6,8 +6,7 @@ import java.util.Date;
 
 @Data
 public class VoucherDTOResponse {
-    String voucherId;
-    String voucherImageQR;
+    Long voucherId;
     String voucherImageURL;
     int voucherValue;
     String voucherDescription;

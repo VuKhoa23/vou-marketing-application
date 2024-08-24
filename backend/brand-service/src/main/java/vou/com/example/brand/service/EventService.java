@@ -175,7 +175,6 @@ public class EventService {
             Voucher voucher = voucherRepository.findByEvent(event);
             if(voucher != null){
                 voucherDTO.setVoucherId(voucher.getId());
-                voucherDTO.setVoucherImageQR(voucher.getImageQR());
                 voucherDTO.setVoucherImageURL(voucher.getImageURL());
                 voucherDTO.setVoucherValue(voucher.getValue());
                 voucherDTO.setVoucherDescription(voucher.getDescription());

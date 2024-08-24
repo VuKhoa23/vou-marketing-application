@@ -10,11 +10,9 @@ import java.util.Date;
 @Data
 public class Voucher {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private String id;
-
-    @Column(name = "image_qr")
-    private String imageQR;
+    private long id;
 
     @Column(name = "image_url")
     private String imageURL;

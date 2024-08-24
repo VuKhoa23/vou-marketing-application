@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 public class VoucherDTO {
-    private String id;
+    private long id;
     private int voucherQuantities;
     private int value;
     private String description;
