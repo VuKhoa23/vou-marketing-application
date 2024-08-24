@@ -12,8 +12,8 @@ public class Brand {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "username", unique = true)
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -23,7 +23,7 @@ public class Brand {
 
     @Column(name = "address")
     private String address;
-
+  
     @Column(name = "state")
     private boolean state = false;
 
