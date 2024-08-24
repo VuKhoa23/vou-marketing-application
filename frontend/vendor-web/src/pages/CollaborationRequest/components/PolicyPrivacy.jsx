@@ -3,15 +3,17 @@ import { Box, Checkbox, Button, Text, VStack, HStack, FormControl, FormErrorMess
 import { setStep } from '../../../store/stepSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitAllForms } from '../../../store/actions';
+import { useNavigate } from 'react-router-dom';
 
 const PolicyPrivacy = () => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {
         eventImage,
         eventDTO: { name, startDate, endDate, isShaking, isTrivia }
     } = useSelector(state => state.forms.eventForm);
-    
+
     const {
         voucherImage,
         voucherDTO: { description, endDate: voucherEndDate, voucherQuantities, value }
@@ -24,7 +26,7 @@ const PolicyPrivacy = () => {
     const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
             const formData = new FormData();
-            
+
             formData.append('eventImage', eventImage);
             formData.append('eventDTO', JSON.stringify({
                 name,
@@ -41,11 +43,12 @@ const PolicyPrivacy = () => {
                 voucherQuantities,
                 value
             }));
-    
-            setError('');  
+
+            setError('');
             try {
                 await dispatch(submitAllForms(formData)).unwrap();
-                console.log('Form submitted successfully');
+                navigate('/events', { replace: true });
+
             } catch (error) {
                 console.error('Form submission error:', error);
             }
@@ -53,8 +56,8 @@ const PolicyPrivacy = () => {
             setError('Vui lòng đồng ý với các điều khoản và chính sách bảo mật trước khi đăng ký.');
         }
     };
-    
-    
+
+
 
     const handleTermsChange = (e) => {
         setTermsAccepted(e.target.checked);
@@ -110,7 +113,7 @@ const PolicyPrivacy = () => {
                     <Checkbox
                         isChecked={termsAccepted}
                         onChange={handleTermsChange}
-                        
+
                     >
                         Tôi đồng ý với các điều khoản và điều kiện của nền tảng.
                     </Checkbox>

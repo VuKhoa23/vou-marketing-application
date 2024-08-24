@@ -14,8 +14,7 @@ export const submitAllForms = createAsyncThunk(
                 console.error('Error response:', errorText);
                 throw new Error(`Network response was not ok. Status: ${response.status}`);
             }
-
-            return await response.json();
+            //return await response.json();
         } catch (error) {
             console.error('Submission error:', error);
             return rejectWithValue(error.message);
