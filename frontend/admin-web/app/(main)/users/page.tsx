@@ -1,86 +1,69 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useFormik } from "formik";
+import { useFormik, FormikValues } from "formik";
 import * as yup from "yup";
 import Table from "@/components/Table";
-import { User } from "@/types/User";
-import userData from "@/mock_data/users.json";
+import { User } from "@/lib/types/User";
+import userData from "@/lib/mock_data/users.json";
 import Modal from "@/components/Modal";
 
-// define edit form validation schema
-export const editSchema = yup.object().shape({
-    name: yup.string().required(),
+// duplicate data & get current max ID to generate new iD when adding users
+// TODO: REMOVE WHEN CONNECTED TO BACKEND)
+let data = [...userData];
+let maxId: number = Math.max(...data.map((item) => item.id));
+
+// add form validation schema
+export const addSchema = yup.object().shape({
+    name: yup.string().required("Vui lòng điền họ và tên"),
     email: yup.string().required("Vui lòng điền địa chỉ email").email("Địa chỉ email không hợp lệ"),
-    username: yup.string().required("Username is required"),
+    username: yup.string().required("Vui lòng điền tên người dùng"),
     phone: yup
         .string()
         .required("Vui lòng điền số điện thoại")
         .matches(/^0[0-9]{9}$/, "Số điện thoại phải bao gồm 10 chữ số và bắt đầu bằng 0"),
 });
 
-// define edit form
-const editForm = () => {
-    const formik = useFormik({
-        initialValues: {
-            avatar: "",
-            name: "",
-            username: "",
-            email: "",
-            phone: "",
-            gender: "",
-            role: "",
-        },
-        validationSchema: editSchema,
-        onSubmit: async (values) => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        },
-    });
-
-    // Deconstruct Formik object
-    const { errors, touched, values, handleChange, handleSubmit } = formik;
-
-    return (
-        <form onSubmit={handleSubmit}>
-            {/* Input for Email */}
-            <div>
-                <label>Email</label>
-                <input
-                    name="email"
-                    type="text"
-                    placeholder="Email"
-                    value={values.email}
-                    onChange={handleChange}
-                />
-                {touched.email && errors.email && <div>{errors.email}</div>}
-            </div>
-
-            {/* Input for Name */}
-            <div>
-                <label>Name</label>
-                <input
-                    name="name"
-                    type="text"
-                    placeholder="Name"
-                    value={values.name}
-                    onChange={handleChange}
-                />
-                {touched.name && errors.name && <div>{errors.name}</div>}
-            </div>
-
-            {/* Submit Button */}
-            <button type="submit">Submit</button>
-        </form>
-    );
-};
+// edit form validation schema
+export const editSchema = yup.object().shape({
+    name: yup.string().required("Vui lòng điền họ và tên"),
+    email: yup.string().required("Vui lòng điền địa chỉ email").email("Địa chỉ email không hợp lệ"),
+    username: yup.string().required("Vui lòng điền tên người dùng"),
+    phone: yup
+        .string()
+        .required("Vui lòng điền số điện thoại")
+        .matches(/^0[0-9]{9}$/, "Số điện thoại phải bao gồm 10 chữ số và bắt đầu bằng 0"),
+});
 
 export default function Users() {
+    const [addOpen, setAddOpen] = useState(false);
+    const handleToggleAdd = () => setAddOpen((prev) => !prev);
+
+    const [editingUser, setEditingUser] = useState<User>();
+
     const [editOpen, setEditOpen] = useState(false);
     const handleToggleEdit = () => setEditOpen((prev) => !prev);
 
     const [deleteOpen, setDeleteOpen] = useState(false);
     const handleToggleDelete = () => setDeleteOpen((prev) => !prev);
+
+    const [tableData, setTableData] = useState(data);
+
+    // update the edit form whenever the selected user changes
+    useEffect(() => {
+        if (editingUser) {
+            editFormik.setValues({
+                id: editingUser.id,
+                name: editingUser.name,
+                username: editingUser.username,
+                email: editingUser.email,
+                phone: editingUser.phone,
+                role: editingUser.role,
+                isActivated: editingUser.isActivated,
+            });
+        }
+    }, [editingUser]);
 
     // define columns for user table
     const columnHelper = createColumnHelper<User>();
@@ -90,15 +73,6 @@ export default function Users() {
             id: "id",
             cell: (info) => info.getValue(),
             header: () => <span>ID</span>,
-        }),
-        columnHelper.accessor((row) => row.avatar, {
-            id: "avatar",
-            cell: (info) => (
-                <div className="mask mask-squircle h-12 w-12">
-                    <img src={info.getValue()} alt="user_avatar" />
-                </div>
-            ),
-            header: () => <span>Ảnh đại diện</span>,
         }),
         columnHelper.accessor((row) => row.name, {
             id: "name",
@@ -113,29 +87,43 @@ export default function Users() {
         columnHelper.accessor((row) => row.email, {
             id: "email",
             cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Email</span>,
+            header: () => <span>Địa chỉ email</span>,
         }),
         columnHelper.accessor((row) => row.phone, {
             id: "phone",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Số điện thoại</span>,
         }),
-        columnHelper.accessor((row) => row.gender, {
-            id: "gender",
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Giới tính</span>,
-        }),
         columnHelper.accessor((row) => row.role, {
             id: "role",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Quyền hạn</span>,
         }),
-        columnHelper.accessor((row) => row.id, {
+        columnHelper.accessor((row) => row.isActivated, {
+            id: "active-status",
+            cell: (info) => (
+                <input
+                    type="checkbox"
+                    className="checkbox checkbox-sm"
+                    disabled
+                    checked={info.getValue()}
+                />
+            ),
+            header: () => <span>Đã kích hoạt?</span>,
+        }),
+        columnHelper.accessor((row) => row, {
             id: "edit-del",
             cell: (info) => (
                 <div className="flex justify-between">
                     {/* edit button */}
-                    <button className="btn btn-square btn-sm" onClick={handleToggleEdit}>
+                    <button
+                        className="btn btn-square btn-sm"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setEditingUser(info.getValue());
+                            handleToggleEdit();
+                        }}
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -155,7 +143,11 @@ export default function Users() {
                     {/* delete button */}
                     <button
                         className="btn btn-error btn-square btn-sm"
-                        onClick={handleToggleDelete}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setEditingUser(info.getValue());
+                            handleToggleDelete();
+                        }}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -178,43 +170,378 @@ export default function Users() {
         }),
     ];
 
+    // add form
+    const addFormik = useFormik({
+        initialValues: {
+            name: "",
+            username: "",
+            email: "",
+            phone: "",
+            role: "Người dùng",
+            isActivated: false,
+        },
+        validationSchema: addSchema,
+        onSubmit: async (values) => {
+            const newUser: User = {
+                id: maxId ? ++maxId : 1,
+                name: values.name!,
+                username: values.username!,
+                email: values.email!,
+                phone: values.phone!,
+                role: values.role!,
+                isActivated: values.isActivated!,
+            };
+
+            data = [...data, newUser];
+
+            setTableData(data);
+            addFormik.resetForm();
+
+            handleToggleAdd();
+        },
+    });
+
+    // edit form
+    const editFormik = useFormik({
+        initialValues: {
+            id: editingUser?.id,
+            name: editingUser?.name,
+            username: editingUser?.username,
+            email: editingUser?.email,
+            phone: editingUser?.phone,
+            role: editingUser?.role,
+            isActivated: editingUser?.isActivated,
+        },
+        validationSchema: editSchema,
+        onSubmit: async (values) => {
+            const newUser: User = {
+                id: values.id!,
+                name: values.name!,
+                username: values.username!,
+                email: values.email!,
+                phone: values.phone!,
+                role: values.role!,
+                isActivated: values.isActivated!,
+            };
+
+            data = data.map((u) => (u.id === newUser.id ? { ...newUser } : u));
+
+            setTableData(data);
+
+            handleToggleEdit();
+        },
+    });
+
     return (
         <div className="flex-col">
             <h1>Quản lý người dùng</h1>
 
             <div className="flex justify-end mb-4">
-                <button className="btn btn-primary">Thêm người dùng</button>
+                <button className="btn btn-primary" onClick={handleToggleAdd}>
+                    Thêm người dùng
+                </button>
             </div>
 
             <div className="card bg-base-100 shadow w-full overflow-x-auto">
                 <div className="card-body">
-                    <Table columnDef={userColumns} data={userData} />
+                    <Table columnDef={userColumns} data={tableData} />
                 </div>
             </div>
 
+            {/* add modal */}
+            <Modal open={addOpen}>
+                <h3 className="font-bold text-lg">Thêm người dùng</h3>
+                <form
+                    method="dialog"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                    }}
+                >
+                    <div>
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Họ và tên</span>
+                            </div>
+                            <input
+                                name="name"
+                                type="text"
+                                placeholder="Họ và tên"
+                                className="input input-bordered w-full"
+                                value={addFormik.values.name}
+                                onChange={addFormik.handleChange}
+                            />
+                            {addFormik.touched.name && addFormik.errors.name && (
+                                <div className="form-error-msg">{addFormik.errors.name}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Tên người dùng</span>
+                            </div>
+                            <input
+                                name="username"
+                                type="text"
+                                placeholder="Tên người dùng"
+                                className="input input-bordered w-full"
+                                value={addFormik.values.username}
+                                onChange={addFormik.handleChange}
+                            />
+                            {addFormik.touched.username && addFormik.errors.username && (
+                                <div className="form-error-msg">{addFormik.errors.username}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Địa chỉ email</span>
+                            </div>
+                            <input
+                                name="email"
+                                type="text"
+                                placeholder="Địa chỉ email"
+                                className="input input-bordered w-full"
+                                value={addFormik.values.email}
+                                onChange={addFormik.handleChange}
+                            />
+                            {addFormik.touched.email && addFormik.errors.email && (
+                                <div className="form-error-msg">{addFormik.errors.email}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Số điện thoại</span>
+                            </div>
+                            <input
+                                name="phone"
+                                type="tel"
+                                placeholder="Số diện thoại"
+                                className="input input-bordered w-full"
+                                value={addFormik.values.phone}
+                                onChange={addFormik.handleChange}
+                            />
+                            {addFormik.touched.phone && addFormik.errors.phone && (
+                                <div className="form-error-msg">{addFormik.errors.phone}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Quyền hạn</span>
+                            </div>
+                            <select
+                                name="role"
+                                value={addFormik.values.role}
+                                className="select select-bordered w-full"
+                                onChange={addFormik.handleChange}
+                                onBlur={addFormik.handleBlur}
+                            >
+                                <option value="Admin" label="Admin" selected>
+                                    Admin
+                                </option>
+                                <option value="Người dùng" label="Người dùng">
+                                    Người dùng
+                                </option>
+                            </select>
+                        </label>
+
+                        <div className="form-control w-full mt-3">
+                            <label className="label cursor-pointer">
+                                <span className="label-text font-bold">Kích hoạt tài khoản</span>
+                                <input
+                                    type="checkbox"
+                                    name="isActivated"
+                                    onChange={addFormik.handleChange}
+                                    className="checkbox"
+                                />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="modal-action">
+                        <label className="btn btn-secondary" onClick={handleToggleAdd}>
+                            Hủy
+                        </label>
+                        <button
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                addFormik.handleSubmit();
+                            }}
+                            className="btn btn-primary"
+                        >
+                            Thêm
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
             {/* edit modal */}
-            <Modal open={editOpen} onClose={handleToggleEdit}>
-                <h3 className="font-bold text-lg">Chỉnh sửa thông tin người dùng</h3>
-                <p className="py-4">Lmao help.</p>
-                <div className="modal-action">
-                    <label className="btn btn-secondary" onClick={handleToggleEdit}>
-                        Hủy
-                    </label>
-                    <label className="btn btn-primary" onClick={handleToggleEdit}>
-                        Xác nhận
-                    </label>
-                </div>
+            <Modal open={editOpen}>
+                <h3 className="font-bold text-lg">Cập nhật thông tin người dùng</h3>
+                <form
+                    method="dialog"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                    }}
+                >
+                    <div>
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">ID</span>
+                            </div>
+                            <input
+                                name="id"
+                                type="text"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.id}
+                                disabled
+                            />
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Họ và tên</span>
+                            </div>
+                            <input
+                                name="name"
+                                type="text"
+                                placeholder="Họ và tên"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.name}
+                                onChange={editFormik.handleChange}
+                            />
+                            {editFormik.touched.name && editFormik.errors.name && (
+                                <div className="form-error-msg">{editFormik.errors.name}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Tên người dùng</span>
+                            </div>
+                            <input
+                                name="username"
+                                type="text"
+                                placeholder="Tên người dùng"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.username}
+                                onChange={editFormik.handleChange}
+                            />
+                            {editFormik.touched.username && editFormik.errors.username && (
+                                <div className="form-error-msg">{editFormik.errors.username}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Địa chỉ email</span>
+                            </div>
+                            <input
+                                name="email"
+                                type="text"
+                                placeholder="Địa chỉ email"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.email}
+                                onChange={editFormik.handleChange}
+                            />
+                            {editFormik.touched.email && editFormik.errors.email && (
+                                <div className="form-error-msg">{editFormik.errors.email}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Số điện thoại</span>
+                            </div>
+                            <input
+                                name="phone"
+                                type="tel"
+                                placeholder="Số diện thoại"
+                                className="input input-bordered w-full"
+                                value={editFormik.values.phone}
+                                onChange={editFormik.handleChange}
+                            />
+                            {editFormik.touched.phone && editFormik.errors.phone && (
+                                <div className="form-error-msg">{editFormik.errors.phone}</div>
+                            )}
+                        </label>
+
+                        <label className="form-control w-full mt-3">
+                            <div className="label">
+                                <span className="label-text font-bold">Quyền hạn</span>
+                            </div>
+                            <select
+                                name="role"
+                                value={editFormik.values.role}
+                                className="select select-bordered w-full"
+                                onChange={editFormik.handleChange}
+                                onBlur={editFormik.handleBlur}
+                            >
+                                <option value="Admin" label="Admin" selected>
+                                    Admin
+                                </option>
+                                <option value="Người dùng" label="Người dùng">
+                                    Người dùng
+                                </option>
+                            </select>
+                        </label>
+
+                        <div className="form-control w-full mt-3">
+                            <label className="label cursor-pointer">
+                                <span className="label-text font-bold">Kích hoạt tài khoản</span>
+                                <input
+                                    type="checkbox"
+                                    name="isActivated"
+                                    onChange={editFormik.handleChange}
+                                    checked={editFormik.values.isActivated}
+                                    className="checkbox"
+                                />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="modal-action mt-3">
+                        <label className="btn btn-secondary" onClick={handleToggleEdit}>
+                            Hủy
+                        </label>
+                        <button
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                editFormik.handleSubmit();
+                            }}
+                            className="btn btn-primary"
+                        >
+                            Xác nhận
+                        </button>
+                    </div>
+                </form>
             </Modal>
 
             {/* delete modal */}
-            <Modal open={deleteOpen} onClose={handleToggleDelete}>
+            <Modal open={deleteOpen}>
                 <h3 className="font-bold text-lg">Xóa người dùng</h3>
                 <p className="py-4">Bạn có chắc chắn muốn xóa người dùng này?</p>
                 <div className="modal-action">
                     <label className="btn btn-secondary" onClick={handleToggleDelete}>
                         Hủy
                     </label>
-                    <label className="btn btn-error" onClick={handleToggleDelete}>
+                    <label
+                        className="btn btn-error"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            data = data.filter((u) => {
+                                if (editingUser) {
+                                    return u.id != editingUser.id;
+                                }
+                            });
+
+                            setTableData(data);
+                            handleToggleDelete();
+                        }}
+                    >
                         Xóa
                     </label>
                 </div>

@@ -5,7 +5,7 @@ export type ModalProps = {
     children: React.ReactNode;
     open: boolean;
     disableClickOutside?: boolean;
-    onClose(): void;
+    onClose?(): void;
 };
 
 export default function Modal({ children, open, disableClickOutside, onClose }: ModalProps) {

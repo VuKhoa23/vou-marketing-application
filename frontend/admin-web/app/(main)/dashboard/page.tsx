@@ -50,7 +50,7 @@ export default function Dashboard() {
             </div>
             <div className="collapse collapse-arrow bg-white my-6">
                 <input type="radio" name="statsgroup" />
-                <div className="collapse-title text-xl font-medium">Doanh nghiệp</div>
+                <div className="collapse-title text-xl font-medium">Thương hiệu</div>
                 <div className="collapse-content">
                     <Stats />
                     <Charts lineData={lineData} donutData={donutData} />

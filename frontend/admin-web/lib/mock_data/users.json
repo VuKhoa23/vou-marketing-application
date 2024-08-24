@@ -1,46 +1,38 @@
 [
     {
         "id": 1,
-        "avatar": "https://img.daisyui.com/images/profile/demo/3@94.webp",
         "name": "Nguyễn Quỳnh Hương",
         "username": "qhuongng",
-        "password": "quynhhuong",
         "email": "qhuong@gmail.com",
         "phone": "0121127291",
-        "gender": "Nữ",
-        "role": "Admin"
+        "role": "Admin",
+        "isActivated": true
     },
     {
         "id": 2,
-        "avatar": "https://img.daisyui.com/images/profile/demo/3@94.webp",
         "name": "Hồ Hữu Tâm",
         "username": "htamh",
-        "password": "huutam",
         "email": "htam@gmail.com",
         "phone": "0121127421",
-        "gender": "Nam",
-        "role": "Người dùng"
+        "role": "Người dùng",
+        "isActivated": true
     },
     {
         "id": 3,
-        "avatar": "https://img.daisyui.com/images/profile/demo/3@94.webp",
         "name": "Vũ Anh Khoa",
         "username": "akhoav",
-        "password": "anhkhoa",
         "email": "akhoa@gmail.com",
         "phone": "0121127631",
-        "gender": "Nam",
-        "role": "Người dùng"
+        "role": "Người dùng",
+        "isActivated": false
     },
     {
         "id": 4,
-        "avatar": "https://img.daisyui.com/images/profile/demo/3@94.webp",
         "name": "Đỗ Minh Triết",
         "username": "mtrietd",
-        "password": "minhtriet",
         "email": "mtriet@gmail.com",
         "phone": "0121127188",
-        "gender": "Nam",
-        "role": "Người dùng"
+        "role": "Người dùng",
+        "isActivated": true
     }
 ]

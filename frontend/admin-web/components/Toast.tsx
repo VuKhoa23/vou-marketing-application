@@ -5,13 +5,15 @@ export type ToastProps = {
     icon?: SVGElement;
 };
 
-export default function ToastProps({ type, body }: ToastProps) {
+export default function Toast({ type, title, body, icon }: ToastProps) {
     return type === "success" ? (
         <div className="alert alert-success">
-            <span>{body}</span>
+            {title ? <h3>{title}</h3> : <></>}
+            <p>{body}</p>
         </div>
     ) : (
         <div className="alert alert-error">
+            {title ? <h3>{title}</h3> : <></>}
             <span>{body}</span>
         </div>
     );
