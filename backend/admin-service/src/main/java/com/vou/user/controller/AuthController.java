@@ -59,6 +59,9 @@ public class AuthController {
             Admin admin = new Admin();
             admin.setUsername(registerDTO.getUsername());
             admin.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+            admin.setName(registerDTO.getName());
+            admin.setEmail(registerDTO.getEmail());
+            admin.setPhone(registerDTO.getPhone());
 
             adminRepository.save(admin);
             return new ResponseEntity<>(ResponseDTO.builder().message("User registered successfully!").build(), HttpStatus.OK);

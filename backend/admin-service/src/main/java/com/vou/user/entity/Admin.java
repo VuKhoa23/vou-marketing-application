@@ -15,9 +15,20 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
+    @Column(name = "username")
     public String username;
 
+    @Column(name = "password")
     public String password;
+
+    @Column(name = "name")
+    public String name;
+
+    @Column(name = "email")
+    public String email;
+
+    @Column(name = "phone")
+    public String phone;
 
     @org.springframework.data.annotation.Transient
     public Set<GrantedAuthority> getRoles(){
