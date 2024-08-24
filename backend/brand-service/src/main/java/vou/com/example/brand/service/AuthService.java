@@ -37,13 +37,17 @@ public class AuthService {
         String name = registerDTO.getUsername();
         String password = registerDTO.getPassword();
         String category = registerDTO.getCategory();
-        double longitude = registerDTO.getLongitude();
-        double latitude = registerDTO.getLatitude();
+        String address = registerDTO.getAddress();
+        boolean isShaking = registerDTO.isShaking();
+        boolean isTrivia = registerDTO.isTrivia();
 
         Brand brand = new Brand();
         brand.setUsername(name);
         brand.setPassword(passwordEncoder.encode(password));
         brand.setCategory(category);
+        brand.setAddress(address);
+        brand.setShaking(isShaking);
+        brand.setTrivia(isTrivia);
 
         brandRepository.save(brand);
     }

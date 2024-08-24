@@ -21,6 +21,15 @@ public class Brand {
     @Column(name = "category")
     private String category;
 
+    @Column(name = "address")
+    private String address;
+  
     @Column(name = "state")
     private boolean state = false;
+
+    @Column(name = "is_shaking")
+    private boolean isShaking = false;
+
+    @Column(name = "is_trivia")
+    private boolean isTrivia = false;
 }

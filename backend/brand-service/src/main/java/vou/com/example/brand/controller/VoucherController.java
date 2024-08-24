@@ -19,16 +19,16 @@ public class VoucherController {
         this.voucherService = voucherService;
     }
 
-    @GetMapping("findAll")
+    @GetMapping("find-all")
     public List<Voucher> findAll(){
         return voucherService.findAll();
     }
 
     @PostMapping("add")
     public void addVoucher(@RequestParam Long brandId,
-                           @RequestPart(value = "fileURLQR") MultipartFile fileURLQR,
-                           @RequestPart(value = "fileURL") MultipartFile fileURL,
+                           @RequestPart(value = "voucherQR") MultipartFile voucherQR,
+                           @RequestPart(value = "voucherImage") MultipartFile voucherImage,
                            @ModelAttribute VoucherDTO voucherDTO){
-        voucherService.addVoucher(brandId, fileURLQR, fileURL, voucherDTO);
+        voucherService.addVoucher(brandId, voucherQR, voucherImage, voucherDTO);
     }
 }

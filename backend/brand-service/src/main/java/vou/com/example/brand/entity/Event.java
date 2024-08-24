@@ -20,9 +20,6 @@ public class Event {
     @Column(name = "imageURL")
     private String imageURL;
 
-    @Column(name = "voucher_quantities")
-    private int voucherQuantities;
-
     @Column(name = "start_date")
     private Date startDate;
 
@@ -32,4 +29,10 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
+
+    @Column(name = "is_trivia")
+    private boolean isTrivia = false;
+
+    @Column(name = "is_shaking")
+    private boolean isShaking = false;
 }

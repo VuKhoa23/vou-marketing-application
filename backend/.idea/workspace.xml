@@ -6,12 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="a033b41e-e628-4a29-8622-8dd38706f13a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/VoucherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/controller/VoucherController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/RegisterDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/dto/RegisterDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Brand.java" beforeDir="false" afterPath="$PROJECT_DIR$/brand-service/src/main/java/vou/com/example/brand/entity/Brand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -41,6 +49,48 @@
     &quot;last_opened_file_path&quot;: &quot;F:/Documents/Code/Spring/vou-marketing-application/backend&quot;
   }
 }</component>
+  <component name="RunManager" selected="Batch.admin">
+    <configuration name="admin" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="./k8s/admin" />
+      <option name="PARENT_ENVS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="admin.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="game" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="./k8s/trivia-game" />
+      <option name="PARENT_ENVS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="game.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="k8s" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="./k8s" />
+      <option name="PARENT_ENVS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="k8s.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Batch.game" />
+        <item itemvalue="Batch.k8s" />
+        <item itemvalue="Batch.admin" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
