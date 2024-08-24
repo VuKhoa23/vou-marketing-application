@@ -27,7 +27,7 @@ public class AuthController {
 //        if(!registerDTO.getPassword().equals(registerDTO.getConfirmation())){
 //            return new ResponseEntity<>("Password and confirmation must match!", HttpStatus.BAD_REQUEST);
 //        }
-        if(brandService.existsByName(registerDTO.getName())){
+        if(brandService.existsByName(registerDTO.getUsername())){
             return new ResponseEntity<>("Brand name is already taken", HttpStatus.BAD_REQUEST);
         }
         authService.register(registerDTO);

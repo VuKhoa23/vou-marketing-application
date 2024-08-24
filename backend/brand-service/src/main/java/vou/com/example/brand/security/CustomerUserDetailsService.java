@@ -22,8 +22,8 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        Brand brand = brandRepository.findByName(name).orElseThrow(()
+        Brand brand = brandRepository.findByUsername(name).orElseThrow(()
                 -> new UsernameNotFoundException("Brand name not found"));
-        return new User(brand.getName(), brand.getPassword(), new ArrayList<>());
+        return new User(brand.getUsername(), brand.getPassword(), new ArrayList<>());
     }
 }

@@ -6,6 +6,6 @@ import vou.com.example.brand.entity.Brand;
 import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-    Optional<Brand> findByName(String name);
-    Boolean existsByName(String name);
+    Optional<Brand> findByUsername(String name);
+    Boolean existsByUsername(String name);
 }

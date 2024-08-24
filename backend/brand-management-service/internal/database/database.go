@@ -12,6 +12,7 @@ import (
 // Service represents a service that interacts with a database.
 type Service interface {
 	Close() error
+	DB() *sql.DB // Method to access the database connection
 }
 
 type service struct {
@@ -48,6 +49,10 @@ func New() Service {
 		db: db,
 	}
 	return dbInstance
+}
+
+func (s *service) DB() *sql.DB {
+	return s.db
 }
 
 // Health checks the health of the database connection by pinging the database.

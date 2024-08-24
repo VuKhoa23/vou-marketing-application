@@ -32,14 +32,14 @@ public class BrandService {
     }
 
     public Optional<Brand> findByName(String name){
-        return brandRepository.findByName(name);
+        return brandRepository.findByUsername(name);
     }
     public Boolean existsByName(String name){
-        return brandRepository.existsByName(name);
+        return brandRepository.existsByUsername(name);
     }
 
     public Long getBrandIdByName(String name) {
-        Brand brand = brandRepository.findByName(name)
+        Brand brand = brandRepository.findByUsername(name)
                 .orElseThrow(() -> new UsernameNotFoundException("Brand not found with name: " + name));
         return brand.getId();
     }
