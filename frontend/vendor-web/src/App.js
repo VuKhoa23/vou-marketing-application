@@ -14,14 +14,15 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'events',
+      {
+        path: 'events',
         children: [
           { index: true, element: <EventsPage />, loader: eventsLoader },
           { path: 'form', element: <CollaborationRequest /> },
         ],
       },
       { path: 'stats', element: <Dashboard /> },
-      { path: 'profile',  element: <VendorProfile />},
+      { path: 'profile', element: <VendorProfile /> },
     ],
   },
 ]);

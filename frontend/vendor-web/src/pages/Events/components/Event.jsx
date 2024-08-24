@@ -11,13 +11,12 @@ function Event({ id, name, brand, image, voucher, startDate, endDate }) {
     } else {
         statusBadge = <div className="badge badge-outline border-red-500 text-red-500">Đang diễn ra</div>;
     }
-
     return (
         <div className="card bg-base-100 w-96 shadow-xl">
             <figure className="w-full h-48 overflow-hidden">
                 <img
                     src={image}
-                    alt={name}
+                    //alt={name}
                     className="w-full h-full object-cover" />
             </figure>
             <div className="card-body">
