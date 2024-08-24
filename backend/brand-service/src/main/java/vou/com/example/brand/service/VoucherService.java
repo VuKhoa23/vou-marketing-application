@@ -25,7 +25,7 @@ public class VoucherService {
     private BrandRepository brandRepository;
 
     @Autowired
-    public VoucherService(VoucherRepository voucherRepository){
+    public VoucherService(VoucherRepository voucherRepository) {
         this.voucherRepository = voucherRepository;
     }
 
@@ -37,7 +37,7 @@ public class VoucherService {
         return convertFile;
     }
 
-    private String generateFileName(MultipartFile file){
+    private String generateFileName(MultipartFile file) {
         return new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
     }
 
@@ -68,11 +68,11 @@ public class VoucherService {
         return fileURL;
     }
 
-    public List<Voucher> findAll(){
+    public List<Voucher> findAll() {
         return voucherRepository.findAll();
     }
 
-    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
@@ -81,8 +81,6 @@ public class VoucherService {
         String fileURLQR = uploadFile(voucherQR);
         String fileURL = uploadFile(voucherImage);
 
-        voucher.setId(voucherDTO.getId());
-        voucher.setImageQR(fileURLQR);
         voucher.setImageURL(fileURL);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
