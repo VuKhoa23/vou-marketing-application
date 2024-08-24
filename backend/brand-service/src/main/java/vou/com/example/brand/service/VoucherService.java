@@ -72,14 +72,14 @@ public class VoucherService {
         return voucherRepository.findAll();
     }
 
-    public void addVoucher(Long brandId, MultipartFile imageFileQR, MultipartFile imageFile, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         Voucher voucher = new Voucher();
 
-        String fileURLQR = uploadFile(imageFileQR);
-        String fileURL = uploadFile(imageFile);
+        String fileURLQR = uploadFile(voucherQR);
+        String fileURL = uploadFile(voucherImage);
 
         voucher.setId(voucherDTO.getId());
         voucher.setImageQR(fileURLQR);
@@ -87,7 +87,6 @@ public class VoucherService {
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
         voucher.setEndDate(voucherDTO.getEndDate());
-        voucher.setBrand(brand);
 
         voucherRepository.save(voucher);
     }

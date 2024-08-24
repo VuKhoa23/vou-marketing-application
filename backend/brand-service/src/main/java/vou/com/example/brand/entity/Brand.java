@@ -21,6 +21,9 @@ public class Brand {
     @Column(name = "category")
     private String category;
 
+    @Column(name = "address")
+    private String address;
+  
     @Column(name = "state")
     private boolean state = false;
 }
