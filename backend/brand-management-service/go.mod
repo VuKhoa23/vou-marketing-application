@@ -1,6 +1,6 @@
 module brand-management-service
 
-go 1.22.5
+go 1.19.13
 
 require (
 	github.com/gin-gonic/gin v1.10.0

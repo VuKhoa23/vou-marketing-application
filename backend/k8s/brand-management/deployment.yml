@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: brand-management
-          image: vukhoa23/brand-management-service:test-1
+          image: vukhoa23/brand-management-service:1
           env:
           - name: PORT
             value: "8082"
