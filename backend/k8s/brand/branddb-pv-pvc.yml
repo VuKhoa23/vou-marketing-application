@@ -4,7 +4,7 @@ metadata:
   name: branddb-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   volumeMode: Filesystem
   storageClassName: standard
   accessModes:
@@ -32,4 +32,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
