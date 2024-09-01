@@ -1,28 +1,20 @@
 cd admin
-admin.bat
+call admin.bat
 
 cd ..
-
-cd brand
-brand.bat
-
-cd ..
-
 cd game
-game.bat
+call game.bat
 
 cd ..
+cd brand
+call brand.bat
 
+cd ..
 cd brand-management
-brand-management.bat
+call brand-management.bat
 
 cd ..
-
 cd ingress
-ingress.bat
+call ingress.bat
 
-
-
-
-
-
+cd ..
