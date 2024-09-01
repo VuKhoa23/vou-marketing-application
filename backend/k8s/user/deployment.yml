@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service-deployment
+  template:
+    metadata:
+      labels:
+        app: user-service-deployment
+    spec:
+      containers:
+      - name: user-service-cont
+        image: vukhoa23/user-service:1
+        env:
+          - name: PORT
+            value: "8083"
+          - name: DB_HOST
+            value: "userdb-service.default"
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_USERNAME
+            value: root
+          - name: DB_ROOT_PASSWORD
+            value: root
+          - name: DB_PASSWORD
+            value: root
+          - name: DB_DATABASE
+            value: vouUser

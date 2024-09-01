@@ -1,7 +1,6 @@
-FROM openjdk:17
-
+FROM golang:1.22.5-alpine
 WORKDIR /app
-
-COPY target/user-0.0.1-SNAPSHOT.jar app.jar 
-
-ENTRYPOINT [ "java", "-jar" , "app.jar" ]
+COPY . .
+RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o /out/main ./
+ENTRYPOINT ["/out/main"]
