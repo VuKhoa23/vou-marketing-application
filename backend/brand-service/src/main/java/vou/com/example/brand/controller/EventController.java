@@ -32,7 +32,7 @@ public class EventController {
     }
 
     @GetMapping("find-all")
-    public List<Event> findAll() {
+    public List<EventAndVoucherDTOResponse> findAll() {
         return eventService.findAll();
     }
 

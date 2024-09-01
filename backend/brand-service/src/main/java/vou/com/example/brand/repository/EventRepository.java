@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByNameContaining(String name, Pageable pageable);
-    List<Event> findAllByBrandId(Long brandId);
+    List<Event> findByBrandId(Long brandId);
 }
