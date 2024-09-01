@@ -9,6 +9,8 @@
   - Return the game(s) of an event
 - GET/api/game/:id
   - Get a specific game
+- GET/api/game
+  - Get all games
 ## For questions
 - POST/api/game/create-question - Request : {game_id: $, title: $}
   - Create a question (return question id use for create answers)
