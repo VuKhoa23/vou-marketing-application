@@ -1,12 +1,19 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gamesocket-service/http_helper"
+	"gamesocket-service/redis_client"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/olahol/melody"
 	"time"
+)
+
+var (
+	redisClient *redis.Client = redis_client.InitRedis()
 )
 
 func main() {
@@ -34,6 +41,11 @@ func main() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game not found"))
 		}
 
+		if redisClient.Get(context.Background(), game.ID).Val() == "" {
+			redisClient.Set(context.Background(), game.ID, "exists", time.Hour*100)
+		} else {
+			fmt.Println(redisClient.Get(context.Background(), game.ID).Val())
+		}
 		if game.StartTime.UnixMilli() <= time.Now().UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
 		}
