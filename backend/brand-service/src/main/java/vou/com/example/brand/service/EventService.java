@@ -161,11 +161,11 @@ public class EventService {
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
 
-            eventDTO.setEventId(event.getId());
-            eventDTO.setEventName(event.getName());
-            eventDTO.setEventImageURL(event.getImageURL());
-            eventDTO.setEventStartDate(event.getStartDate());
-            eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setImageURL(event.getImageURL());
+            eventDTO.setStartDate(event.getStartDate());
+            eventDTO.setEndDate(event.getEndDate());
             eventDTO.setBrand(brand);
             eventDTO.setTrivia(event.isTrivia());
             eventDTO.setShaking(event.isShaking());
@@ -195,5 +195,9 @@ public class EventService {
     public Event findById(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
+    }
+
+    public List<Event> findAllByIdIn(List<Long> ids) {
+        return eventRepository.findAllByIdIn(ids);
     }
 }

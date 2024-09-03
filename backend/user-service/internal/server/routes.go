@@ -19,5 +19,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/api/user/get-events-by-brand", s.getEventsByBrandHandler)
 
 	r.POST("/api/user/watchlist/add", s.AddEventToWatchlistHandler)
+	r.GET("/api/user/watchlists", s.ShowWatchlistHandler)
 	return r
 }

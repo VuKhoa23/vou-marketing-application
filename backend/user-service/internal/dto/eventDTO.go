@@ -10,12 +10,12 @@ type Brand struct {
 }
 
 type EventDTO struct {
-	EventId        int    `json:"eventId"`
-	EventName      string `json:"eventName"`
-	EventImageURL  string `json:"eventImageURL"`
-	EventStartDate int64  `json:"eventStartDate"`
-	EventEndDate   int64  `json:"eventEndDate"`
-	Brand          Brand  `json:"brand"`
-	Trivia         bool   `json:"trivia"`
-	Shaking        bool   `json:"shaking"`
+	Id        int    `json:"Id"`
+	Name      string `json:"Name"`
+	ImageURL  string `json:"ImageURL"`
+	StartDate int64  `json:"StartDate"`
+	EndDate   int64  `json:"EndDate"`
+	Brand     Brand  `json:"brand"`
+	Trivia    bool   `json:"trivia"`
+	Shaking   bool   `json:"shaking"`
 }
