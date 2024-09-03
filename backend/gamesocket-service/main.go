@@ -8,7 +8,9 @@ import (
 	"gamesocket-service/redis_client"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/olahol/melody"
+	"os"
 	"time"
 )
 
@@ -90,6 +92,8 @@ func main() {
 			}
 		}()
 	})
-
-	router.Run(":8084")
+	err := router.Run(":" + os.Getenv("PORT"))
+	if err != nil {
+		return
+	}
 }

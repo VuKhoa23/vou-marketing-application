@@ -1,4 +1,4 @@
-package server
+-package server
 
 import (
 	"game-service/internal/model"

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamesocket-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gamesocket-deployment
+  template:
+    metadata:
+      labels:
+        app: gamesocket-deployment
+    spec:
+      containers:
+      - name: gamesocket-cont
+        image: vukhoa23/gamesocket-service:1
+        env:
+        - name: PORT
+          value: "8084"
+        - name: REDIS_URL
+          value: "gameredis-service.default:6379"
+   

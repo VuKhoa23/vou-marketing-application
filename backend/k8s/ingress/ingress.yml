@@ -22,3 +22,17 @@ spec:
             name: brand-service
             port:
               number: 8080
+      - path: /api/game
+        pathType: Prefix
+        backend:
+          service:
+            name: game-service
+            port:
+              number: 8081
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: gamesocket-service
+            port:
+              number: 8084
