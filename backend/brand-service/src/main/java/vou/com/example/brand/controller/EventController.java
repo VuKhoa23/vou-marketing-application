@@ -36,6 +36,11 @@ public class EventController {
         return eventService.findAll();
     }
 
+    @GetMapping("find")
+    public Event findById(@RequestParam Long id) {
+        return eventService.findById(id);
+    }
+
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
             @RequestPart("eventImage") MultipartFile eventImage,
@@ -92,4 +97,6 @@ public class EventController {
         List<EventAndVoucherDTOResponse> result = eventService.findAllByBrandId(brandId);
         return ResponseEntity.ok(result);
     }
+
+
 }

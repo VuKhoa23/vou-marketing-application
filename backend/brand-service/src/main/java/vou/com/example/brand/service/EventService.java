@@ -191,4 +191,9 @@ public class EventService {
 
         return responseDTOList;
     }
+
+    public Event findById(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
+    }
 }

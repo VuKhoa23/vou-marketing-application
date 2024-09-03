@@ -16,5 +16,3 @@ call brand-management.bat
 cd ..
 cd ingress
 call ingress.bat
-
-cd ..
