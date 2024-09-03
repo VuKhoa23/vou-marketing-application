@@ -20,5 +20,10 @@ cd brand-management
 
 cd ..
 
+cd gamesocket
+./gamesocket.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh
