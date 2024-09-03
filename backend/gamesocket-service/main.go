@@ -25,6 +25,7 @@ func main() {
 	router.GET("/ws", func(c *gin.Context) {
 		err := m.HandleRequest(c.Writer, c.Request)
 		if err != nil {
+			fmt.Println(err.Error())
 			return
 		}
 	})
@@ -39,15 +40,26 @@ func main() {
 			_ = s.Close()
 		}
 		game, err := http_helper.GetGameById(id)
-		if err != nil || game.ID == "" {
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		if game.ID == "" {
+			fmt.Println("Game not found")
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game not found"))
 		}
 
-		if redisClient.Get(context.Background(), game.ID).Val() == "" {
-			redisClient.Set(context.Background(), game.ID, "exists", time.Hour*100)
+		cmd := redisClient.Get(context.Background(), game.ID)
+
+		if cmd.Err() != nil {
+			fmt.Println(cmd.Err().Error())
 		} else {
-			fmt.Println(redisClient.Get(context.Background(), game.ID).Val())
+			if cmd.Val() != "" {
+				redisClient.Set(context.Background(), game.ID, "exists", time.Hour*100)
+			} else {
+				fmt.Println(redisClient.Get(context.Background(), game.ID).Val())
+			}
 		}
+
 		if game.StartTime.UnixMilli() <= time.Now().UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
 		}
@@ -55,6 +67,7 @@ func main() {
 		questions, err := http_helper.GetQuestionsByGameId(id)
 
 		if err != nil {
+			fmt.Println(err.Error())
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(500, "Cannot get questions"))
 		}
 
@@ -77,6 +90,7 @@ func main() {
 				data, _ := json.Marshal(questions[i])
 				err := s.Write(data)
 				if err != nil {
+					fmt.Println(err.Error())
 					return
 				}
 				time.Sleep(5 * time.Second)
@@ -92,8 +106,10 @@ func main() {
 			}
 		}()
 	})
+	fmt.Println("env: " + os.Getenv("PORT"))
 	err := router.Run(":" + os.Getenv("PORT"))
 	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 }

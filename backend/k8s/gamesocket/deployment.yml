@@ -14,10 +14,12 @@ spec:
     spec:
       containers:
       - name: gamesocket-cont
-        image: vukhoa23/gamesocket-service:1
+        image: vukhoa23/gamesocket-service:5
         env:
         - name: PORT
           value: "8084"
         - name: REDIS_URL
           value: "gameredis-service.default:6379"
+        - name: GAME_SERVICE_URL
+          value: "http://game-service.default:8081"
    
