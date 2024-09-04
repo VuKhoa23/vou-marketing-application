@@ -4,6 +4,7 @@ import RootLayout from './pages/Root';
 import Home, { loader as eventsLoader } from './pages/Home';
 import GamePage from './pages/GamePage';
 import UserProfile from './pages/UserProfile';
+import TriviaGame from './pages/GamePage/components/TriviaGame';
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,12 @@ const router = createBrowserRouter([
         path: 'game',
         children: [
           { index: true, element: <GamePage /> }
+        ],
+      },
+      {
+        path: 'trivia',
+        children: [
+          { index: true, element: <TriviaGame /> }
         ],
       },
       { path: 'profile', element: <UserProfile /> },

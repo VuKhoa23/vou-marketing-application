@@ -6,15 +6,13 @@ import animation from "./lotties/man-holding-tablet";
 function TriviaGame({ gameId, eventName }) {
     const [gameEnd, setGameEnd] = useState(false);
 
-    const [script, setScript] = useState("Bạn vui lòng chờ một chút nhé!");
+    const [script, setScript] = useState("");
     const [answers, setAnswers] = useState([]);
     const [answered, setAnswered] = useState(false);
 
     const [seconds, setSeconds] = useState(0);
     const [score, setScore] = useState(0);
     const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
-
-    const toast = useToast();
 
     const animOptions = {
         loop: true,
@@ -30,6 +28,7 @@ function TriviaGame({ gameId, eventName }) {
 
         ws.onopen = () => {
             console.log("Connected to the WebSocket server");
+            setScript("Bạn vui lòng chờ một chút nhé!");
         };
 
         ws.onmessage = (event) => {
@@ -58,6 +57,7 @@ function TriviaGame({ gameId, eventName }) {
 
         ws.onclose = (event) => {
             console.log("WebSocket connection closed:", event.reason);
+            setScript("Bạn đã bị mất kết nối với VOU. Hãy thử lại sau nhé.");
         };
 
         ws.onerror = (error) => {
@@ -88,7 +88,7 @@ function TriviaGame({ gameId, eventName }) {
 
             if (answerIndex === correctAnswerIndex) {
                 setScript(`Chính xác!`);
-                setScore(score + 100);
+                setScore(score + 40);
                 setAnswers([]);
             } else {
                 setScript(`Câu trả lời đúng là ${answers[correctAnswerIndex].content}`);
@@ -101,7 +101,7 @@ function TriviaGame({ gameId, eventName }) {
     return (
         <div className="m-10">
             <Heading as="h4" size="lg" textAlign="center" my={4}>
-                Sự kiện: {eventName}
+                Sự kiện: Sự kiện của Grab
             </Heading>
             <div className="flex">
                 <div className="flex-col w-1/5 mr-10">
@@ -151,7 +151,7 @@ function TriviaGame({ gameId, eventName }) {
                     marginTop={"5"}
                 >
                     {answered ? (
-                        <Text fontSize="xl" fontWeight="bold" mb={4}>
+                        <Text fontSize="xl" fontWeight="bold">
                             Vui lòng chờ câu hỏi tiếp theo...
                         </Text>
                     ) : answers.length > 0 ? (
@@ -175,11 +175,11 @@ function TriviaGame({ gameId, eventName }) {
                             ))}
                         </Flex>
                     ) : gameEnd === true ? (
-                        <Text fontSize="xl" fontWeight="bold" mb={4}>
+                        <Text fontSize="xl" fontWeight="bold">
                             Trò chơi đã kết thúc.
                         </Text>
                     ) : (
-                        <Text fontSize="xl" fontWeight="bold" mb={4}>
+                        <Text fontSize="xl" fontWeight="bold">
                             Đang chuẩn bị trò chơi...
                         </Text>
                     )}
@@ -196,7 +196,7 @@ function TriviaGame({ gameId, eventName }) {
                     marginBottom="auto"
                     marginTop={"5"}
                 >
-                    <Text fontSize="xl" fontWeight="bold" mb={4}>
+                    <Text fontSize="xl" fontWeight="bold">
                         {script}
                     </Text>
                 </Box>
