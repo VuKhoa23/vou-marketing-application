@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"gamesocket-service/http_helper"
 	"gamesocket-service/redis_client"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/olahol/melody"
 	"os"
@@ -15,12 +15,14 @@ import (
 )
 
 var (
-	redisClient *redis.Client = redis_client.InitRedis()
+	redisClient = redis_client.InitRedis()
 )
 
 func main() {
 	router := gin.Default()
 	m := melody.New()
+
+	router.Use(cors.Default())
 
 	router.GET("/ws", func(c *gin.Context) {
 		err := m.HandleRequest(c.Writer, c.Request)
@@ -71,10 +73,19 @@ func main() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(500, "Cannot get questions"))
 		}
 
+		instant := s.Request.URL.Query().Get("instant")
+		fmt.Println("Instant: " + instant)
 		go func() {
-			// stop until the start time
-
-			//
+			if instant == "" {
+				// stop until the start time
+				for {
+					if game.StartTime.UnixMilli() <= time.Now().UnixMilli() {
+						break
+					}
+					time.Sleep(time.Second)
+				}
+				//
+			}
 			message := struct {
 				Message string `json:"message"`
 				Code    string `json:"code"`

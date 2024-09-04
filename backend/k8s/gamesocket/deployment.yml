@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gamesocket-cont
-        image: vukhoa23/gamesocket-service:6
+        image: vukhoa23/gamesocket-service:7
         env:
         - name: PORT
           value: "8084"
