@@ -75,8 +75,9 @@ func main() {
 			}
 		}
 
-		startTime := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), game.StartTime.Hour(), game.StartTime.Minute(), 0, game.StartTime.Nanosecond(), time.Now().Location())
-		if startTime.UnixMilli() <= time.Now().UnixMilli() {
+		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
+		startTime := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), game.StartTime.Hour(), game.StartTime.Minute(), 0, game.StartTime.Nanosecond(), loc)
+		if startTime.UnixMilli() <= time.Now().In(loc).UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
 		}
 
