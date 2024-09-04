@@ -1,7 +1,7 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import RootLayout from './pages/Root';
-import Home from './pages/Home';
+import Home, { loader as eventsLoader } from './pages/Home';
 import GamePage from './pages/GamePage';
 import UserProfile from './pages/UserProfile';
 
@@ -10,7 +10,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <RootLayout />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <Home />, loader: eventsLoader },
       {
         path: 'game',
         children: [
