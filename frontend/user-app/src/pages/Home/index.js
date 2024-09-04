@@ -2,21 +2,21 @@ function Home() {
     return (
         <div className="flex-col">
             <a href="/game">
-                <div className="card bg-base-100 w-96 shadow-xl my-5 mx-10">
+                <div className="card bg-base-100 w-96 shadow-xl mx-10">
                     <figure>
                         <img
-                            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                            src="https://vcdn1-kinhdoanh.vnecdn.net/2020/12/12/Grab-settop-01_1607740624.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=CsnyXdfpv8CUAIYVUWpB6g"
                             alt="Shoes" />
                     </figure>
                     <div className="card-body">
                         <h2 className="card-title">
-                            New event
+                            Sự kiện của Grab
                             <div className="badge badge-secondary">NEW</div>
                         </h2>
-                        <p>Click here to join game</p>
+                        <p>Tham gia ngay!</p>
                         <div className="card-actions justify-end">
-                            <div className="badge badge-outline">Shaker</div>
-                            <div className="badge badge-outline">Vouchers</div>
+                            <div className="badge badge-outline">Trivia</div>
+                            <div className="badge badge-outline">Grab Voucher</div>
                         </div>
                     </div>
                 </div>

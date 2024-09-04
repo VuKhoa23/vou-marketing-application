@@ -1,6 +1,8 @@
+import TriviaGame from "./components/TriviaGame";
+
 function GamePage() {
     return (
-        <div>A game goes here</div>
+        <TriviaGame />
     );
 }
 

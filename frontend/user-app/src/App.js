@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import GamePage from './pages/GamePage';
 import UserProfile from './pages/UserProfile';
 
-
 const router = createBrowserRouter([
   {
     path: '/',
