@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"gamesocket-service/http_helper"
 	"gamesocket-service/redis_client"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/olahol/melody"
@@ -18,11 +17,25 @@ var (
 	redisClient = redis_client.InitRedis()
 )
 
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func main() {
 	router := gin.Default()
 	m := melody.New()
-
-	router.Use(cors.Default())
+	router.Use(corsMiddleware())
 
 	router.GET("/ws", func(c *gin.Context) {
 		err := m.HandleRequest(c.Writer, c.Request)
