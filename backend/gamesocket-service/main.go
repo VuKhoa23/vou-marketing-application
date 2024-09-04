@@ -93,7 +93,8 @@ func main() {
 					fmt.Println(err.Error())
 					return
 				}
-				time.Sleep(5 * time.Second)
+				// send question every 15s
+				time.Sleep(15 * time.Second)
 				if i+1 == len(questions) {
 					message.Message = "Game ended"
 					message.Code = "GAME_ENDED"
