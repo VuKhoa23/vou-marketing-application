@@ -75,7 +75,8 @@ func main() {
 			}
 		}
 
-		if game.StartTime.UnixMilli() <= time.Now().UnixMilli() {
+		startTime := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), game.StartTime.Hour(), game.StartTime.Minute(), 0, game.StartTime.Nanosecond(), time.Now().Location())
+		if startTime.UnixMilli() <= time.Now().UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
 		}
 
@@ -92,9 +93,12 @@ func main() {
 			if instant == "" {
 				// stop until the start time
 				for {
-					if game.StartTime.UnixMilli() <= time.Now().UnixMilli() {
+					if startTime.UnixMilli() <= time.Now().UnixMilli() {
 						break
 					}
+					fmt.Println(startTime.UnixMilli())
+					fmt.Println(time.Now().UnixMilli())
+					fmt.Println(startTime.UnixMilli() - time.Now().UnixMilli())
 					time.Sleep(time.Second)
 				}
 				//
