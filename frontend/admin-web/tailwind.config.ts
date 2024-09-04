@@ -43,7 +43,7 @@ const config: Config = {
           },
         },
       ],
-    darkTheme: "light"
+    darkTheme: "mytheme"
   },
 };
 
