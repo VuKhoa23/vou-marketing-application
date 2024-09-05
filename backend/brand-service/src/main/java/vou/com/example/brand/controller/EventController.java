@@ -73,11 +73,10 @@ public class EventController {
         return ResponseEntity.ok("{\"message\": \"Add event and voucher successfully!\"}");
     }
 
-    @PostMapping("update")
+    @PutMapping("update")
     public ResponseEntity<String> updateEvent(@RequestParam Long eventId,
-                                           @RequestPart(value = "fileURL") MultipartFile fileURL,
-                                           @ModelAttribute (value = "eventDTO")  EventDTO eventDTO){
-        eventService.updateEvent(eventId, fileURL, eventDTO);
+                                           @RequestBody EventDTO eventDTO){
+        eventService.updateEvent(eventId, eventDTO);
         return ResponseEntity.ok("Event updated successfully!");
     }
 

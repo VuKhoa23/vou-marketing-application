@@ -133,16 +133,13 @@ public class EventService {
         return eventRepository.findByNameContaining(name, pageable);
     }
 
-    public void updateEvent(Long eventId, MultipartFile fileURL, EventDTO eventDTO){
+    public void updateEvent(Long eventId, EventDTO eventDTO){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));;
-
-        String filePath = uploadFile(fileURL);
 
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setImageURL(filePath);
 
         eventRepository.save(event);
     }

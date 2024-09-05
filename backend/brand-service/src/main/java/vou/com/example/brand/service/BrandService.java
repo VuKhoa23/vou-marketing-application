@@ -10,6 +10,7 @@ import vou.com.example.brand.dto.request.QuestionWithAnswerDTORequest;
 import vou.com.example.brand.dto.response.GameDTOResponse;
 import vou.com.example.brand.dto.response.QuestionDTOResponse;
 import vou.com.example.brand.entity.Brand;
+import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
 
 import java.util.List;
@@ -46,6 +47,10 @@ public class BrandService {
 
     public List<Brand> findAll(){
         return brandRepository.findAll();
+    }
+    public Brand findById(Long brandId){
+        return brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
     }
 
     public String getGame(String gameId) {
