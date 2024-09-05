@@ -10,6 +10,7 @@ import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
 import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
+import vou.com.example.brand.repository.EventRepository;
 import vou.com.example.brand.repository.VoucherRepository;
 
 import java.io.File;
@@ -23,10 +24,15 @@ public class VoucherService {
     private static final String VOLUME_PATH = "";
     private VoucherRepository voucherRepository;
     private BrandRepository brandRepository;
+    private EventRepository eventRepository;
 
     @Autowired
-    public VoucherService(VoucherRepository voucherRepository){
+    public VoucherService(VoucherRepository voucherRepository,
+                          EventRepository eventRepository,
+                          BrandRepository brandRepository){
         this.voucherRepository = voucherRepository;
+        this.brandRepository = brandRepository;
+        this.eventRepository = eventRepository;
     }
 
     private File convertMultipartFileToFile(MultipartFile file) throws IOException {
@@ -97,5 +103,14 @@ public class VoucherService {
         voucherRepository.save(voucher);
 
         return voucher;
+    }
+
+    public Integer getTotalVouchersByBrand(Long brandId){
+        List<Event> events = eventRepository.findAllByBrandId(brandId);
+        List<Voucher> vouchers = voucherRepository.findByEventIn(events);
+
+        return vouchers.stream()
+                .mapToInt(Voucher::getVoucherQuantities)
+                .sum();
     }
 }

@@ -36,4 +36,9 @@ public class VoucherController {
     public Voucher updateVoucher(@RequestParam Long voucherId, @RequestParam int quantities){
         return voucherService.updateVoucherQuantities(voucherId, quantities);
     }
+
+    @GetMapping("quantities")
+    public Integer getTotalVoucherQuantities(@RequestParam Long brandId) {
+        return voucherService.getTotalVouchersByBrand(brandId);
+    }
 }
