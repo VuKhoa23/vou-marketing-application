@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     Optional<Voucher> findById(Long id);
     Voucher findByEvent(Event event);
+    List<Voucher> findByEventIn(List<Event> events);
 }

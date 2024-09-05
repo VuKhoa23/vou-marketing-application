@@ -24,6 +24,11 @@ public class BrandController {
         return brandService.findAll();
     }
 
+    @GetMapping("find")
+    public Brand findById(@RequestParam Long brandId){
+        return brandService.findById(brandId);
+    }
+
     @GetMapping("/get-game")
     public String getGame(@RequestParam String gameId) {
         return brandService.getGame(gameId);
@@ -37,21 +42,5 @@ public class BrandController {
     @PostMapping("/create-question-with-answers")
     public String createQuestionWithAnswers(@RequestBody CreateQuestionWithAnswersDTORequest createQuestionWithAnswersDTORequest) {
         return brandService.createQuestionAndAnswers(createQuestionWithAnswersDTORequest);
-    }
-
-
-//    @PostMapping("/create-question")
-//    public QuestionDTOResponse createQuestion(@RequestBody QuestionDTORequest questionDTORequest) {
-//        return brandService.createQuestion(questionDTORequest);
-//    }
-
-//    @PostMapping("/create-answer")
-//    public String createAnswer(@RequestBody QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
-//        return brandService.createAnswer(questionWithAnswerDTORequest);
-//    }
-
-    @GetMapping("hello")
-    public String sayHello(){
-        return "hello world";
     }
 }
