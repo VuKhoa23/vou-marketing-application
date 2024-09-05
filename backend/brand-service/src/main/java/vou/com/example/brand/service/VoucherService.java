@@ -88,4 +88,14 @@ public class VoucherService {
 
         voucherRepository.save(voucher);
     }
+
+    public Voucher updateVoucherQuantities(Long voucherId, int quantities) {
+        Voucher voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
+
+        voucher.setVoucherQuantities(quantities);
+        voucherRepository.save(voucher);
+
+        return voucher;
+    }
 }

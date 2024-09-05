@@ -31,4 +31,9 @@ public class VoucherController {
                            @ModelAttribute VoucherDTO voucherDTO){
         voucherService.addVoucher(brandId, voucherQR, voucherImage, voucherDTO);
     }
+
+    @PutMapping("update")
+    public Voucher updateVoucher(@RequestParam Long voucherId, @RequestParam int quantities){
+        return voucherService.updateVoucherQuantities(voucherId, quantities);
+    }
 }
