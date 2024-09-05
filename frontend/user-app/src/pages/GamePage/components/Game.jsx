@@ -1,9 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../style/index.css';
-import { Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton, Text } from '@chakra-ui/react';
 import { BiCoin } from 'react-icons/bi';
-import { FaFacebook, FaUserFriends, FaArrowRight, FaPlus } from 'react-icons/fa';
+import { FaFacebook, FaUserFriends, FaTicketAlt, FaPlus } from 'react-icons/fa';
+import { useDisclosure, Text, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton } from '@chakra-ui/react';
+import VoucherModal from './ExchangeVoucher';
 
+const DUMMY_VOUCHER = {
+    image: "/voucher1.png",
+    description: "Voucher giảm giá nhân sự kiện khai trương chi nhánh mới",
+    value: "30%",
+    endDate: "30-10-2024"
+}
 
 function Game() {
     const [isShaking, setIsShaking] = useState(false);
@@ -18,6 +25,7 @@ function Game() {
     const bonusSectionRef = useRef(null);
     const alertRef = useRef(null);
 
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleShake = () => {
         if (attemp > 0) {
@@ -133,8 +141,10 @@ function Game() {
                     <Box className='flex justify-end items-center rounded-full border-4 border-black px-4 py-2 mt-3 bg-blue-200'>
                         <strong className="mr-auto">Quy đổi voucher</strong>
                         <button
-                            className='rounded-full w-10 h-10 flex items-center justify-center bru-shadow game-btn bg-teal-200'>
-                            <FaArrowRight />
+                            className='rounded-full w-10 h-10 flex items-center justify-center bru-shadow game-btn bg-teal-200'
+                            onClick={onOpen}
+                        >
+                            <FaTicketAlt />
                         </button>
                     </Box>
                 </Box>
@@ -193,6 +203,12 @@ function Game() {
                     </Alert>
                 </Box>
             )}
+
+            <VoucherModal
+                isOpen={isOpen}
+                onClose={onClose}
+                voucher={DUMMY_VOUCHER}
+            />
         </Box>
     );
 }

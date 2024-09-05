@@ -75,3 +75,23 @@
 .video-container {
     box-shadow: 5px 5px 0px #000;
 }
+
+/* Nút tam giác hướng lên */
+.triangle-up {
+    border-bottom: 30px solid #fbcfe8;
+    border-right: 15px solid transparent;
+    border-left: 15px solid transparent;
+    width: 30px;
+    height: 30px;
+    margin-bottom: 5px;
+}
+
+/* Nút tam giác hướng xuống */
+.triangle-down {
+    border-top: 30px solid #fbcfe8;
+    border-right: 15px solid transparent;
+    border-left: 15px solid transparent;
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+}

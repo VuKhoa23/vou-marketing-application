@@ -1,6 +1,7 @@
 import { Flex, Box, Avatar, Grid, GridItem, Text } from '@chakra-ui/react';
 import Stat from './components/Stat';
 import EditableForm from './components/ContactInfo';
+import Cooperation from './components/Cooperation';
 
 function VendorProfile() {
     return (
@@ -29,8 +30,8 @@ function VendorProfile() {
                     </GridItem>
                 </GridItem>
 
-                <GridItem colSpan={3} rowSpan={2} bg='white' mr={100}  borderRadius="1rem"> 
-                    
+                <GridItem colSpan={3} rowSpan={2} bg='white' mr={100} borderRadius="1rem"  >
+                    <Cooperation />
                 </GridItem>
 
             </Grid>
