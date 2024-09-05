@@ -43,7 +43,7 @@ public class VoucherService {
         return convertFile;
     }
 
-    private String generateFileName(MultipartFile file){
+    private String generateFileName(MultipartFile file) {
         return new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
     }
 
@@ -74,11 +74,11 @@ public class VoucherService {
         return fileURL;
     }
 
-    public List<Voucher> findAll(){
+    public List<Voucher> findAll() {
         return voucherRepository.findAll();
     }
 
-    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO){
+    public void addVoucher(Long brandId, MultipartFile voucherQR, MultipartFile voucherImage, VoucherDTO voucherDTO) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
@@ -94,7 +94,6 @@ public class VoucherService {
 
         voucherRepository.save(voucher);
     }
-
     public Voucher updateVoucherQuantities(Long voucherId, int quantities) {
         Voucher voucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
@@ -114,3 +113,4 @@ public class VoucherService {
                 .sum();
     }
 }
+

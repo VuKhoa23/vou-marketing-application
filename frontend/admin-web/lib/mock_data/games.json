@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "name": "Lắc Xì",
+        "type": "Trò chơi lắc đổi quà",
+        "allowsTrade": true,
+        "instructions": "Hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn..."
+    },
+    {
+        "id": 2,
+        "name": "Cahoot",
+        "type": "Trò chơi trivia",
+        "allowsTrade": false,
+        "instructions": "Hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn..."
+    }
+]

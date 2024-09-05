@@ -1,12 +1,24 @@
 cd admin
-admin.bat
+call admin.bat
 
 cd ..
-
-cd trivia-game
-game.bat
+cd game
+call game.bat
 
 cd ..
+cd brand
+call brand.bat
 
+cd ..
+cd brand-management
+call brand-management.bat
+
+cd ..
+cd gamesocket
+call gamesocket.bat
+
+cd ..
 cd ingress
-ingress.bat
+call ingress.bat
+
+cd ..

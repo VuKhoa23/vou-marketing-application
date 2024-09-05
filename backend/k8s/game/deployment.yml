@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: game-service-cont
-        image: vukhoa23/game-service:test-1
+        image: vukhoa23/game-service:1
         env:
         - name: PORT
           value: "8081"

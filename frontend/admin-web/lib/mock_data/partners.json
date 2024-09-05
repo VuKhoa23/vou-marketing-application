@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Công ty A",
+        "industry": "Công nghệ",
+        "address": "227 Nguyễn Văn Cừ, Quận 5",
+        "long": "106.123456",
+        "lat": "10.123456",
+        "isActivated": true
+    },
+    {
+        "id": 2,
+        "name": "Công ty B",
+        "industry": "Fintech",
+        "address": "227 Nguyễn Văn Cừ, Quận 5",
+        "long": "106.123456",
+        "lat": "10.123456",
+        "isActivated": true
+    },
+    {
+        "id": 3,
+        "name": "Công ty C",
+        "industry": "F&B",
+        "address": "227 Nguyễn Văn Cừ, Quận 5",
+        "long": "106.123456",
+        "lat": "10.123456",
+        "isActivated": true
+    },
+    {
+        "id": 4,
+        "name": "Công ty D",
+        "industry": "Y tế",
+        "address": "227 Nguyễn Văn Cừ, Quận 5",
+        "long": "106.123456",
+        "lat": "10.123456",
+        "isActivated": true
+    }
+]

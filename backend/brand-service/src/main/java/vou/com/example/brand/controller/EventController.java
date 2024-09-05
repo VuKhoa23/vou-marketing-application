@@ -27,19 +27,19 @@ public class EventController {
     }
 
     @GetMapping("hello")
-    public void sayHello(){
+    public void sayHello() {
         System.out.println("Hello my friend");
     }
 
     @GetMapping("find-all")
-    public List<Event> findAll(){
+    public List<EventAndVoucherDTOResponse> findAll() {
         return eventService.findAll();
     }
 
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
-                                           @RequestPart("eventImage") MultipartFile eventImage,
-                                           @RequestPart("eventDTO") EventDTO eventDTO){
+            @RequestPart("eventImage") MultipartFile eventImage,
+            @RequestPart("eventDTO") EventDTO eventDTO) {
         System.out.println("Received brandId: " + brandId);
         System.out.println("Received file: " + eventImage.getOriginalFilename());
         System.out.println("Received eventDTO: " + eventDTO);
@@ -47,22 +47,23 @@ public class EventController {
         return ResponseEntity.ok("Event added successfully!");
     }
 
-//    @PostMapping("add/event-and-voucher")
-//    public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-//                                           @RequestPart("eventImage") MultipartFile eventImage,
-//                                           @RequestPart ("eventDTO") EventDTO eventDTO,
-//                                           @RequestPart("voucherImage") MultipartFile voucherImage,
-//                                           @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
-//        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
-//        return ResponseEntity.ok("Event and voucher added successfully!");
-//    }
+    // @PostMapping("add/event-and-voucher")
+    // public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
+    // @RequestPart("eventImage") MultipartFile eventImage,
+    // @RequestPart ("eventDTO") EventDTO eventDTO,
+    // @RequestPart("voucherImage") MultipartFile voucherImage,
+    // @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
+    // eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage,
+    // voucherDTO);
+    // return ResponseEntity.ok("Event and voucher added successfully!");
+    // }
 
     @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-                                                     @RequestPart("eventImage") MultipartFile eventImage,
-                                                     @RequestPart ("eventDTO") String eventDTOString,
-                                                     @RequestPart("voucherImage") MultipartFile voucherImage,
-                                                     @RequestPart ("voucherDTO") String voucherDTOString) throws JsonProcessingException {
+            @RequestPart("eventImage") MultipartFile eventImage,
+            @RequestPart("eventDTO") String eventDTOString,
+            @RequestPart("voucherImage") MultipartFile voucherImage,
+            @RequestPart("voucherDTO") String voucherDTOString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         EventDTO eventDTO = objectMapper.readValue(eventDTOString, EventDTO.class);
         VoucherDTO voucherDTO = objectMapper.readValue(voucherDTOString, VoucherDTO.class);
@@ -81,7 +82,7 @@ public class EventController {
     }
 
     @GetMapping("search/find-by-name-containing")
-    public Page<Event> findByNameContaining(@RequestParam("name") String name, Pageable pageable){
+    public Page<Event> findByNameContaining(@RequestParam("name") String name, Pageable pageable) {
         return eventService.findByNameContaining(name, pageable);
     }
 

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userdb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userdb-deployment
+  template:
+    metadata:
+      labels:
+        app: userdb-deployment
+    spec:
+      containers:
+      - name: userdb-cont
+        image: mysql:8.4.1
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        volumeMounts:
+        - name: userdb-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: user-initdb
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: userdb-persistent-storage
+        persistentVolumeClaim:
+          claimName: userdb-pvc
+      - name: user-initdb
+        configMap:
+          name: user-initdb-config

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gameredis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gameredis-deployment
+  template:
+    metadata:
+      labels:
+        app: gameredis-deployment
+    spec:
+      containers:
+      - name: gameredis-cont
+        image: redis:6-alpine
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+   

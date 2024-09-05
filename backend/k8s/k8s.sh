@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd admin
-./admin.sh
+cd brand
+./brand.sh
 
 cd .. 
 
@@ -10,13 +10,18 @@ cd game
 
 cd ..
 
-cd brand
-./brand.sh
+cd admin
+./admin.sh
 
 cd ..
 
 cd brand-management
 ./brand-management.sh
+
+cd ..
+
+cd gamesocket
+./gamesocket.sh
 
 cd ..
 

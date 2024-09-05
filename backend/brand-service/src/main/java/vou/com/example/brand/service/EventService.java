@@ -144,16 +144,12 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public List<Event> findAll(){
-        return eventRepository.findAll();
-    }
-
     public List<EventAndVoucherDTOResponse> findAllByBrandId(Long brandId) {
         List<EventAndVoucherDTOResponse> responseDTOList = new ArrayList<>();
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        List<Event> events = eventRepository.findAllByBrandId(brandId);
+        List<Event> events = eventRepository.findByBrandId(brandId);
 
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
@@ -163,7 +159,45 @@ public class EventService {
             eventDTO.setEventImageURL(event.getImageURL());
             eventDTO.setEventStartDate(event.getStartDate());
             eventDTO.setEventEndDate(event.getEndDate());
-            eventDTO.setBrand(brand);
+            eventDTO.setTrivia(event.isTrivia());
+            eventDTO.setShaking(event.isShaking());
+
+            VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
+            Voucher voucher = voucherRepository.findByEvent(event);
+            if(voucher != null){
+                voucherDTO.setVoucherId(voucher.getId());
+                voucherDTO.setVoucherImageURL(voucher.getImageURL());
+                voucherDTO.setVoucherValue(voucher.getValue());
+                voucherDTO.setVoucherDescription(voucher.getDescription());
+                voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherEndDate(voucher.getEndDate());
+                voucherDTO.setVoucherStatus(voucher.isStatus());
+            }
+
+            EventAndVoucherDTOResponse responseDTO = new EventAndVoucherDTOResponse();
+            responseDTO.setEvent(eventDTO);
+            responseDTO.setVoucher(voucherDTO);
+
+            responseDTOList.add(responseDTO);
+        }
+
+        return responseDTOList;
+    }
+
+    public List<EventAndVoucherDTOResponse> findAll() {
+        List<EventAndVoucherDTOResponse> responseDTOList = new ArrayList<>();
+
+        List<Event> events = eventRepository.findAll();
+
+        for (Event event : events) {
+            EventDTOResponse eventDTO = new EventDTOResponse();
+
+            eventDTO.setEventId(event.getId());
+            eventDTO.setEventName(event.getName());
+            eventDTO.setEventImageURL(event.getImageURL());
+            eventDTO.setEventStartDate(event.getStartDate());
+            eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setBrand(event.getBrand());
             eventDTO.setTrivia(event.isTrivia());
             eventDTO.setShaking(event.isShaking());
 
