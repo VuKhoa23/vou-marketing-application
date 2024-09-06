@@ -7,11 +7,11 @@ import java.util.Date;
 
 @Data
 public class EventDTOResponse {
-    long eventId;
-    String eventName;
-    String eventImageURL;
-    Date eventStartDate;
-    Date eventEndDate;
+    long id;
+    String name;
+    String imageURL;
+    Date startDate;
+    Date endDate;
     Brand brand;
     boolean isTrivia;
     boolean isShaking;

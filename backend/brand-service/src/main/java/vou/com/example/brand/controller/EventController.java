@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vou.com.example.brand.dto.EventDTO;
+import vou.com.example.brand.dto.IdsDTO;
 import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.dto.response.EventAndVoucherDTOResponse;
 import vou.com.example.brand.entity.Event;
@@ -36,6 +37,17 @@ public class EventController {
         return eventService.findAll();
     }
 
+    @PostMapping("find-by-ids")
+    public List<Event> findAllByIdIn(@RequestBody IdsDTO idsDTO) {
+        List<Long> ids = idsDTO.getIds();
+        return eventService.findAllByIdIn(ids);
+    }
+
+    @GetMapping("find")
+    public Event findById(@RequestParam Long id) {
+        return eventService.findById(id);
+    }
+
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
             @RequestPart("eventImage") MultipartFile eventImage,
@@ -46,17 +58,6 @@ public class EventController {
         eventService.addEvent(brandId, eventImage, eventDTO);
         return ResponseEntity.ok("Event added successfully!");
     }
-
-    // @PostMapping("add/event-and-voucher")
-    // public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-    // @RequestPart("eventImage") MultipartFile eventImage,
-    // @RequestPart ("eventDTO") EventDTO eventDTO,
-    // @RequestPart("voucherImage") MultipartFile voucherImage,
-    // @RequestPart ("voucherDTO") VoucherDTO voucherDTO){
-    // eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage,
-    // voucherDTO);
-    // return ResponseEntity.ok("Event and voucher added successfully!");
-    // }
 
     @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
