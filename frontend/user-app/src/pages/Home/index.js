@@ -84,13 +84,13 @@ function Home() {
                     {(resolvedEvents) => (
                         <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
                             {resolvedEvents.map((event) => (
-                                <li key={event.event.eventId} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
                                     <Event
-                                        id={event.event.eventId}
-                                        image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.eventImageURL)}`}
-                                        name={event.event.eventName}
-                                        startDate={formatDate(event.event.eventStartDate)}
-                                        endDate={formatDate(event.event.eventEndDate)}
+                                        id={event.event.id}
+                                        //image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.imageURL)}`}
+                                        name={event.event.name}
+                                        startDate={formatDate(event.event.startDate)}
+                                        endDate={formatDate(event.event.endDate)}
                                         brand={event.event.brand.username}
                                         voucher={event.voucher.voucherQuantities}
                                     />
@@ -100,6 +100,7 @@ function Home() {
                     )}
                 </Await>
             </Suspense>
+
 
             {selectedEvent && (
                 <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -112,20 +113,20 @@ function Home() {
                             <Flex>
                                 <Box flex="1" p={4}>
                                     <Image
-                                        src={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(selectedEvent.event.eventImageURL)}`}
-                                        //alt={selectedEvent.event.eventName}
+                                        //src={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(selectedEvent.event.imageURL)}`}
+                                        //alt={selectedEvent.event.name}
                                         borderRadius="md"
                                         boxSize="100%"
                                         objectFit="cover"
                                     />
                                 </Box>
                                 <Box flex="1" p={4}>
-                                    <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.event.eventName}</Text>
+                                    <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.event.name}</Text>
                                     <Text fontSize="md" mb={4}>{selectedEvent.voucher.voucherDescription}</Text>
                                     <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucher.voucherQuantities}</Text>
                                     <Text fontSize="sm" mb={2}>Loại trò chơi: {getGameType(selectedEvent.event)}</Text>
-                                    <Text fontSize="sm" mb={2}>Ngày bắt đầu: {formatDate(selectedEvent.event.eventStartDate)}</Text>
-                                    <Text fontSize="sm" mb={2}>Ngày kết thúc: {formatDate(selectedEvent.event.eventEndDate)}</Text>
+                                    <Text fontSize="sm" mb={2}>Ngày bắt đầu: {formatDate(selectedEvent.event.startDate)}</Text>
+                                    <Text fontSize="sm" mb={2}>Ngày kết thúc: {formatDate(selectedEvent.event.endDate)}</Text>
                                     <Text fontSize="sm">Thương hiệu: {selectedEvent.event.brand.username}</Text>
                                 </Box>
                             </Flex>
@@ -154,7 +155,7 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://127.0.0.1/api/brand/event/events-and-vouchers?brandId=1');
+    const response = await fetch('http://localhost:8080/api/brand/event/find-all');
     if (!response.ok) {
         throw json(
             { message: 'Could not fetch events.' },
@@ -163,6 +164,7 @@ async function loadEvents() {
     }
     else {
         const resData = await response.json();
+        console.log(resData);
         return resData;
     }
 }
