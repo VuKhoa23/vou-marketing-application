@@ -142,7 +142,6 @@ public class EventService {
         event.setEndDate(eventDTO.getEndDate());
         event.setTrivia(eventDTO.isTrivia());
         event.setShaking(eventDTO.isShaking());
-        event.setShaking(eventDTO.isShaking());
 
         eventRepository.save(event);
     }
