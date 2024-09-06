@@ -3,6 +3,8 @@ package vou.com.example.brand.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "brand")
 @Data

@@ -133,22 +133,17 @@ public class EventService {
         return eventRepository.findByNameContaining(name, pageable);
     }
 
-    public void updateEvent(Long eventId, MultipartFile fileURL, EventDTO eventDTO){
+    public void updateEvent(Long eventId, EventDTO eventDTO){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));;
-
-        String filePath = uploadFile(fileURL);
 
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setImageURL(filePath);
+        event.setTrivia(event.isTrivia());
+        event.setShaking(event.isShaking());
 
         eventRepository.save(event);
-    }
-
-    public List<Event> findAll(){
-        return eventRepository.findAll();
     }
 
     public List<EventAndVoucherDTOResponse> findAllByBrandId(Long brandId) {
@@ -161,12 +156,11 @@ public class EventService {
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
 
-            eventDTO.setId(event.getId());
-            eventDTO.setName(event.getName());
-            eventDTO.setImageURL(event.getImageURL());
-            eventDTO.setStartDate(event.getStartDate());
-            eventDTO.setEndDate(event.getEndDate());
-            eventDTO.setBrand(brand);
+            eventDTO.setEventId(event.getId());
+            eventDTO.setEventName(event.getName());
+            eventDTO.setEventImageURL(event.getImageURL());
+            eventDTO.setEventStartDate(event.getStartDate());
+            eventDTO.setEventEndDate(event.getEndDate());
             eventDTO.setTrivia(event.isTrivia());
             eventDTO.setShaking(event.isShaking());
 
@@ -192,12 +186,42 @@ public class EventService {
         return responseDTOList;
     }
 
-    public Event findById(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Event not found with id: " + id));
-    }
+    public List<EventAndVoucherDTOResponse> findAll() {
+        List<EventAndVoucherDTOResponse> responseDTOList = new ArrayList<>();
 
-    public List<Event> findAllByIdIn(List<Long> ids) {
-        return eventRepository.findAllByIdIn(ids);
+        List<Event> events = eventRepository.findAll();
+
+        for (Event event : events) {
+            EventDTOResponse eventDTO = new EventDTOResponse();
+
+            eventDTO.setEventId(event.getId());
+            eventDTO.setEventName(event.getName());
+            eventDTO.setEventImageURL(event.getImageURL());
+            eventDTO.setEventStartDate(event.getStartDate());
+            eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setBrand(event.getBrand());
+            eventDTO.setTrivia(event.isTrivia());
+            eventDTO.setShaking(event.isShaking());
+
+            VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
+            Voucher voucher = voucherRepository.findByEvent(event);
+            if(voucher != null){
+                voucherDTO.setVoucherId(voucher.getId());
+                voucherDTO.setVoucherImageURL(voucher.getImageURL());
+                voucherDTO.setVoucherValue(voucher.getValue());
+                voucherDTO.setVoucherDescription(voucher.getDescription());
+                voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherEndDate(voucher.getEndDate());
+                voucherDTO.setVoucherStatus(voucher.isStatus());
+            }
+
+            EventAndVoucherDTOResponse responseDTO = new EventAndVoucherDTOResponse();
+            responseDTO.setEvent(eventDTO);
+            responseDTO.setVoucher(voucherDTO);
+
+            responseDTOList.add(responseDTO);
+        }
+
+        return responseDTOList;
     }
 }

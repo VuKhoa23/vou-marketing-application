@@ -2,11 +2,8 @@ package vou.com.example.brand.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import vou.com.example.brand.dto.request.GameDTORequest;
-import vou.com.example.brand.dto.request.QuestionDTORequest;
-import vou.com.example.brand.dto.request.QuestionWithAnswerDTORequest;
+import vou.com.example.brand.dto.request.*;
 import vou.com.example.brand.dto.response.GameDTOResponse;
-import vou.com.example.brand.dto.response.QuestionDTOResponse;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.service.BrandService;
 
@@ -27,6 +24,11 @@ public class BrandController {
         return brandService.findAll();
     }
 
+    @GetMapping("find")
+    public Brand findById(@RequestParam Long brandId){
+        return brandService.findById(brandId);
+    }
+
     @GetMapping("/get-game")
     public String getGame(@RequestParam String gameId) {
         return brandService.getGame(gameId);
@@ -37,18 +39,8 @@ public class BrandController {
         return brandService.createGame(gameDTORequest);
     }
 
-    @PostMapping("/create-question")
-    public QuestionDTOResponse createQuestion(@RequestBody QuestionDTORequest questionDTORequest) {
-        return brandService.createQuestion(questionDTORequest);
-    }
-
-    @PostMapping("/create-answer")
-    public String createAnswer(@RequestBody QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
-        return brandService.createAnswer(questionWithAnswerDTORequest);
-    }
-
-    @GetMapping("hello")
-    public String sayHello(){
-        return "hello world";
+    @PostMapping("/create-question-with-answers")
+    public String createQuestionWithAnswers(@RequestBody CreateQuestionWithAnswersDTORequest createQuestionWithAnswersDTORequest) {
+        return brandService.createQuestionAndAnswers(createQuestionWithAnswersDTORequest);
     }
 }

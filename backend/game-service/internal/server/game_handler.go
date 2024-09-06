@@ -11,17 +11,25 @@ import (
 	"time"
 )
 
-func (s *Server) getGameHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Game Get Id: " + c.Param("id"),
-	})
-}
-
 type GameReq struct {
 	ID        primitive.ObjectID `json:"id,omitempty"`
 	EventId   int                `json:"event_id,omitempty"`
 	StartTime *string            `json:"start_time"`
 	Type      *string            `json:"type"`
+}
+
+func (s *Server) getGameHandler(c *gin.Context) {
+	id := c.Param("id")
+	game, err := repository.GetGameById(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": game,
+	})
 }
 
 // POST - /api/game
@@ -66,6 +74,21 @@ func (s *Server) getGameByEventIdHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("eventId"))
 	var games []model.Game
 	games, err := repository.GetAllGamesByEventId(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot get all games: " + err.Error(),
+		})
+		return
+	}
+	if len(games) == 0 {
+		c.JSON(http.StatusOK, make([]string, 0))
+	}
+	c.JSON(http.StatusOK, games)
+}
+
+func (s *Server) getAllGames(c *gin.Context) {
+	var games []model.Game
+	games, err := repository.GetAllGames()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Cannot get all games: " + err.Error(),

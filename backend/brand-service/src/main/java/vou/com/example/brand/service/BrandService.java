@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import vou.com.example.brand.dto.request.GameDTORequest;
-import vou.com.example.brand.dto.request.QuestionDTORequest;
-import vou.com.example.brand.dto.request.QuestionWithAnswerDTORequest;
+import vou.com.example.brand.dto.request.*;
 import vou.com.example.brand.dto.response.GameDTOResponse;
 import vou.com.example.brand.dto.response.QuestionDTOResponse;
 import vou.com.example.brand.entity.Brand;
+import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class BrandService {
     private BrandRepository brandRepository;
     private RestTemplate restTemplate;
 
-    private static final String gameURL = "http://127.0.0.1:40950/api/game";
+    private static final String gameURL = "http://127.0.0.1:6724/api/game";
     private static final String createGameURL = gameURL;
     private static final String createQuestionURL = gameURL + "/create-question";
     private static final String createAnswerURL = gameURL + "/create-answers";
@@ -47,6 +46,10 @@ public class BrandService {
     public List<Brand> findAll(){
         return brandRepository.findAll();
     }
+    public Brand findById(Long brandId){
+        return brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
+    }
 
     public String getGame(String gameId) {
         return restTemplate.getForObject(createGameURL + "/" + gameId, String.class);
@@ -57,13 +60,26 @@ public class BrandService {
         return restTemplate.postForObject(createGameURL, gameDTORequest, GameDTOResponse.class);
     }
 
-    public QuestionDTOResponse createQuestion(QuestionDTORequest questionDTORequest) {
-        System.out.println("Sending request to game service: " + questionDTORequest);
-        return restTemplate.postForObject(createQuestionURL, questionDTORequest, QuestionDTOResponse.class);
-    }
+    public String createQuestionAndAnswers(CreateQuestionWithAnswersDTORequest createQuestionWithAnswersDTORequest) {
+        QuestionDTOResponse questionResponse = restTemplate.postForObject(createQuestionURL, createQuestionWithAnswersDTORequest.getQuestionDTORequest(), QuestionDTOResponse.class);
 
-    public String createAnswer(QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
-        System.out.println("Sending request to game service: " + questionWithAnswerDTORequest);
+        String questionId = questionResponse.getId();
+
+        QuestionWithAnswerDTORequest questionWithAnswerDTORequest = new QuestionWithAnswerDTORequest();
+        questionWithAnswerDTORequest.setQuestionId(questionId);
+        questionWithAnswerDTORequest.setAnswers(createQuestionWithAnswersDTORequest.getAnswers());
+
         return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
     }
+
+
+//    public QuestionDTOResponse createQuestion(QuestionDTORequest questionDTORequest) {
+//        System.out.println("Sending request to game service: " + questionDTORequest);
+//        return restTemplate.postForObject(createQuestionURL, questionDTORequest, QuestionDTOResponse.class);
+//    }
+
+//    public String createAnswer(QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
+//        System.out.println("Sending request to game service: " + questionWithAnswerDTORequest);
+//        return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
+//    }
 }

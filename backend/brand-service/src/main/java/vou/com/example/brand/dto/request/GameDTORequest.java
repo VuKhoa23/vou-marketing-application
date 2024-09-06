@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class GameDTORequest {
-    private Long event_id;
-
-    private String start_time;
+    Long event_id;
+    String start_time;
+    String type;
 }

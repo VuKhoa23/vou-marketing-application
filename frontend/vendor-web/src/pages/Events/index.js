@@ -1,5 +1,4 @@
 import { Suspense, useState } from 'react';
-import { DUMMY_EVENTS } from '../../dummy-events'
 import Event from './components/Event';
 import { NavLink, json, useLoaderData, defer, Await } from 'react-router-dom';
 import {
@@ -170,7 +169,7 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+    const response = await fetch('http://127.0.0.1/api/brand/event/events-and-vouchers?brandId=1');
     if (!response.ok) {
         throw json(
             { message: 'Could not fetch events.' },
