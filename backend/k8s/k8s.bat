@@ -20,5 +20,3 @@ call gamesocket.bat
 cd ..
 cd ingress
 call ingress.bat
-
-cd ..
