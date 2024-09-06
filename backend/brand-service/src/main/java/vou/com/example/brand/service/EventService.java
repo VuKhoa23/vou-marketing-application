@@ -140,8 +140,8 @@ public class EventService {
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setTrivia(event.isTrivia());
-        event.setShaking(event.isShaking());
+        event.setTrivia(eventDTO.isTrivia());
+        event.setShaking(eventDTO.isShaking());
 
         eventRepository.save(event);
     }
@@ -156,11 +156,10 @@ public class EventService {
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
 
-            eventDTO.setEventId(event.getId());
-            eventDTO.setEventName(event.getName());
-            eventDTO.setEventImageURL(event.getImageURL());
-            eventDTO.setEventStartDate(event.getStartDate());
-            eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setStartDate(event.getStartDate());
+            eventDTO.setEndDate(event.getEndDate());
             eventDTO.setTrivia(event.isTrivia());
             eventDTO.setShaking(event.isShaking());
 
@@ -194,11 +193,10 @@ public class EventService {
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
 
-            eventDTO.setEventId(event.getId());
-            eventDTO.setEventName(event.getName());
-            eventDTO.setEventImageURL(event.getImageURL());
-            eventDTO.setEventStartDate(event.getStartDate());
-            eventDTO.setEventEndDate(event.getEndDate());
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setStartDate(event.getStartDate());
+            eventDTO.setEndDate(event.getEndDate());
             eventDTO.setBrand(event.getBrand());
             eventDTO.setTrivia(event.isTrivia());
             eventDTO.setShaking(event.isShaking());
@@ -223,5 +221,15 @@ public class EventService {
         }
 
         return responseDTOList;
+    }
+
+    public List<Event> findAllByIdIn(List<Long> ids) {
+        return eventRepository.findAllByIdIn(ids);
+    }
+
+    public Event findById(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));
+        return event;
     }
 }
