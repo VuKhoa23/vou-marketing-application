@@ -481,10 +481,8 @@ export default function EventList() {
         name,
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
-        gameType: {
-          isShaking,
-          isTrivia,
-        },
+        shaking: isShaking,
+        trivia: isTrivia,
       };
 
       // Gọi API để cập nhật sự kiện
@@ -495,6 +493,8 @@ export default function EventList() {
         },
         body: JSON.stringify(payload),
       });
+
+      console.log(payload);
 
       const gameTypes = [];
       if (isShaking) gameTypes.push('Lắc xu');
@@ -758,16 +758,16 @@ function determineGameType(item) {
   if (item.event.shaking) {
     types.push("Lắc xu");
   }
-  return types.length > 0 ? types.join(", ") : "Unknown"; // Kết hợp các loại game nếu có, hoặc trả về "Unknown"
+  return types.length > 0 ? types.join(", ") : "Unknown";
 }
 
 function transformData(apiData) {
   return apiData.map(item => ({
-    id: item.event.eventId,
-    name: item.event.eventName,
+    id: item.event.id,
+    name: item.event.name,
     quantity: item.voucher.voucherQuantities,
-    startDate: formatDate(item.event.eventStartDate),
-    endDate: formatDate(item.event.eventEndDate),
+    startDate: formatDate(item.event.startDate),
+    endDate: formatDate(item.event.endDate),
     participants: item.participants || 0,
     gameType: determineGameType(item)
   }));
