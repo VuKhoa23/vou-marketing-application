@@ -33,8 +33,8 @@ public class VoucherController {
     }
 
     @PutMapping("update")
-    public Voucher updateVoucher(@RequestParam Long voucherId, @RequestParam int quantities){
-        return voucherService.updateVoucherQuantities(voucherId, quantities);
+    public Voucher updateVoucher(@RequestParam Long eventId, @RequestParam int quantities){
+        return voucherService.updateVoucherQuantities(eventId, quantities);
     }
 
     @GetMapping("quantities")
