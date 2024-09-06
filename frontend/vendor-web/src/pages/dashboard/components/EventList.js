@@ -1,6 +1,8 @@
-import { Flex, Box, Table, Tbody, Td, Text, Th, Thead, Tr, Button, Input,
+import {
+  Flex, Box, Table, Tbody, Td, Text, Th, Thead, Tr, Button, Input,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
-  FormControl, FormErrorMessage, FormLabel, Textarea, Select, InputGroup, InputRightElement, Icon
+  FormControl, FormErrorMessage, FormLabel, InputGroup, InputRightElement, Icon,
+  VStack, Checkbox
 } from '@chakra-ui/react';
 import { createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { CalendarIcon } from '@chakra-ui/icons';
@@ -16,12 +18,19 @@ export default function EventList(props) {
   const [pageIndex, setPageIndex] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [voucherModalData, setVoucherModalData] = React.useState(null);
-  const [eventModalData, setEventModalData] = React.useState(null);
   const [newQuantity, setNewQuantity] = React.useState(0);
   const [totalQuantity, setTotalQuantity] = React.useState(0);
   const [error, setError] = React.useState('');
   const voucherModalDisclosure = useDisclosure();
   const eventModalDisclosure = useDisclosure();
+  const [eventModalData, setEventModalData] = React.useState({
+    name: '',
+    startDate: '',
+    endDate: '',
+    isShaking: false,
+    isTrivia: false,
+  });
+
 
   const textColor = 'black';
   const borderColor = 'gray.200';
@@ -60,6 +69,7 @@ export default function EventList(props) {
     }
 
   }
+
 
   function validateField(identifier) {
     const value = eventModalData[identifier];
@@ -100,23 +110,65 @@ export default function EventList(props) {
     }));
   }
 
+  function handleGameTypeChange(type, checked) {
+    setEventModalData(prevData => ({
+      ...prevData,
+      [type]: checked
+    }));
+  }
+  function parseGameType(gameType) {
+    return {
+      isShaking: gameType.includes('Lắc xu'),
+      isTrivia: gameType.includes('Trivia'),
+    };
+  }
+
+  function updateEventModalDataFromGameType(gameType) {
+    const { isShaking, isTrivia } = parseGameType(gameType);
+    setEventModalData(prevData => ({
+      ...prevData,
+      isShaking: isShaking,
+      isTrivia: isTrivia,
+    }));
+  }
+
+
+
   const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
     <InputGroup>
-        <InputRightElement pointerEvents="none">
-            <Icon as={CalendarIcon} color="gray.500" />
-        </InputRightElement>
-        <Input
-            ref={ref}
-            value={value}
-            onClick={onClick}
-            onBlur={onBlur}
-            placeholder="Chọn ngày"
-            readOnly
-        />
+      <InputRightElement pointerEvents="none">
+        <Icon as={CalendarIcon} color="gray.500" />
+      </InputRightElement>
+      <Input
+        ref={ref}
+        value={value}
+        onClick={onClick}
+        onBlur={onBlur}
+        placeholder="Chọn ngày"
+        readOnly
+      />
     </InputGroup>
-));
+  ));
 
   const columns = [
+    columnHelper.accessor('id', {
+      id: 'id',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          STT
+        </Text>
+      ),
+      cell: (info) => (
+        <Text color={textColor} fontSize="sm" fontWeight="700">
+          {info.getValue()}
+        </Text>
+      ),
+    }),
     columnHelper.accessor('name', {
       id: 'name',
       header: () => (
@@ -127,6 +179,28 @@ export default function EventList(props) {
           color="gray.400"
         >
           TÊN SỰ KIỆN
+        </Text>
+      ),
+      cell: (info) => (
+        <Text color={textColor} fontSize="sm" fontWeight="700" whiteSpace="normal"
+          overflowWrap="break-word"
+          wordBreak="break-word"
+          maxWidth="200px"
+        >
+          {info.getValue()}
+        </Text>
+      ),
+    }),
+    columnHelper.accessor('gameType', {
+      id: 'gameType',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          Loại trò chơi
         </Text>
       ),
       cell: (info) => (
@@ -244,22 +318,23 @@ export default function EventList(props) {
           size="md"
           fontWeight="700"
           onClick={() => {
-            setEventModalData({
+            updateEventModalDataFromGameType(info.row.original.gameType);
+            setEventModalData(prevData => ({
+              ...prevData,
               name: info.row.original.name,
-              slogan: info.row.original.slogan,
-              gameType: info.row.original.gameType,
-              participants: info.row.original.participants,
               startDate: info.row.original.startDate,
               endDate: info.row.original.endDate,
-              info: info.row.original.info
-            });
+            }));
             eventModalDisclosure.onOpen();
-          }}>
+            console.log(eventModalData);
+          }}
+        >
           Chỉnh sửa
         </Button>
       ),
     }),
   ];
+
 
   const [data, setData] = React.useState(() => [...tableData]);
 
@@ -448,79 +523,64 @@ export default function EventList(props) {
                 />
               </FormControl>
 
-              <FormControl>
-                  <FormLabel htmlFor="slogan">Khẩu hiệu sự kiện</FormLabel>
-                  <Input
-                    id="slogan"
-                    type="text"
-                    value={eventModalData.slogan}
-                    onChange={(e) => handleInputChange('slogan', e.target.value)}
-                    placeholder='Khẩu hiệu sự kiện'
-                  />
-                </FormControl>
+              <FormControl isInvalid={!!errors.gameType}>
+                <FormLabel>
+                  Loại trò chơi
+                  <Text as="span" color="red.500" ml={1}>*</Text>
+                </FormLabel>
+                <VStack align="left">
+                  <Checkbox
+                    isChecked={eventModalData.isShaking}
+                    onChange={(e) => handleGameTypeChange('isShaking', e.target.checked)}
+                  >
+                    Lắc xu
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={eventModalData.isTrivia}
+                    onChange={(e) => handleGameTypeChange('isTrivia', e.target.checked)}
+                  >
+                    Trivia (câu hỏi trắc nghiệm)
+                  </Checkbox>
+                </VStack>
 
-                <FormControl isInvalid={!!errors.gameType}>
-                  <FormLabel htmlFor="gameType">
-                    Loại trò chơi
+                <FormErrorMessage>{errors.gameType}</FormErrorMessage>
+              </FormControl>
+
+              <div className='flex'>
+                <FormControl isInvalid={!!errors.startDate}>
+                  <FormLabel htmlFor="startDate">
+                    Ngày bắt đầu
                     <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
-                  <Select
-                    id="gameType"
-                    value={eventModalData.gameType}
-                    onChange={(e) => handleInputChange('gameType', e.target.value)}
-                    onBlur={() => validateField('gameType')}
-                  >
-                    <option value="">Chọn loại trò chơi</option>
-                    <option value="trivia">Trivia (Câu hỏi trắc nghiệm)</option>
-                    <option value="shake">Lắc xu</option>
-                  </Select>
-                  <FormErrorMessage>{errors.gameType}</FormErrorMessage>
+                  <DatePicker
+                    selected={new Date(eventModalData.startDate.split("-").reverse().join("-"))}
+                    onChange={(date) => handleInputChange('startDate', date)}
+                    onBlur={() => validateField('startDate')}
+                    dateFormat="dd-MM-yyyy"
+                    customInput={<CustomInput />}
+                    minDate={new Date()}
+                    className="custom-datepicker"
+                  />
+                  <FormErrorMessage>{errors.startDate}</FormErrorMessage>
                 </FormControl>
 
-                <div className='flex'>
-                  <FormControl isInvalid={!!errors.startDate}>
-                    <FormLabel htmlFor="startDate">
-                      Ngày bắt đầu
-                      <Text as="span" color="red.500" ml={1}>*</Text>
-                    </FormLabel>
-                    <DatePicker
-                      selected={new Date(eventModalData.startDate.split("-").reverse().join("-"))}
-                      onChange={(date) => handleInputChange('startDate', date)}
-                      onBlur={() => validateField('startDate')}
-                      dateFormat="dd-MM-yyyy"
-                      customInput={<CustomInput />}
-                      minDate={new Date()}
-                      className="custom-datepicker"
-                    />
-                    <FormErrorMessage>{errors.startDate}</FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl isInvalid={!!errors.endDate}>
-                    <FormLabel htmlFor="endDate">
-                      Ngày kết thúc
-                      <Text as="span" color="red.500" ml={1}>*</Text>
-                    </FormLabel>
-                    <DatePicker
-                      selected={new Date(eventModalData.endDate.split("-").reverse().join("-"))}
-                      onChange={(date) => handleInputChange('endDate', date)}
-                      onBlur={() => validateField('endDate')}
-                      dateFormat="dd-MM-yyyy"
-                      customInput={<CustomInput />}
-                      minDate={new Date()}
-                      className="custom-datepicker"
-                    />
-                    <FormErrorMessage>{errors.endDate}</FormErrorMessage>
-                  </FormControl>
-                </div>
-
-              <FormControl>
-                <FormLabel htmlFor="info">Mô tả ngắn về sự kiện</FormLabel>
-                <Textarea
-                  id="info"
-                  value={eventModalData.info}
-                // onChange={(e) => handleInputChange('info', e.target.value)}
-                />
-              </FormControl>
+                <FormControl isInvalid={!!errors.endDate}>
+                  <FormLabel htmlFor="endDate">
+                    Ngày kết thúc
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <DatePicker
+                    selected={new Date(eventModalData.endDate.split("-").reverse().join("-"))}
+                    onChange={(date) => handleInputChange('endDate', date)}
+                    onBlur={() => validateField('endDate')}
+                    dateFormat="dd-MM-yyyy"
+                    customInput={<CustomInput />}
+                    minDate={new Date()}
+                    className="custom-datepicker"
+                  />
+                  <FormErrorMessage>{errors.endDate}</FormErrorMessage>
+                </FormControl>
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button colorScheme="blue" mr="3" onClick={handleSubmit}> Cập nhật </Button>

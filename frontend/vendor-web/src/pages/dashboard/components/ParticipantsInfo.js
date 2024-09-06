@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Flex,
-  Text,
-  List,
-  ListItem,
-  Select,
-  SimpleGrid
-} from "@chakra-ui/react";
+import { Box, Flex, Text, List, ListItem } from "@chakra-ui/react";
 import Card from "./card/Card";
 import ColumnChart1 from "./charts/BarChart1";
 import { userParticipationData, barChartOptionsConsumption, eventNames } from "./variables/charts";
@@ -90,34 +82,11 @@ export default function ParticipantsInfo(props) {
         />
       </Box>
 
-      <Box width='full' height='50px' mt='10px'>
-        <Select
-          fontSize='sm'
-          variant='subtle'
-          width='full'
-          fontWeight='700'
-          textAlign='center'
-          whiteSpace='normal'
-        >
-          <option></option>
-          <option>Hallo</option>
-          <option>Hallo</option>
-        </Select>
+      <Box bg="white" mt={4} >
+        <Text fontSize="lg" fontWeight="bold" >
+          *Note: Số thứ tự của mỗi cột tương ứng với các sự kiện ở bảng "SỰ KIỆN"
+        </Text>
       </Box>
-
-      {/* <Box width='full' overflowX='auto'>
-        <SimpleGrid columns={columns.length} spacing={4} minChildWidth='120px'>
-          {columns.map((col, index) => (
-            <Box key={index} p='10px'>
-              {col.map((event, i) => (
-                <Text key={i} mb='10px' fontSize="14px">
-                  {index * columnCount + i + 1}. {event}
-                </Text>
-              ))}
-            </Box>
-          ))}
-        </SimpleGrid>
-      </Box> */}
     </Card>
   );
 }
