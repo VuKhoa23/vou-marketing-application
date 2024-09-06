@@ -149,7 +149,7 @@ public class EventService {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
-        List<Event> events = eventRepository.findByBrandId(brandId);
+        List<Event> events = eventRepository.findAllByBrandId(brandId);
 
         for (Event event : events) {
             EventDTOResponse eventDTO = new EventDTOResponse();
