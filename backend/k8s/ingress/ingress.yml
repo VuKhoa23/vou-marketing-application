@@ -28,7 +28,7 @@ spec:
           service:
             name: user-service
             port:
-              number: 8080
+              number: 8083
       - path: /ws
         pathType: Prefix
         backend:
