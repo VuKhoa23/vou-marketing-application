@@ -37,7 +37,7 @@ const PolicyPrivacy = () => {
 
     async function fetchEvents() {
         const response = await fetch(
-            "http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1"
+            "http://localhost/api/brand/event/events-and-vouchers?brandId=1"
         );
         if (response.ok) {
             const apiData = await response.json();
