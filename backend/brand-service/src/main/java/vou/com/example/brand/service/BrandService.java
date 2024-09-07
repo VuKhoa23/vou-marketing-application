@@ -1,6 +1,8 @@
 package vou.com.example.brand.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +29,16 @@ public class BrandService {
     public BrandService(BrandRepository brandRepository, RestTemplate restTemplate){
         this.brandRepository = brandRepository;
         this.restTemplate = restTemplate;
+    }
+
+    public Brand getInfo(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Brand brand = brandRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("Brand not found with name: " + username));
+
+        return brand;
     }
 
     public Optional<Brand> findByName(String name){

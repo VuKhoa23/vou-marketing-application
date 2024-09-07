@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/api/brand/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/brand/brand").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/brand").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/brand/event").authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());

@@ -19,6 +19,11 @@ public class BrandController {
         this.brandService = brandService;
     }
 
+    @GetMapping("info")
+    public Brand getInfo(){
+        return brandService.getInfo();
+    }
+
     @GetMapping("find-all")
     public List<Brand> findAll(){
         return brandService.findAll();
