@@ -1,10 +1,7 @@
 package repository
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 )
 
 func AddEventToWatchlist(userID int64, eventID int64) error {
@@ -50,48 +47,4 @@ func ShowWatchlist(userID int64) ([]int64, error) {
 		return nil, fmt.Errorf("error occurred during row iteration: %w", err)
 	}
 	return watchlist, nil
-}
-
-func isUserExist(userID int64) bool {
-	query := "SELECT COUNT(*) FROM user WHERE id = ?"
-	var count int
-	err := db.QueryRow(query, userID).Scan(&count)
-	if err != nil {
-		return false
-	}
-	return count > 0
-}
-
-func isEventExist(eventID int64) bool {
-	url := fmt.Sprintf("http://localhost:8080/api/brand/event/find?id=%d", eventID)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Printf("error checking if event exists: %v\n", err)
-		return false
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return false
-	}
-
-	var eventResponse struct {
-		ID int64 `json:"id"`
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("failed to read response body: %v\n", err)
-		return false
-	}
-	fmt.Printf("response body: %s\n", string(body))
-
-	err = json.Unmarshal(body, &eventResponse)
-	if err != nil {
-		fmt.Printf("failed to unmarshal JSON response: %v\n", err)
-		return false
-	}
-
-	return eventResponse.ID == eventID
 }
