@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: brand
-          image: tricker14/vou_brand:11
+          image: tricker14/vou_brand:12
           ports:
             - containerPort: 8080
