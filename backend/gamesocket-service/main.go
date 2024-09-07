@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/olahol/melody"
+	"github.com/segmentio/kafka-go"
 	"os"
 	"time"
 )
@@ -46,6 +47,25 @@ func main() {
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
+		w := &kafka.Writer{
+			Addr:     kafka.TCP("localhost:9092"),
+			Balancer: &kafka.LeastBytes{},
+		}
+
+		err := w.WriteMessages(context.Background(),
+			kafka.Message{
+				Topic:     "user-answers",
+				Partition: 0,
+				Key:       []byte("Message"),
+				Value:     msg,
+			},
+		)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		if err := w.Close(); err != nil {
+			fmt.Println(err.Error())
+		}
 		fmt.Println(string(msg[:]))
 	})
 
@@ -97,9 +117,6 @@ func main() {
 					if startTime.UnixMilli() <= time.Now().UnixMilli() {
 						break
 					}
-					fmt.Println(startTime.UnixMilli())
-					fmt.Println(time.Now().UnixMilli())
-					fmt.Println(startTime.UnixMilli() - time.Now().UnixMilli())
 					time.Sleep(time.Second)
 				}
 				//
