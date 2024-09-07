@@ -1,65 +1,66 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import * as yup from "yup";
-import { useFormik } from "formik";
-import { setAuthUser } from "@/lib/redux/slices/authSlice";
-import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import { setAuthUser } from '../../store/slices/authSlice';
+import toast, { Toaster } from 'react-hot-toast';
 
 const loginSchema = yup.object({
-    username: yup.string().required("Vui lòng điền tên đăng nhập"),
-    password: yup.string().required("Vui lòng điền mật khẩu"),
+    username: yup
+        .string()
+        .required('Vui lòng điền tên đăng nhập'),
+    password: yup
+        .string()
+        .required('Vui lòng điền mật khẩu'),
 });
 
 const Login = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const router = useRouter();
 
     const loginFormik = useFormik({
         initialValues: {
-            username: "",
-            password: "",
+            username: '',
+            password: ''
         },
         validationSchema: loginSchema,
         onSubmit: (values) => handleSubmit(values),
     });
 
-    const handleSubmit = async (values: { username: string; password: string }) => {
+    const handleSubmit = async (values) => {
         try {
-            const response = await fetch("http://localhost/api/admin/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch('http://localhost/api/brand/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values),
+
             });
 
             if (response.ok) {
-                const data = await response.json();
-                dispatch(setAuthUser(data));
-                toast.success("Đăng nhập thành công.");
-                router.push("/");
+                const userData = await response.json();
+                const token = userData.accessToken.replace('Bearer ', '');
+                dispatch(setAuthUser(token));
+                toast.success('Đăng nhập thành công.');
+                navigate('/');
             } else {
-                toast.error("Thông tin đăng nhập không hợp lệ.");
+                toast.error('Thông tin đăng nhập không hợp lệ.');
             }
         } catch (error) {
-            toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            toast.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
         }
     };
 
     return (
-        <div className="flex justify-center min-h-screen">
-            <div>
-                <Toaster position="top-right" />
-            </div>
+        <div className='flex justify-center min-h-screen'>
+            <div><Toaster position="top-right" /></div>
             <div className="flex flex-col gap-4 rounded-box bg-base-200 p-6 my-auto w-1/4">
-                <h1 className="text-3xl font-bold self-center">Chào mừng admin VOU</h1>
+                <h1 className="text-3xl font-bold self-center">Đăng nhập vào VOU</h1>
 
                 <span className="self-center">
-                    <a href="/signup" className="link link-primary ml-1">
-                        Đăng ký tài khoản quản trị
-                    </a>
+                    <a href="/signup" className="link link-primary ml-1">Đăng ký tài khoản doanh nghiệp</a>
                 </span>
+
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();

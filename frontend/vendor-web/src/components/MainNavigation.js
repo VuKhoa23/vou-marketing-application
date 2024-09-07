@@ -25,7 +25,7 @@ function MainNavigation() {
             className={`sticky top-0 z-50 navbar ${isScrolled ? 'bg-blue-500 bg-opacity-60' : 'bg-blue-500'} text-primary-content flex justify-center items-center transition-all duration-300 ease-in-out`}
         >
             <div>
-                <a className="btn btn-ghost text-xl">daisyUI</a>
+                <a href="/" className="btn btn-ghost text-xl">VOU Partner Client</a>
             </div>
             <div className="flex justify-center items-center flex-1 space-x-4">
                 <NavLink to='/' className="btn btn-ghost btn-rectangle">
@@ -82,14 +82,13 @@ function MainNavigation() {
                     </div>
                     <ul
                         tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                        className="menu menu-sm dropdown-content bg-base-100 text-neutral rounded-box z-[1] mt-3 w-52 p-2 shadow">
                         <li>
                             <NavLink to="/profile" className="justify-between">
                                 Profile
                             </NavLink>
                         </li>
-                        <li><a>Settings</a></li>
-                        <li><a>Logout</a></li>
+                        <li><a href="/login">Logout</a></li>
                     </ul>
                 </div>
             </div>

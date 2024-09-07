@@ -5,6 +5,9 @@ import Home, { loader as eventsLoader } from './pages/Home';
 import GamePage from './pages/GamePage';
 import UserProfile from './pages/UserProfile';
 import TriviaGame from './pages/GamePage/components/TriviaGame';
+import Login from './pages/Login';
+import store from './redux/store';
+import { Provider } from 'react-redux';
 
 const router = createBrowserRouter([
   {
@@ -27,10 +30,14 @@ const router = createBrowserRouter([
       { path: 'profile', element: <UserProfile /> },
     ],
   },
+  { path: 'login', element: <Login /> },
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>);
 }
 
 export default App;

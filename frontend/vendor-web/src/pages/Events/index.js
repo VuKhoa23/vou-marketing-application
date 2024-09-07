@@ -80,6 +80,7 @@ function EventsPage() {
                     </svg>
                 </label>
             </div>
+
             <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
                 <Await resolve={events}>
                     {(resolvedEvents) => (
@@ -169,7 +170,8 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://localhost:8080/api/brand/event/find-all');
+    const response = await fetch('http://localhost/api/brand/event/find-all');
+
     if (!response.ok) {
         throw json(
             { message: 'Could not fetch events.' },

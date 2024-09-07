@@ -4,7 +4,7 @@ export const submitAllForms = createAsyncThunk(
     'forms/submitAllForms',
     async (formData, { rejectWithValue }) => {
         try {
-            const response = await fetch('http://localhost:8080/api/brand/event/add/event-and-voucher?brandId=1', {
+            const response = await fetch('http://localhost/api/brand/event/add/event-and-voucher?brandId=1', {
                 method: 'POST',
                 body: formData,
             });
