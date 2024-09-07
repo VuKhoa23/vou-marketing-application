@@ -30,3 +30,5 @@ spec:
             value: root
           - name: DB_DATABASE
             value: vouUser
+          - name: API_BRAND_URL
+            value: http://brand-service.default:8080
