@@ -22,13 +22,13 @@ spec:
             name: brand-service
             port:
               number: 8080
-      - path: /api/game
+      - path: /api/user
         pathType: Prefix
         backend:
           service:
-            name: game-service
+            name: user-service
             port:
-              number: 8081
+              number: 8080
       - path: /ws
         pathType: Prefix
         backend:
