@@ -138,7 +138,7 @@ function EventsPage() {
                                     />
                                 </Box>
                                 <Box flex="1" p={4}>
-                                    <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.event.name}</Text>
+                                    <Text fontSize="2xl" mb={4} fontWeight="bold" whiteSpace="normal" overflowWrap="break-word" wordBreak="break-word">{selectedEvent.event.name}</Text>
                                     <Text fontSize="md" mb={4}>{selectedEvent.voucher.voucherDescription}</Text>
                                     <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucher.voucherQuantities}</Text>
                                     <Text fontSize="sm" mb={2}>Loại trò chơi: {getGameType(selectedEvent.event)}</Text>
@@ -178,7 +178,6 @@ async function loadEvents() {
     }
     else {
         const resData = await response.json();
-        console.log(resData);
         return resData;
     }
 }

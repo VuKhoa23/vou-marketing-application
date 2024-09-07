@@ -48,17 +48,19 @@ export default function EventList() {
   const dispatch = useDispatch();
   const tableData = useSelector(state => state.events);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
-      if (response.ok) {
-        const apiData = await response.json();
-        const transformedData = transformData(apiData);
-        dispatch(setEvents(transformedData));
-      }
-    }
-    fetchEvents();
-  }, [dispatch]);
+  // useEffect(() => {
+  //   async function fetchEvents() {
+  //     const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+  //     if (response.ok) {
+  //       const apiData = await response.json();
+  //       const transformedData = transformData(apiData);
+  //       dispatch(setEvents(transformedData));
+  //     }
+  //   }
+  //   if (tableData.length <= 0) {
+  //     fetchEvents();
+  //   }
+  // }, [dispatch, tableData]);
 
   function handleInputChange(identifier, value) {
     // Dispatch the update to Redux store
@@ -180,7 +182,7 @@ export default function EventList() {
           fontSize={{ sm: '10px', lg: '12px' }}
           color="gray.400"
         >
-          STT
+          ID
         </Text>
       ),
       cell: (info) => (
@@ -395,6 +397,7 @@ export default function EventList() {
 
   const handleClose = (modalType) => {
     setError('');
+    setErrors('');
     const closeFunction = modalType === 'voucher' ? voucherModalDisclosure.onClose : eventModalDisclosure.onClose;
     closeFunction();
   };
@@ -750,28 +753,28 @@ export default function EventList() {
   );
 }
 
-function determineGameType(item) {
-  const types = [];
-  if (item.event.trivia) {
-    types.push("Trivia");
-  }
-  if (item.event.shaking) {
-    types.push("Lắc xu");
-  }
-  return types.length > 0 ? types.join(", ") : "Unknown";
-}
+// function determineGameType(item) {
+//   const types = [];
+//   if (item.event.trivia) {
+//     types.push("Trivia");
+//   }
+//   if (item.event.shaking) {
+//     types.push("Lắc xu");
+//   }
+//   return types.length > 0 ? types.join(", ") : "Unknown";
+// }
 
-function transformData(apiData) {
-  return apiData.map(item => ({
-    id: item.event.id,
-    name: item.event.name,
-    quantity: item.voucher.voucherQuantities,
-    startDate: formatDate(item.event.startDate),
-    endDate: formatDate(item.event.endDate),
-    participants: item.participants || 0,
-    gameType: determineGameType(item)
-  }));
-}
+// function transformData(apiData) {
+//   return apiData.map(item => ({
+//     id: item.event.id,
+//     name: item.event.name,
+//     quantity: item.voucher.voucherQuantities,
+//     startDate: formatDate(item.event.startDate),
+//     endDate: formatDate(item.event.endDate),
+//     participants: item.participants || 0,
+//     gameType: determineGameType(item)
+//   }));
+// }
 
 function formatDate(dateString) {
   const date = new Date(dateString);

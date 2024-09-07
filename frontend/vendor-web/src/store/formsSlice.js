@@ -38,6 +38,10 @@ const formsSlice = createSlice({
             const { gameType, selected } = action.payload;
             state.eventForm.eventDTO[gameType] = selected;
         },
+
+        resetForms(state) {
+            return initialState;
+        }
     }
 });
 
@@ -45,6 +49,7 @@ export const {
     setEventForm,
     setVoucherForm,
     updateGameTypeSelection,
+    resetForms,
 } = formsSlice.actions;
 
 export default formsSlice.reducer;

@@ -1,12 +1,17 @@
 function Event({ id, name, brand, image, voucher, startDate, endDate }) {
 
+    function parseDate(dateString) {
+        const [day, month, year] = dateString.split('-');
+        return new Date(year, month - 1, day);
+    }
+
     const now = new Date();
 
     // Xác định trạng thái của sự kiện
     let statusBadge;
-    if (now < new Date(startDate)) {
+    if (now < parseDate(startDate)) {
         statusBadge = <div className="badge badge-outline border-blue-500 text-blue-500">Sắp bắt đầu</div>;
-    } else if (now > new Date(endDate)) {
+    } else if (now > parseDate(endDate)) {
         statusBadge = <div className="badge badge-outline border-gray-500 text-gray-500">Đã kết thúc</div>;
     } else {
         statusBadge = <div className="badge badge-outline border-red-500 text-red-500">Đang diễn ra</div>;

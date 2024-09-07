@@ -11,12 +11,34 @@ import PieCard from "./components/Reachability";
 import NumberOfParticipants from "./components/NumberOfParticipants";
 import TotalSpent from "./components/RevenueNProfit";
 import ParticipantsInfo from "./components/ParticipantsInfo";
+import { useSelector, useDispatch } from "react-redux";
+import { setEvents } from "../../store/eventsSlice";
+import { useEffect } from "react";
 
 
 
 export default function Dashboard() {
     const pageBg = "gray.100";
 
+    const dispatch = useDispatch();
+    const events = useSelector(state => state.events);
+
+    useEffect(() => {
+        async function fetchEvents() {
+            const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+            if (response.ok) {
+                const apiData = await response.json();
+                const transformedData = transformData(apiData);
+                dispatch(setEvents(transformedData));
+            }
+        }
+        if (events.length <= 0) {
+            fetchEvents();
+        }
+    }, [dispatch, events]);
+
+    const totalParticipants = events.reduce((total, event) => total + event.participants, 0);
+    const totalVouchers = events.reduce((total, event) => total + event.quantity, 0);
 
     return (
         <Box pt={{ base: "20px", md: "20px", xl: "20px" }} px={5} bg={pageBg}>
@@ -33,14 +55,14 @@ export default function Dashboard() {
                     icon={FaCalendarAlt}
                     content={{
                         title: 'Tất cả sự kiện',
-                        data: '25 Events'
+                        data: `${events.length} sự kiện`
                     }}
                 />
                 <MiniCard
                     icon={FaUsers}
                     content={{
                         title: 'Tổng số người chơi',
-                        data: '3,450 Users'
+                        data: `${totalParticipants} người chơi`
                     }}
                 />
                 <MiniCard
@@ -54,14 +76,14 @@ export default function Dashboard() {
                     icon={FaTag}
                     content={{
                         title: 'Số lượng voucher',
-                        data: '1,200 vouchers'
+                        data: `${totalVouchers} vouchers`
                     }}
                 />
                 <MiniCard
                     icon={FaClock}
                     content={{
                         title: 'Thời gian trung bình',
-                        data: '45 Minutes'
+                        data: '45 phút'
                     }}
                 />
                 <MiniCard
@@ -98,5 +120,22 @@ function determineGameType(item) {
     if (item.event.shaking) {
         types.push("Lắc xu");
     }
-    return types.length > 0 ? types.join(", ") : "Unknown"; // Kết hợp các loại game nếu có, hoặc trả về "Unknown"
+    return types.length > 0 ? types.join(", ") : "Unknown";
+}
+
+function transformData(apiData) {
+    return apiData.map(item => ({
+        id: item.event.id,
+        name: item.event.name,
+        quantity: item.voucher.voucherQuantities,
+        startDate: formatDate(item.event.startDate),
+        endDate: formatDate(item.event.endDate),
+        participants: item.participants || 0,
+        gameType: determineGameType(item)
+    }));
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
 }
