@@ -31,10 +31,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/api/user/public", s.publicHandler)
 	r.GET("/api/user/protected", middleware.AuthenticationMiddleware, s.protectedHandler)
 
-	r.POST("/api/user/watchlist/add", s.AddEventToWatchlistHandler)
-	r.GET("/api/user/watchlist", s.ShowWatchlistHandler)
+	r.POST("/api/user/watchlist/add", middleware.AuthenticationMiddleware, s.AddEventToWatchlistHandler)
+	r.GET("/api/user/watchlist", middleware.AuthenticationMiddleware, s.ShowWatchlistHandler)
 
-	r.POST("/api/user/game/join", s.CreateUserEventHandler)
-	r.GET("/api/user/game/play", s.UpdateUserEventHandler)
+	r.POST("/api/user/game/join", middleware.AuthenticationMiddleware, s.CreateUserEventHandler)
+	r.POST("/api/user/game/play", middleware.AuthenticationMiddleware, s.UpdateUserEventHandler)
 	return r
 }

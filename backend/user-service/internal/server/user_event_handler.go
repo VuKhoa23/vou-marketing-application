@@ -9,14 +9,12 @@ import (
 )
 
 type CreateUserEventReq struct {
-	UserID  int64 `json:"userId"`
 	EventID int64 `json:"eventId"`
 }
 
 type UpdateUserEventReq struct {
-	UserID  int64 `json:"userId"`
 	EventID int64 `json:"eventId"`
-	Coin    int64 `json:"coin"`
+	NewCoin int64 `json:"newCoin"`
 }
 
 func (s *Server) CreateUserEventHandler(c *gin.Context) {
@@ -26,7 +24,27 @@ func (s *Server) CreateUserEventHandler(c *gin.Context) {
 		return
 	}
 
-	err := repository.CreateUserEvent(req.UserID, req.EventID)
+	userId, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		return
+	}
+
+	// Convert userId to int64 if it's an int16
+	var userIdInt64 int64
+	switch id := userId.(type) {
+	case int64:
+		userIdInt64 = id
+	case int16:
+		userIdInt64 = int64(id) // Convert int16 to int64
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
+		return
+	}
+
+	err := repository.CreateUserEvent(userIdInt64, req.EventID)
 	fmt.Printf("Request Body: %+v\n", req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user_event: " + err.Error()})
@@ -44,7 +62,27 @@ func (s *Server) UpdateUserEventHandler(c *gin.Context) {
 		return
 	}
 
-	err := repository.UpdateUserEvent(req.UserID, req.EventID, req.Coin)
+	userId, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		return
+	}
+
+	// Convert userId to int64 if it's an int16
+	var userIdInt64 int64
+	switch id := userId.(type) {
+	case int64:
+		userIdInt64 = id
+	case int16:
+		userIdInt64 = int64(id) // Convert int16 to int64
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
+		return
+	}
+
+	err := repository.UpdateUserEvent(userIdInt64, req.EventID, req.NewCoin)
 	fmt.Printf("Request Body: %+v\n", req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user_event: " + err.Error()})

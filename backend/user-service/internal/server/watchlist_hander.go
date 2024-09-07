@@ -5,17 +5,13 @@ import (
 	"brand-management-service/internal/repository"
 	"fmt"
 	"net/http"
-	"strconv"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AddEventToWatchlistReq struct {
-	UserID  int64 `json:"userId"`
 	EventID int64 `json:"eventId"`
-}
-
-type Event struct {
 }
 
 func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
@@ -25,7 +21,27 @@ func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
 		return
 	}
 
-	err := repository.AddEventToWatchlist(req.UserID, req.EventID)
+	userId, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		return
+	}
+
+	// Convert userId to int64 if it's an int16
+	var userIdInt64 int64
+	switch id := userId.(type) {
+	case int64:
+		userIdInt64 = id
+	case int16:
+		userIdInt64 = int64(id) // Convert int16 to int64
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
+		return
+	}
+
+	err := repository.AddEventToWatchlist(userIdInt64, req.EventID)
 	fmt.Printf("Request Body: %+v\n", req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add event to watchlist: " + err.Error()})
@@ -37,21 +53,31 @@ func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
 }
 
 func (s *Server) ShowWatchlistHandler(c *gin.Context) {
-	url := "http://localhost:8080/api/brand/event/find-by-ids"
+	baseURL := os.Getenv("API_BRAND_URL")
+	url := fmt.Sprintf("%s/event/find-by-ids", baseURL)
+	// url := "http://localhost:8080/api/brand/event/find-by-ids"
 
-	userIdStr := c.Query("userId")
-	if userIdStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
+	userId, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
 		return
 	}
 
-	userId, err := strconv.ParseInt(userIdStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid userId format"})
+	// Convert userId to int64 if it's an int16
+	var userIdInt64 int64
+	switch id := userId.(type) {
+	case int64:
+		userIdInt64 = id
+	case int16:
+		userIdInt64 = int64(id) // Convert int16 to int64
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
 		return
 	}
 
-	eventIds, err := repository.ShowWatchlist(userId)
+	eventIds, err := repository.ShowWatchlist(userIdInt64)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event IDs: " + err.Error()})
 		return

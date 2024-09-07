@@ -17,7 +17,7 @@ func CreateUserEvent(userID int64, eventID int64) error {
 	coin := int64(0)
 	turn := int64(10)
 
-	query := "INSERT INTO watchlist (user_id, event_id, coin, turn) VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO user_event (user_id, event_id, coin, turn) VALUES (?, ?, ?, ?)"
 	_, err := db.Exec(query, userID, eventID, coin, turn)
 	if err != nil {
 		// Handle specific error if needed (e.g., unique constraint violation)
@@ -26,7 +26,7 @@ func CreateUserEvent(userID int64, eventID int64) error {
 	return nil
 }
 
-func UpdateUserEvent(userID int64, eventID int64, coin int64) error {
+func UpdateUserEvent(userID int64, eventID int64, newCoin int64) error {
 	if !isUserExist(userID) {
 		return fmt.Errorf("user with ID %d does not exist", userID)
 	}
@@ -37,7 +37,7 @@ func UpdateUserEvent(userID int64, eventID int64, coin int64) error {
 
 	var existingCoin int64
 	var existingTurn int64
-	query := "SELECT coin, turn FROM watchlist WHERE user_id = ? AND event_id = ?"
+	query := "SELECT coin, turn FROM user_event WHERE user_id = ? AND event_id = ?"
 	row := db.QueryRow(query, userID, eventID)
 	err := row.Scan(&existingCoin, &existingTurn)
 
@@ -48,8 +48,9 @@ func UpdateUserEvent(userID int64, eventID int64, coin int64) error {
 	}
 
 	turn := existingTurn - 1
+	coin := existingCoin + newCoin
 
-	updateQuery := "UPDATE watchlist SET coin = ?, turn = ? WHERE user_id = ? AND event_id = ?"
+	updateQuery := "UPDATE user_event SET coin = ?, turn = ? WHERE user_id = ? AND event_id = ?"
 
 	result, err := db.Exec(updateQuery, coin, turn, userID, eventID)
 	if err != nil {

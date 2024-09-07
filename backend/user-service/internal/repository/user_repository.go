@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
 func CreateUser(user model.User) (model.User, error) {
@@ -95,4 +96,50 @@ func PostJsonResponse(url string, requestData interface{}, result interface{}) e
 	}
 
 	return nil
+}
+
+func isUserExist(userID int64) bool {
+	query := "SELECT COUNT(*) FROM user WHERE id = ?"
+	var count int
+	err := db.QueryRow(query, userID).Scan(&count)
+	if err != nil {
+		return false
+	}
+	return count > 0
+}
+
+func isEventExist(eventID int64) bool {
+	baseURL := os.Getenv("API_BRAND_URL")
+	url := fmt.Sprintf("%s/event/find?id=%d", baseURL, eventID)
+	// url := fmt.Sprintf("http://localhost:8080/api/brand/event/find?id=%d", eventID)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("error checking if event exists: %v\n", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false
+	}
+
+	var eventResponse struct {
+		ID int64 `json:"id"`
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("failed to read response body: %v\n", err)
+		return false
+	}
+	fmt.Printf("response body: %s\n", string(body))
+
+	err = json.Unmarshal(body, &eventResponse)
+	if err != nil {
+		fmt.Printf("failed to unmarshal JSON response: %v\n", err)
+		return false
+	}
+
+	return eventResponse.ID == eventID
 }
