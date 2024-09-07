@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user-service-cont
-        image: tricker14/user-service:1
+        image: vukhoa23/user-service:2
         env:
           - name: PORT
             value: "8083"
@@ -31,4 +31,4 @@ spec:
           - name: DB_DATABASE
             value: vouUser
           - name: API_BRAND_URL
-            value: http://brand-service.default:8080
+            value: "http://brand-service.default:8080"
