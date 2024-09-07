@@ -1,37 +1,66 @@
-import { Flex, Box, Table, Tbody, Td, Text, Th, Thead, Tr, Button, Input,
+import {
+  Flex, Box, Table, Tbody, Td, Text, Th, Thead, Tr, Button, Input,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
-  FormControl, FormErrorMessage, FormLabel, Textarea, Select, InputGroup, InputRightElement, Icon
+  FormControl, FormErrorMessage, FormLabel, InputGroup, InputRightElement, Icon,
+  VStack, Checkbox, useToast
 } from '@chakra-ui/react';
 import { createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { CalendarIcon } from '@chakra-ui/icons';
 import DatePicker from 'react-datepicker';
-import * as React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setEvents, updateEvent } from '../../../store/eventsSlice';
 
 
 const columnHelper = createColumnHelper();
 
-export default function EventList(props) {
-  const { tableData } = props;
+export default function EventList() {
   const [sorting, setSorting] = React.useState([]);
   const [pageIndex, setPageIndex] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [voucherModalData, setVoucherModalData] = React.useState(null);
-  const [eventModalData, setEventModalData] = React.useState(null);
   const [newQuantity, setNewQuantity] = React.useState(0);
   const [totalQuantity, setTotalQuantity] = React.useState(0);
   const [error, setError] = React.useState('');
   const voucherModalDisclosure = useDisclosure();
   const eventModalDisclosure = useDisclosure();
+  const [eventModalData, setEventModalData] = React.useState({
+    id: '',
+    name: '',
+    startDate: null,
+    endDate: null,
+    isShaking: false,
+    isTrivia: false,
+  });
+
 
   const textColor = 'black';
   const borderColor = 'gray.200';
 
+
   const [errors, setErrors] = React.useState({
-    eventName: '',
+    name: '',
     startDate: '',
     endDate: '',
     gameType: '',
   });
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const tableData = useSelector(state => state.events);
+
+  // useEffect(() => {
+  //   async function fetchEvents() {
+  //     const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+  //     if (response.ok) {
+  //       const apiData = await response.json();
+  //       const transformedData = transformData(apiData);
+  //       dispatch(setEvents(transformedData));
+  //     }
+  //   }
+  //   if (tableData.length <= 0) {
+  //     fetchEvents();
+  //   }
+  // }, [dispatch, tableData]);
 
   function handleInputChange(identifier, value) {
     // Dispatch the update to Redux store
@@ -61,17 +90,20 @@ export default function EventList(props) {
 
   }
 
+
   function validateField(identifier) {
     const value = eventModalData[identifier];
     let errorMessage = '';
 
     switch (identifier) {
-      case 'eventName':
+      case 'name':
+        console.log("check name");
         if (!value) {
           errorMessage = 'Tên sự kiện không được bỏ trống.';
         }
         break;
       case 'startDate':
+        console.log("check sd");
         if (!value) {
           errorMessage = 'Ngày bắt đầu không được bỏ trống.';
         } else if (eventModalData.endDate && new Date(value) > new Date(eventModalData.endDate)) {
@@ -79,6 +111,7 @@ export default function EventList(props) {
         }
         break;
       case 'endDate':
+        console.log("check ed");
         if (!value) {
           errorMessage = 'Ngày kết thúc không được bỏ trống.';
         } else if (eventModalData.startDate && new Date(value) < new Date(eventModalData.startDate)) {
@@ -86,6 +119,7 @@ export default function EventList(props) {
         }
         break;
       case 'gameType':
+        console.log("");
         if (!value) {
           errorMessage = 'Bạn phải chọn loại trò chơi.';
         }
@@ -100,23 +134,63 @@ export default function EventList(props) {
     }));
   }
 
+  function handleGameTypeChange(type, checked) {
+    setEventModalData(prevData => ({
+      ...prevData,
+      [type]: checked
+    }));
+  }
+  function parseGameType(gameType) {
+    return {
+      isShaking: gameType.includes('Lắc xu'),
+      isTrivia: gameType.includes('Trivia'),
+    };
+  }
+
+  function updateEventModalDataFromGameType(gameType) {
+    const { isShaking, isTrivia } = parseGameType(gameType);
+    setEventModalData(prevData => ({
+      ...prevData,
+      isShaking: isShaking,
+      isTrivia: isTrivia,
+    }));
+  }
+
   const CustomInput = React.forwardRef(({ value, onClick, onBlur }, ref) => (
     <InputGroup>
-        <InputRightElement pointerEvents="none">
-            <Icon as={CalendarIcon} color="gray.500" />
-        </InputRightElement>
-        <Input
-            ref={ref}
-            value={value}
-            onClick={onClick}
-            onBlur={onBlur}
-            placeholder="Chọn ngày"
-            readOnly
-        />
+      <InputRightElement pointerEvents="none">
+        <Icon as={CalendarIcon} color="gray.500" />
+      </InputRightElement>
+      <Input
+        ref={ref}
+        value={value}
+        onClick={onClick}
+        onBlur={onBlur}
+        placeholder="Chọn ngày"
+        readOnly
+      />
     </InputGroup>
-));
+  ));
 
   const columns = [
+    columnHelper.accessor('id', {
+      id: 'id',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          ID
+        </Text>
+      ),
+      cell: (info) => (
+        <Text color={textColor} fontSize="sm" fontWeight="700">
+          {info.getValue()}
+        </Text>
+      ),
+    }),
     columnHelper.accessor('name', {
       id: 'name',
       header: () => (
@@ -127,6 +201,28 @@ export default function EventList(props) {
           color="gray.400"
         >
           TÊN SỰ KIỆN
+        </Text>
+      ),
+      cell: (info) => (
+        <Text color={textColor} fontSize="sm" fontWeight="700" whiteSpace="normal"
+          overflowWrap="break-word"
+          wordBreak="break-word"
+          maxWidth="200px"
+        >
+          {info.getValue()}
+        </Text>
+      ),
+    }),
+    columnHelper.accessor('gameType', {
+      id: 'gameType',
+      header: () => (
+        <Text
+          justifyContent="space-between"
+          align="center"
+          fontSize={{ sm: '10px', lg: '12px' }}
+          color="gray.400"
+        >
+          Loại trò chơi
         </Text>
       ),
       cell: (info) => (
@@ -177,6 +273,7 @@ export default function EventList(props) {
             size="sm"
             onClick={() => {
               setVoucherModalData({
+                id: info.row.original.id,
                 name: info.row.original.name,
                 quantity: info.getValue(),
               });
@@ -244,22 +341,27 @@ export default function EventList(props) {
           size="md"
           fontWeight="700"
           onClick={() => {
-            setEventModalData({
+            updateEventModalDataFromGameType(info.row.original.gameType);
+            setEventModalData(prevData => ({
+              ...prevData,
+              id: info.row.original.id,
               name: info.row.original.name,
-              slogan: info.row.original.slogan,
-              gameType: info.row.original.gameType,
-              participants: info.row.original.participants,
-              startDate: info.row.original.startDate,
-              endDate: info.row.original.endDate,
-              info: info.row.original.info
-            });
+              startDate: new Date(info.row.original.startDate.split("-").reverse().join("-")),
+              endDate: new Date(info.row.original.endDate.split("-").reverse().join("-")),
+            }));
             eventModalDisclosure.onOpen();
-          }}>
+            console.log(eventModalData);
+          }}
+        >
           Chỉnh sửa
         </Button>
       ),
     }),
   ];
+
+  useEffect(() => {
+    setData([...tableData]);
+  }, [tableData]);
 
   const [data, setData] = React.useState(() => [...tableData]);
 
@@ -295,20 +397,153 @@ export default function EventList(props) {
 
   const handleClose = (modalType) => {
     setError('');
+    setErrors('');
     const closeFunction = modalType === 'voucher' ? voucherModalDisclosure.onClose : eventModalDisclosure.onClose;
     closeFunction();
   };
 
-  const handleSubmit = () => {
+  const handleUpdateVoucherQuantity = async () => {
     const quantity = Number(newQuantity);
+
     if (!newQuantity || quantity <= 0) {
       setError('Vui lòng nhập số lượng voucher hợp lệ.');
       return;
     }
-    setError('');
-    console.log(`Added ${newQuantity} vouchers to ${voucherModalData.name}`);
-    handleClose("voucher");
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/brand/voucher/update?eventId=${voucherModalData.id}&quantities=${totalQuantity}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        dispatch(updateEvent({ ...voucherModalData, quantity: totalQuantity }));
+        handleClose("voucher");
+        setError('');
+        toast({
+          title: "Cập nhật thành công",
+          description: "Số lượng voucher đã được cập nhật thành công.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Cập nhật thất bại",
+          description: 'Có lỗi xảy ra khi cập nhật số lượng voucher.',
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      setError('An unexpected error occurred.');
+
+    }
   };
+
+  const handleUpdateEvent = async () => {
+    const { name, startDate, endDate, isShaking, isTrivia } = eventModalData;
+    if (!name || name.trim() === '') {
+      toast({
+        title: "Lỗi",
+        description: "Tên sự kiện không được để trống.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!isShaking && !isTrivia) {
+      toast({
+        title: "Lỗi",
+        description: "Ít nhất một trong hai game (Lắc xu hoặc Trivia) phải được chọn.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (endDate < startDate) {
+      toast({
+        title: "Lỗi",
+        description: "Ngày kết thúc không được nhỏ hơn ngày bắt đầu.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const payload = {
+        name,
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        shaking: isShaking,
+        trivia: isTrivia,
+      };
+
+      // Gọi API để cập nhật sự kiện
+      const response = await fetch(`http://localhost:8080/api/brand/event/update?eventId=${eventModalData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log(payload);
+
+      const gameTypes = [];
+      if (isShaking) gameTypes.push('Lắc xu');
+      if (isTrivia) gameTypes.push('Trivia');
+      const gameType = gameTypes.join(', ') || 'Unknown';
+
+      if (response.ok) {
+        const updatedEvent = {
+          id: eventModalData.id,
+          name,
+          startDate: formatDate(payload.startDate),
+          endDate: formatDate(payload.endDate),
+          gameType,
+        };
+        dispatch(updateEvent(updatedEvent));
+
+        eventModalDisclosure.onClose();
+
+        toast({
+          title: "Thành công",
+          description: "Sự kiện đã được cập nhật thành công.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Cập nhật thất bại",
+          description: "Có lỗi xảy ra khi cập nhật sự kiện.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating event:", error);
+      toast({
+        title: "Lỗi",
+        description: "Lỗi rồi",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
 
   return (
     <Box overflowX="auto" p="5" bg="white" borderRadius="xl">
@@ -418,10 +653,10 @@ export default function EventList(props) {
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr="3" onClick={handleSubmit}>
+              <Button colorScheme="blue" mr="3" onClick={handleUpdateVoucherQuantity}>
                 Thêm
               </Button>
-              <Button onClick={handleClose}>Hủy</Button>
+              <Button onClick={() => handleClose("voucher")}>Hủy</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -433,7 +668,7 @@ export default function EventList(props) {
           <ModalContent>
             <ModalHeader textAlign="center" fontSize="lg" fontWeight="bold"> CHỈNH SỬA THÔNG TIN SỰ KIỆN </ModalHeader>
             <ModalBody>
-              <FormControl>
+              <FormControl isInvalid={!!errors.name}>
                 <FormLabel htmlFor="eventName">
                   Tên sự kiện
                   <Text as="span" color="red.500" ml={1}>*</Text>
@@ -448,87 +683,100 @@ export default function EventList(props) {
                 />
               </FormControl>
 
-              <FormControl>
-                  <FormLabel htmlFor="slogan">Khẩu hiệu sự kiện</FormLabel>
-                  <Input
-                    id="slogan"
-                    type="text"
-                    value={eventModalData.slogan}
-                    onChange={(e) => handleInputChange('slogan', e.target.value)}
-                    placeholder='Khẩu hiệu sự kiện'
-                  />
-                </FormControl>
+              <FormControl isInvalid={!!errors.gameType}>
+                <FormLabel>
+                  Loại trò chơi
+                  <Text as="span" color="red.500" ml={1}>*</Text>
+                </FormLabel>
+                <VStack align="left">
+                  <Checkbox
+                    isChecked={eventModalData.isShaking}
+                    onChange={(e) => handleGameTypeChange('isShaking', e.target.checked)}
+                  >
+                    Lắc xu
+                  </Checkbox>
+                  <Checkbox
+                    isChecked={eventModalData.isTrivia}
+                    onChange={(e) => handleGameTypeChange('isTrivia', e.target.checked)}
+                  >
+                    Trivia (câu hỏi trắc nghiệm)
+                  </Checkbox>
+                </VStack>
 
-                <FormControl isInvalid={!!errors.gameType}>
-                  <FormLabel htmlFor="gameType">
-                    Loại trò chơi
+                <FormErrorMessage>{errors.gameType}</FormErrorMessage>
+              </FormControl>
+
+              <div className='flex'>
+                <FormControl isInvalid={!!errors.startDate}>
+                  <FormLabel htmlFor="startDate">
+                    Ngày bắt đầu
                     <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
-                  <Select
-                    id="gameType"
-                    value={eventModalData.gameType}
-                    onChange={(e) => handleInputChange('gameType', e.target.value)}
-                    onBlur={() => validateField('gameType')}
-                  >
-                    <option value="">Chọn loại trò chơi</option>
-                    <option value="trivia">Trivia (Câu hỏi trắc nghiệm)</option>
-                    <option value="shake">Lắc xu</option>
-                  </Select>
-                  <FormErrorMessage>{errors.gameType}</FormErrorMessage>
+                  <DatePicker
+                    selected={eventModalData.startDate}
+                    onChange={(date) => handleInputChange('startDate', date)}
+                    onBlur={() => validateField('startDate')}
+                    dateFormat="dd-MM-yyyy"
+                    customInput={<CustomInput />}
+                    minDate={new Date()}
+                    className="custom-datepicker"
+                  />
+                  <FormErrorMessage>{errors.startDate}</FormErrorMessage>
                 </FormControl>
 
-                <div className='flex'>
-                  <FormControl isInvalid={!!errors.startDate}>
-                    <FormLabel htmlFor="startDate">
-                      Ngày bắt đầu
-                      <Text as="span" color="red.500" ml={1}>*</Text>
-                    </FormLabel>
-                    <DatePicker
-                      selected={new Date(eventModalData.startDate.split("-").reverse().join("-"))}
-                      onChange={(date) => handleInputChange('startDate', date)}
-                      onBlur={() => validateField('startDate')}
-                      dateFormat="dd-MM-yyyy"
-                      customInput={<CustomInput />}
-                      minDate={new Date()}
-                      className="custom-datepicker"
-                    />
-                    <FormErrorMessage>{errors.startDate}</FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl isInvalid={!!errors.endDate}>
-                    <FormLabel htmlFor="endDate">
-                      Ngày kết thúc
-                      <Text as="span" color="red.500" ml={1}>*</Text>
-                    </FormLabel>
-                    <DatePicker
-                      selected={new Date(eventModalData.endDate.split("-").reverse().join("-"))}
-                      onChange={(date) => handleInputChange('endDate', date)}
-                      onBlur={() => validateField('endDate')}
-                      dateFormat="dd-MM-yyyy"
-                      customInput={<CustomInput />}
-                      minDate={new Date()}
-                      className="custom-datepicker"
-                    />
-                    <FormErrorMessage>{errors.endDate}</FormErrorMessage>
-                  </FormControl>
-                </div>
-
-              <FormControl>
-                <FormLabel htmlFor="info">Mô tả ngắn về sự kiện</FormLabel>
-                <Textarea
-                  id="info"
-                  value={eventModalData.info}
-                // onChange={(e) => handleInputChange('info', e.target.value)}
-                />
-              </FormControl>
+                <FormControl isInvalid={!!errors.endDate}>
+                  <FormLabel htmlFor="endDate">
+                    Ngày kết thúc
+                    <Text as="span" color="red.500" ml={1}>*</Text>
+                  </FormLabel>
+                  <DatePicker
+                    selected={eventModalData.endDate}
+                    onChange={(date) => handleInputChange('endDate', date)}
+                    onBlur={() => validateField('endDate')}
+                    dateFormat="dd-MM-yyyy"
+                    customInput={<CustomInput />}
+                    minDate={new Date()}
+                    className="custom-datepicker"
+                  />
+                  <FormErrorMessage>{errors.endDate}</FormErrorMessage>
+                </FormControl>
+              </div>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr="3" onClick={handleSubmit}> Cập nhật </Button>
-              <Button onClick={handleClose}>Hủy</Button>
+              <Button colorScheme="blue" mr="3" onClick={handleUpdateEvent}> Cập nhật </Button>
+              <Button onClick={() => handleClose("event")}>Hủy</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
       )}
     </Box>
   );
+}
+
+// function determineGameType(item) {
+//   const types = [];
+//   if (item.event.trivia) {
+//     types.push("Trivia");
+//   }
+//   if (item.event.shaking) {
+//     types.push("Lắc xu");
+//   }
+//   return types.length > 0 ? types.join(", ") : "Unknown";
+// }
+
+// function transformData(apiData) {
+//   return apiData.map(item => ({
+//     id: item.event.id,
+//     name: item.event.name,
+//     quantity: item.voucher.voucherQuantities,
+//     startDate: formatDate(item.event.startDate),
+//     endDate: formatDate(item.event.endDate),
+//     participants: item.participants || 0,
+//     gameType: determineGameType(item)
+//   }));
+// }
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
 }

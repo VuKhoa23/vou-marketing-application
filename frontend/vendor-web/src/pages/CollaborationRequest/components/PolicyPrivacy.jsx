@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Checkbox, Button, Text, VStack, HStack, FormControl, FormErrorMessage } from '@chakra-ui/react';
+import { Box, Checkbox, Button, Text, VStack, HStack, FormControl, FormErrorMessage, useToast } from '@chakra-ui/react';
 import { setStep } from '../../../store/stepSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitAllForms } from '../../../store/actions';
 import { useNavigate } from 'react-router-dom';
+import { resetForms } from '../../../store/formsSlice';
+import { setEvents } from '../../../store/eventsSlice';
 
 const PolicyPrivacy = () => {
 
+    const toast = useToast();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {
@@ -22,6 +25,15 @@ const PolicyPrivacy = () => {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [error, setError] = useState('');
+
+    async function fetchEvents() {
+        const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+        if (response.ok) {
+            const apiData = await response.json();
+            const transformedData = transformData(apiData);
+            dispatch(setEvents(transformedData));
+        }
+    }
 
     const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
@@ -46,7 +58,18 @@ const PolicyPrivacy = () => {
             setError('');
             try {
                 await dispatch(submitAllForms(formData)).unwrap();
-                //navigate('/events', { replace: true });
+                fetchEvents()
+                toast({
+                    title: "Đăng ký thành công",
+                    description: "Sự kiện của bạn đã được đăng ký.",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+
+                dispatch(resetForms());
+                dispatch(setStep(1));
+                navigate('/events', { replace: true });
 
             } catch (error) {
                 console.error('Form submission error:', error);
@@ -148,3 +171,32 @@ const PolicyPrivacy = () => {
 };
 
 export default PolicyPrivacy;
+
+function determineGameType(item) {
+    const types = [];
+    if (item.event.trivia) {
+        types.push("Trivia");
+    }
+    if (item.event.shaking) {
+        types.push("Lắc xu");
+    }
+    return types.length > 0 ? types.join(", ") : "Unknown";
+}
+
+function transformData(apiData) {
+    return apiData.map(item => ({
+        id: item.event.id,
+        name: item.event.name,
+        quantity: item.voucher.voucherQuantities,
+        startDate: formatDate(item.event.startDate),
+        endDate: formatDate(item.event.endDate),
+        participants: item.participants || 0,
+        gameType: determineGameType(item)
+    }));
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+}
+
