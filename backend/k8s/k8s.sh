@@ -25,5 +25,10 @@ cd gamesocket
 
 cd ..
 
+cd user
+./user.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh

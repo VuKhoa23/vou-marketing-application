@@ -18,5 +18,9 @@ cd gamesocket
 call gamesocket.bat
 
 cd ..
+cd user
+call user.bat
+
+cd ..
 cd ingress
 call ingress.bat
