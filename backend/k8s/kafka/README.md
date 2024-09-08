@@ -1,0 +1,1 @@
+Run each deployment one by one using kubectl apply -f=<name of deployment file.yml>. Check the Minikube dashboard to see if the deployment is green before proceeding to the next deployment.
