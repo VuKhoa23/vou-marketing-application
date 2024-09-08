@@ -120,10 +120,12 @@ public class EventService {
         voucherRepository.save(voucher);
     }
 
-    public void addEventAndVoucher(Long brandId, String eventImage, EventDTO eventDTO,
+    public Long addEventAndVoucher(Long brandId, String eventImage, EventDTO eventDTO,
                                    String voucherImage, VoucherDTO voucherDTO){
         Long eventId = addEvent(brandId, eventImage, eventDTO);
         addVoucher(eventId, voucherImage, voucherDTO);
+
+        return eventId;
     }
 
     public Page<Event> findByNameContaining(String name, Pageable pageable){

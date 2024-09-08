@@ -65,8 +65,10 @@ public class EventController {
         ObjectMapper objectMapper = new ObjectMapper();
         EventDTO eventDTO = objectMapper.readValue(eventDTOString, EventDTO.class);
         VoucherDTO voucherDTO = objectMapper.readValue(voucherDTOString, VoucherDTO.class);
-        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
-        return ResponseEntity.ok("{\"message\": \"Add event and voucher successfully!\"}");
+        Long eventId = eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
+        String responseMessage = String.format("{\"message\": \"Add event and voucher successfully!\", \"eventId\": %d}", eventId);
+
+        return ResponseEntity.ok(responseMessage);
     }
 
     @PutMapping("update")
