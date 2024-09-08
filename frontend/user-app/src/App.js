@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: 'trivia',
+        path: 'trivia/:eventId',
         children: [
           { index: true, element: <TriviaGame /> }
         ],
