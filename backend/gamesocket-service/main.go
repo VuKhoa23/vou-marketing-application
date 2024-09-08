@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gamesocket-service/http_helper"
+	"gamesocket-service/model"
 	"gamesocket-service/redis_client"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
@@ -71,51 +72,65 @@ func main() {
 		id := s.Request.URL.Query().Get("gameId")
 		if id == "" {
 			_ = s.Close()
-		}
-		game, err := http_helper.GetGameById(id)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		if game.ID == "" {
-			fmt.Println("Game not found")
-			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game not found"))
 			return
 		}
 
-		cmd := redisClient.Get(context.Background(), game.ID)
-
-		if cmd.Err() != nil {
-			fmt.Println(cmd.Err().Error())
-		} else {
-			if cmd.Val() != "" {
-				redisClient.Set(context.Background(), game.ID, "exists", time.Hour*100)
-			} else {
-				fmt.Println(redisClient.Get(context.Background(), game.ID).Val())
+		// handle caching game info
+		cmd := redisClient.Get(context.Background(), "Game"+id)
+		var game model.Game
+		if cmd.Val() == "" {
+			gameQuery, err := http_helper.GetGameById(id)
+			if err != nil {
+				fmt.Println(err.Error())
 			}
+			if gameQuery.ID == "" {
+				fmt.Println("Game not found")
+				_ = s.CloseWithMsg(melody.FormatCloseMessage(404, "Game not found"))
+				return
+			}
+
+			p, _ := json.Marshal(&gameQuery)
+			redisClient.Set(context.Background(), "Game"+id, p, 1*time.Minute)
+			game = gameQuery
+		} else {
+			p := redisClient.Get(context.Background(), "Game"+id)
+			data, _ := p.Bytes()
+			_ = json.Unmarshal(data, &game)
 		}
 
 		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 		startTime := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), game.StartTime.Hour(), game.StartTime.Minute(), 0, game.StartTime.Nanosecond(), loc)
 		if startTime.UnixMilli() <= time.Now().In(loc).UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
+			fmt.Println("Game ended")
 			return
 		}
 
-		questions, err := http_helper.GetQuestionsByGameId(id)
+		cmd = redisClient.Get(context.Background(), "GameQuestion"+id)
+		var questions []model.Question
+		if cmd.Val() == "" {
+			questionsQuery, err := http_helper.GetQuestionsByGameId(id)
+			if err != nil {
+				_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Error fetching questions"))
+				fmt.Println(err.Error())
+				return
+			}
+			if len(questionsQuery) == 0 {
+				_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "No questions"))
+				fmt.Println("NO QUESTION AVAILABLE")
+				return
+			}
 
-		if err != nil {
-			fmt.Println(err.Error())
-			_ = s.CloseWithMsg(melody.FormatCloseMessage(500, "Cannot get questions"))
-			return
+			p, _ := json.Marshal(&questionsQuery)
+			redisClient.Set(context.Background(), "GameQuestion"+id, p, 1*time.Minute)
+			questions = questionsQuery
+		} else {
+			p := redisClient.Get(context.Background(), "GameQuestion"+id)
+			data, _ := p.Bytes()
+			_ = json.Unmarshal(data, &questions)
 		}
 
 		instant := s.Request.URL.Query().Get("instant")
-
-		if len(questions) == 0 {
-			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "No questions"))
-			fmt.Println("NO QUESTION AVAILABLE")
-			return
-		}
 
 		go func() {
 			if instant == "" {
@@ -124,7 +139,8 @@ func main() {
 					if startTime.UnixMilli() <= time.Now().UnixMilli() {
 						break
 					}
-					time.Sleep(time.Second)
+					fmt.Println(startTime.UnixMilli() - time.Now().UnixMilli())
+					time.Sleep(500 * time.Millisecond)
 				}
 				//
 			}
