@@ -66,46 +66,8 @@ public class BrandService {
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
     }
 
-    public String getGame(String gameId) {
-        return restTemplate.getForObject(createGameURL + "/" + gameId, String.class);
-    }
-
-    public List<GameDTOResponse> getGameByEvent(Long eventId) {
-        ResponseEntity<List<GameDTOResponse>> responseEntity = restTemplate.exchange(
-                createGameURL + "/by-event/" + eventId,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<GameDTOResponse>>() {}
-        );
-
-        return responseEntity.getBody();
-    }
-
-    public GameDTOResponse createGame(GameDTORequest gameDTORequest) {
-        System.out.println("Sending request to game service: " + gameDTORequest);
-        return restTemplate.postForObject(createGameURL, gameDTORequest, GameDTOResponse.class);
-    }
-
-    public String createQuestionAndAnswers(CreateQuestionWithAnswersDTORequest createQuestionWithAnswersDTORequest) {
-        QuestionDTOResponse questionResponse = restTemplate.postForObject(createQuestionURL, createQuestionWithAnswersDTORequest.getQuestionDTORequest(), QuestionDTOResponse.class);
-
-        String questionId = questionResponse.getId();
-
-        QuestionWithAnswerDTORequest questionWithAnswerDTORequest = new QuestionWithAnswerDTORequest();
-        questionWithAnswerDTORequest.setQuestionId(questionId);
-        questionWithAnswerDTORequest.setAnswers(createQuestionWithAnswersDTORequest.getAnswers());
-
-        return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
-    }
-
-
 //    public QuestionDTOResponse createQuestion(QuestionDTORequest questionDTORequest) {
 //        System.out.println("Sending request to game service: " + questionDTORequest);
 //        return restTemplate.postForObject(createQuestionURL, questionDTORequest, QuestionDTOResponse.class);
-//    }
-
-//    public String createAnswer(QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
-//        System.out.println("Sending request to game service: " + questionWithAnswerDTORequest);
-//        return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
 //    }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vou.com.example.brand.dto.request.CreateQuestionWithAnswersDTORequest;
 import vou.com.example.brand.dto.request.GameDTORequest;
+import vou.com.example.brand.dto.request.QuestionWithAnswerDTORequest;
 import vou.com.example.brand.dto.response.GameDTOResponse;
 import vou.com.example.brand.service.GameService;
 

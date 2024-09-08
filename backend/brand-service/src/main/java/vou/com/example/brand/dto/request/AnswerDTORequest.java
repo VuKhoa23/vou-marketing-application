@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AnswerDTORequest {
-    private String content;
-    private boolean truthy;
+    String content;
+    boolean truthy;
 }
