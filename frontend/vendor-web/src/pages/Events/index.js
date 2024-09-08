@@ -92,7 +92,7 @@ function EventsPage() {
                                 <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
                                     <Event
                                         id={event.event.id}
-                                        //image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.imageURL)}`}
+                                        image={`/event-banner.jpg`}
                                         name={event.event.name}
                                         startDate={formatDate(event.event.startDate)}
                                         endDate={formatDate(event.event.endDate)}
@@ -143,8 +143,8 @@ function EventsPage() {
                             <Flex>
                                 <Box flex="1" p={4}>
                                     <Image
-                                        //src={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(selectedEvent.event.imageURL)}`}
-                                        //alt={selectedEvent.event.name}
+                                        src={`/event-banner.jpg`}
+                                        alt={selectedEvent.event.name}
                                         borderRadius="md"
                                         boxSize="100%"
                                         objectFit="cover"

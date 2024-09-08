@@ -31,6 +31,8 @@ const PolicyPrivacy = () => {
         voucherDTO: { description, endDate: voucherEndDate, voucherQuantities, value },
     } = useSelector((state) => state.forms.voucherForm);
 
+    const triviaTime = useSelector((state) => state.forms.triviaTime);
+
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [error, setError] = useState("");
@@ -39,6 +41,7 @@ const PolicyPrivacy = () => {
         const response = await fetch(
             "http://localhost/api/brand/event/events-and-vouchers?brandId=1"
         );
+
         if (response.ok) {
             const apiData = await response.json();
             const transformedData = transformData(apiData);
@@ -51,6 +54,7 @@ const PolicyPrivacy = () => {
             const formData = new FormData();
 
             formData.append("eventImage", eventImage);
+
             formData.append(
                 "eventDTO",
                 JSON.stringify({
@@ -61,7 +65,9 @@ const PolicyPrivacy = () => {
                     shaking: isShaking,
                 })
             );
+
             formData.append("voucherImage", voucherImage);
+
             formData.append(
                 "voucherDTO",
                 JSON.stringify({
@@ -73,9 +79,12 @@ const PolicyPrivacy = () => {
             );
 
             setError("");
+
             try {
-                await dispatch(submitAllForms(formData)).unwrap();
+                await dispatch(submitAllForms({ formData, triviaTime })).unwrap();
+
                 fetchEvents();
+
                 toast({
                     title: "Đăng ký thành công",
                     description: "Sự kiện của bạn đã được đăng ký.",

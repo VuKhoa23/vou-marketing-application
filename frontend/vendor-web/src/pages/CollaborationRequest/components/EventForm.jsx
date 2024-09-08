@@ -1,6 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setEventForm, updateGameTypeSelection } from "../../../store/slices/formsSlice";
+import {
+    setEventForm,
+    updateGameTypeSelection,
+    setTriviaTime,
+} from "../../../store/slices/formsSlice";
 import { setStep } from "../../../store/slices/stepSlice";
 import {
     Box,
@@ -282,7 +286,7 @@ function EventForm() {
                         <Flex>
                             <FormControl isInvalid={!!errors.startDate}>
                                 <FormLabel htmlFor="startDate">
-                                    Ngày bắt đầu
+                                    Ngày bắt đầu sự kiện
                                     <Text as="span" color="red.500" ml={1}>
                                         *
                                     </Text>
@@ -305,7 +309,7 @@ function EventForm() {
 
                             <FormControl isInvalid={!!errors.endDate}>
                                 <FormLabel htmlFor="endDate">
-                                    Ngày kết thúc
+                                    Ngày kết thúc sự kiện
                                     <Text as="span" color="red.500" ml={1}>
                                         *
                                     </Text>
@@ -325,6 +329,27 @@ function EventForm() {
                                 />
                                 <FormErrorMessage>{errors.endDate}</FormErrorMessage>
                             </FormControl>
+
+                            {formValues.eventDTO.isTrivia === true ? (
+                                <div>
+                                    <FormLabel htmlFor="triviaTime">
+                                        Ngày giờ bắt đầu game trivia
+                                        <Text as="span" color="red.500" ml={1}>
+                                            *
+                                        </Text>
+                                    </FormLabel>
+                                    <Input
+                                        id="triviaTime"
+                                        placeholder="Chọn ngày và giờ"
+                                        type="datetime-local"
+                                        onChange={(event) =>
+                                            dispatch(setTriviaTime(event.target.value))
+                                        }
+                                    />
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Flex>
                     </VStack>
                 </Grid>
