@@ -50,29 +50,25 @@ public class EventController {
 
     @PostMapping("add")
     public ResponseEntity<String> addEvent(@RequestParam Long brandId,
-            @RequestPart("eventImage") MultipartFile eventImage,
+            @RequestPart("eventImage") String eventImage,
             @RequestPart("eventDTO") EventDTO eventDTO) {
-        System.out.println("Received brandId: " + brandId);
-        System.out.println("Received file: " + eventImage.getOriginalFilename());
-        System.out.println("Received eventDTO: " + eventDTO);
         eventService.addEvent(brandId, eventImage, eventDTO);
         return ResponseEntity.ok("Event added successfully!");
     }
 
     @PostMapping("add/event-and-voucher")
     public ResponseEntity<String> addEventAndVoucher(@RequestParam Long brandId,
-            @RequestPart("eventImage") MultipartFile eventImage,
+            @RequestPart("eventImage") String eventImage,
             @RequestPart("eventDTO") String eventDTOString,
-            @RequestPart("voucherImage") MultipartFile voucherImage,
+            @RequestPart("voucherImage") String voucherImage,
             @RequestPart("voucherDTO") String voucherDTOString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         EventDTO eventDTO = objectMapper.readValue(eventDTOString, EventDTO.class);
         VoucherDTO voucherDTO = objectMapper.readValue(voucherDTOString, VoucherDTO.class);
-        System.out.println("Received brandId: " + brandId);
-        System.out.println("Received file: " + eventImage.getOriginalFilename());
-        System.out.println("Received eventDTO: " + eventDTO);
-        eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
-        return ResponseEntity.ok("{\"message\": \"Add event and voucher successfully!\"}");
+        Long eventId = eventService.addEventAndVoucher(brandId, eventImage, eventDTO, voucherImage, voucherDTO);
+        String responseMessage = String.format("{\"message\": \"Add event and voucher successfully!\", \"eventId\": %d}", eventId);
+
+        return ResponseEntity.ok(responseMessage);
     }
 
     @PutMapping("update")

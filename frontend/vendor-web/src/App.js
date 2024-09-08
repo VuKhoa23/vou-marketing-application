@@ -6,6 +6,7 @@ import Dashboard from './pages/dashboard';
 import RootLayout from './pages/Root';
 import CollaborationRequest from './pages/CollaborationRequest';
 import VendorProfile from './pages/VendorProfile';
+import Login from './pages/Login';
 
 
 const router = createBrowserRouter([
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: 'profile', element: <VendorProfile /> },
     ],
   },
+  { path: 'login', element: <Login /> },
 ]);
 
 function App() {

@@ -12,11 +12,11 @@ import (
 )
 
 func CreateUser(user model.User) (model.User, error) {
-	query := "INSERT INTO user (username, password, state) VALUES (?, ?, ?)"
+	query := "INSERT INTO user (username, password, phone, gender) VALUES (?, ?, ?, ?)"
 
 	hashedPassword := utils.HashPassword(user.Password)
 
-	_, err := db.Exec(query, user.Username, hashedPassword, 1)
+	_, err := db.Exec(query, user.Username, hashedPassword, user.Phone, user.Gender)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -28,7 +28,7 @@ func LoginUser(user model.User) (string, error) {
 
 	userFromDb := model.User{}
 	row := db.QueryRow(query, user.Username)
-	err := row.Scan(&userFromDb.ID, &userFromDb.Username, &userFromDb.Password, &userFromDb.State)
+	err := row.Scan(&userFromDb.ID, &userFromDb.Username, &userFromDb.Password, &userFromDb.Phone, &userFromDb.Gender)
 	if err != nil {
 		return "", err
 	}
@@ -133,7 +133,6 @@ func isEventExist(eventID int64) bool {
 		fmt.Printf("failed to read response body: %v\n", err)
 		return false
 	}
-	fmt.Printf("response body: %s\n", string(body))
 
 	err = json.Unmarshal(body, &eventResponse)
 	if err != nil {

@@ -3,8 +3,9 @@ package utils
 import (
 	"brand-management-service/internal/constants"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateToken(ID int16, username string) (string, error) {
@@ -36,6 +37,7 @@ func VerifyToken(tokenString string) (int16, error) {
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
+
 	idClaim, ok := claims["id"].(float64)
 	if !ok {
 		return 0, fmt.Errorf("id claim is missing or not a number")

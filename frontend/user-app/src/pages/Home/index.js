@@ -17,12 +17,14 @@ import {
 
 function Home() {
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [triviaGameId, setTriviaGameId] = useState('');
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
 
     const openModal = (event) => {
         setSelectedEvent(event);
+        console.log(event);
         onOpen();
     };
 
@@ -87,12 +89,13 @@ function Home() {
                                 <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
                                     <Event
                                         id={event.event.id}
-                                        //image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.imageURL)}`}
+                                        image={`/event-banner.jpg`}
                                         name={event.event.name}
                                         startDate={formatDate(event.event.startDate)}
                                         endDate={formatDate(event.event.endDate)}
                                         brand={event.event.brand.username}
                                         voucher={event.voucher.voucherQuantities}
+                                        isTrivia={event.event.trivia}
                                     />
                                 </li>
                             ))}
@@ -133,7 +136,8 @@ function Home() {
                         </ModalBody>
                         <ModalFooter>
                             <Button className='mr-2'>
-                                <NavLink to='/Game'>Chơi game</NavLink>
+                                {selectedEvent.event.trivia === true ? <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink> : <NavLink to='/game'>Chơi game</NavLink>}
+
                             </Button>
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>
@@ -155,17 +159,43 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://localhost:8080/api/brand/event/find-all');
-    if (!response.ok) {
-        throw json(
-            { message: 'Could not fetch events.' },
-            { status: 500 },
-        );
-    }
-    else {
-        const resData = await response.json();
-        console.log(resData);
-        return resData;
+    try {
+        const response = await fetch('http://localhost/api/brand/event/find-all');
+
+        if (!response.ok) {
+            // Log the detailed error information to the console
+            console.error('Failed to fetch events:', response.status, response.statusText);
+
+            // Clone the response to be able to read it twice
+            const responseClone = response.clone();
+
+            // Attempt to parse the JSON error response from the backend
+            try {
+                const errorData = await response.json();
+                console.error('Backend error message:', errorData.message);
+
+                // Optionally, you can throw a custom error with the backend message for further handling
+                throw new Error(`Backend responded with ${response.status}: ${errorData.message}`);
+            } catch (jsonError) {
+                // If parsing the JSON fails, log the raw response text from the cloned response
+                console.error('Failed to parse error JSON:', jsonError);
+                const errorText = await responseClone.text();
+                console.error('Raw error response:', errorText);
+
+                // Throw a generic error for non-JSON responses
+                throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
+            }
+        } else {
+            const resData = await response.json();
+            return resData;
+        }
+    } catch (error) {
+        // Log any unexpected network errors or other exceptions
+        console.error('An error occurred while fetching events:', error);
+
+        // Optionally, you can re-throw the error or handle it gracefully here, 
+        // e.g., by displaying a user-friendly error message in your UI
+        throw error; // Re-throw to let the React Router handle the error
     }
 }
 

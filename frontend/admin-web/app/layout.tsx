@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import "../globals.css";
+import "./globals.css";
+import StoreProvider from "./StoreProvider";
 
 export const metadata: Metadata = {
     title: "VOU Admin",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
-            <body className="flex min-h-screen bg-white">{children}</body>
+            <body>
+                <StoreProvider>{children}</StoreProvider>
+            </body>
         </html>
     );
 }

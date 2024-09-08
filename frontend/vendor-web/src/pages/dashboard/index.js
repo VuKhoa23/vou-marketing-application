@@ -12,7 +12,7 @@ import NumberOfParticipants from "./components/NumberOfParticipants";
 import TotalSpent from "./components/RevenueNProfit";
 import ParticipantsInfo from "./components/ParticipantsInfo";
 import { useSelector, useDispatch } from "react-redux";
-import { setEvents } from "../../store/eventsSlice";
+import { setEvents } from "../../store/slices/eventsSlice";
 import { useEffect } from "react";
 
 
@@ -25,13 +25,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchEvents() {
-            const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
+            const response = await fetch('http://localhost/api/brand/event/events-and-vouchers?brandId=1');
             if (response.ok) {
                 const apiData = await response.json();
                 const transformedData = transformData(apiData);
                 dispatch(setEvents(transformedData));
             }
         }
+
         if (events.length <= 0) {
             fetchEvents();
         }

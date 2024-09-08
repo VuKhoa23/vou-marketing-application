@@ -19,7 +19,8 @@ const initialState = {
             voucherQuantities: 0,
             value: 0
         }
-    }
+    },
+    triviaTime: null
 };
 
 const formsSlice = createSlice({
@@ -39,6 +40,10 @@ const formsSlice = createSlice({
             state.eventForm.eventDTO[gameType] = selected;
         },
 
+        setTriviaTime(state, action) {
+            state.triviaTime = action.payload;
+        },
+
         resetForms(state) {
             return initialState;
         }
@@ -50,6 +55,7 @@ export const {
     setVoucherForm,
     updateGameTypeSelection,
     resetForms,
+    setTriviaTime
 } = formsSlice.actions;
 
 export default formsSlice.reducer;
