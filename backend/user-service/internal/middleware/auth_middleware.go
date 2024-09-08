@@ -3,8 +3,10 @@ package middleware
 import (
 	"brand-management-service/internal/utils"
 	"errors"
-	"github.com/gin-gonic/gin"
+	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func extractBearerToken(header string) (string, error) {
@@ -23,14 +25,30 @@ func extractBearerToken(header string) (string, error) {
 func AuthenticationMiddleware(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		c.Abort()
+		return
+	}
+
 	extractedToken, err := extractBearerToken(token)
 	if err != nil {
-		c.Next()
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		c.Abort()
+		return
 	}
 
 	id, err := utils.VerifyToken(extractedToken)
 	if err != nil {
-		c.Next()
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		c.Abort()
+		return
 	}
 
 	c.Set("isAuthenticated", true)
