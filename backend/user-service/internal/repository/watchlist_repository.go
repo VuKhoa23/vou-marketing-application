@@ -1,20 +1,21 @@
 package repository
 
 import (
+	"brand-management-service/internal/model"
 	"fmt"
 )
 
-func AddEventToWatchlist(userID int64, eventID int64) error {
-	if !isUserExist(userID) {
-		return fmt.Errorf("user with ID %d does not exist", userID)
+func AddEventToWatchlist(watchlist model.Watchlist) error {
+	if !isUserExist(watchlist.UserID) {
+		return fmt.Errorf("user with ID %d does not exist", watchlist.UserID)
 	}
 
-	if !isEventExist(eventID) {
-		return fmt.Errorf("event with ID %d does not exist", eventID)
+	if !isEventExist(watchlist.EventID) {
+		return fmt.Errorf("event with ID %d does not exist", watchlist.EventID)
 	}
 
 	query := "INSERT INTO watchlist (user_id, event_id) VALUES (?, ?)"
-	_, err := db.Exec(query, userID, eventID)
+	_, err := db.Exec(query, watchlist.UserID, watchlist.EventID)
 	if err != nil {
 		// Handle specific error if needed (e.g., unique constraint violation)
 		return fmt.Errorf("failed to add event to watchlist: %w", err)

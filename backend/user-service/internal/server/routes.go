@@ -34,7 +34,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.POST("/api/user/watchlist/add", middleware.AuthenticationMiddleware, s.AddEventToWatchlistHandler)
 	r.GET("/api/user/watchlist", middleware.AuthenticationMiddleware, s.ShowWatchlistHandler)
 
-	r.POST("/api/user/game/join", middleware.AuthenticationMiddleware, s.CreateUserEventHandler)
-	r.POST("/api/user/game/play", middleware.AuthenticationMiddleware, s.UpdateUserEventHandler)
+	r.POST("/api/user/add-coin", middleware.AuthenticationMiddleware, s.AddCoinHandler)
+	r.POST("/api/user/subtract-coin", middleware.AuthenticationMiddleware, s.SubtractCoinHandler)
 	return r
 }
