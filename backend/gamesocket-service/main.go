@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/olahol/melody"
+	"github.com/segmentio/kafka-go"
 	"os"
 	"time"
 )
@@ -45,7 +46,24 @@ func main() {
 		}
 	})
 
+	w := &kafka.Writer{
+		Addr:     kafka.TCP("localhost:9092"),
+		Balancer: &kafka.LeastBytes{},
+	}
+	defer w.Close()
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
+		err := w.WriteMessages(context.Background(),
+			kafka.Message{
+				Topic:     "user-answers",
+				Partition: 0,
+				Key:       []byte("Message"),
+				Value:     msg,
+			},
+		)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
 		fmt.Println(string(msg[:]))
 	})
 
@@ -61,6 +79,7 @@ func main() {
 		if game.ID == "" {
 			fmt.Println("Game not found")
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game not found"))
+			return
 		}
 
 		cmd := redisClient.Get(context.Background(), game.ID)
@@ -79,6 +98,7 @@ func main() {
 		startTime := time.Date(game.StartTime.Year(), game.StartTime.Month(), game.StartTime.Day(), game.StartTime.Hour(), game.StartTime.Minute(), 0, game.StartTime.Nanosecond(), loc)
 		if startTime.UnixMilli() <= time.Now().In(loc).UnixMilli() {
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "Game ended"))
+			return
 		}
 
 		questions, err := http_helper.GetQuestionsByGameId(id)
@@ -86,10 +106,17 @@ func main() {
 		if err != nil {
 			fmt.Println(err.Error())
 			_ = s.CloseWithMsg(melody.FormatCloseMessage(500, "Cannot get questions"))
+			return
 		}
 
 		instant := s.Request.URL.Query().Get("instant")
-		fmt.Println("Instant: " + instant)
+
+		if len(questions) == 0 {
+			_ = s.CloseWithMsg(melody.FormatCloseMessage(400, "No questions"))
+			fmt.Println("NO QUESTION AVAILABLE")
+			return
+		}
+
 		go func() {
 			if instant == "" {
 				// stop until the start time
@@ -97,9 +124,6 @@ func main() {
 					if startTime.UnixMilli() <= time.Now().UnixMilli() {
 						break
 					}
-					fmt.Println(startTime.UnixMilli())
-					fmt.Println(time.Now().UnixMilli())
-					fmt.Println(startTime.UnixMilli() - time.Now().UnixMilli())
 					time.Sleep(time.Second)
 				}
 				//
