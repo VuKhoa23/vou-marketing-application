@@ -3,17 +3,25 @@ package server
 import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/repository"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-type AuthReq struct {
+type RegisterReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Phone    string `json:"phone"`
+	Gender   string `json:"gender"`
+}
+
+type LoginReq struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func (s Server) registerHandler(c *gin.Context) {
-	var req AuthReq
+	var req RegisterReq
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -21,7 +29,12 @@ func (s Server) registerHandler(c *gin.Context) {
 		})
 		return
 	}
-	user, err := repository.CreateUser(model.User{Username: req.Username, Password: req.Password})
+	user, err := repository.CreateUser(model.User{
+		Username: req.Username,
+		Password: req.Password,
+		Phone:    req.Phone,
+		Gender:   req.Gender,
+	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -35,7 +48,7 @@ func (s Server) registerHandler(c *gin.Context) {
 }
 
 func (s Server) loginHandler(c *gin.Context) {
-	var req AuthReq
+	var req LoginReq
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

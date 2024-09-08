@@ -2,6 +2,7 @@ package server
 
 import (
 	"brand-management-service/internal/dto"
+	"brand-management-service/internal/model"
 	"brand-management-service/internal/repository"
 	"fmt"
 	"net/http"
@@ -41,7 +42,12 @@ func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
 		return
 	}
 
-	err := repository.AddEventToWatchlist(userIdInt64, req.EventID)
+	watchlist := model.Watchlist{
+		UserID:  userIdInt64,
+		EventID: req.EventID,
+	}
+
+	err := repository.AddEventToWatchlist(watchlist)
 	fmt.Printf("Request Body: %+v\n", req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add event to watchlist: " + err.Error()})

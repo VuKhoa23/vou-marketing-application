@@ -30,5 +30,10 @@ cd user
 
 cd ..
 
+cd kafka
+./kafka.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh
