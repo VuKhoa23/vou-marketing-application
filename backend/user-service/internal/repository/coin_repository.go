@@ -91,14 +91,20 @@ func SubtractCoin(coin model.Coin) error {
 	}
 
 	// Subtract coins to the existing record
-	newCoinValue := existingCoin - coin.Coin
-	if newCoinValue < 0 {
-		return fmt.Errorf("resulting coin value is negative: %d", newCoinValue)
-	}
-	queryUpdate := "UPDATE coin SET coin = ? WHERE user_id = ? AND event_id = ?"
-	_, err = db.Exec(queryUpdate, newCoinValue, coin.UserID, coin.EventID)
+	queryUpdate := "UPDATE coin SET coin = coin - ? WHERE user_id = ? AND event_id = ? AND coin >= ?"
+	result, err := db.Exec(queryUpdate, coin.Coin, coin.UserID, coin.EventID, coin.Coin)
 	if err != nil {
 		return fmt.Errorf("failed to update coin: %w", err)
+	}
+
+	// Check if the update affected exactly one row
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("update failed: either no matching record or insufficient coin balance")
 	}
 
 	return nil
