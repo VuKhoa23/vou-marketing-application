@@ -15,12 +15,15 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import CollabImg from '../../assets/collab.jpg';
+import { useSelector } from 'react-redux';
 
 function EventsPage() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
+    const token = useSelector((state) => state.auth.accessToken);
+
 
     const openModal = (event) => {
         setSelectedEvent(event);
@@ -115,7 +118,16 @@ function EventsPage() {
                         <p className="py-6">
                             Chúng tôi cung cấp dịch vụ tạo sự kiện trò chơi sáng tạo giúp bạn thu hút sự chú ý và kết nối sâu sắc với khách hàng. Đừng bỏ lỡ cơ hội để làm nổi bật thương hiệu và sản phẩm của bạn thông qua các trải nghiệm tương tác đầy ấn tượng. Hãy hợp tác với chúng tôi và biến mỗi sự kiện thành một chiến lược quảng cáo hiệu quả!
                         </p>
-                        <NavLink to='form' className="btn btn-primary">Đăng ký ngay</NavLink>
+                        {token === null ?
+                            <NavLink to='/login' className="btn btn-primary">
+                                Đăng nhập để tạo sự kiện
+                            </NavLink>
+                            :
+                            <NavLink to='form' className="btn btn-primary">
+                                Đăng ký ngay
+                            </NavLink>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -170,7 +182,7 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://localhost/api/brand/event/find-all');
+    const response = await fetch('http://127.0.0.1/api/brand/event/find-all');
 
     if (!response.ok) {
         throw json(

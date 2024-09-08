@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -19,6 +20,8 @@ function MainNavigation() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    const token = useSelector((state) => state.auth.accessToken);
 
     return (
         <div
@@ -56,7 +59,8 @@ function MainNavigation() {
                             strokeLinejoin="round" />
                     </svg>
                 </NavLink>
-                <NavLink to='/stats' className="btn btn-ghost btn-rectangle">
+
+                <NavLink to={token === null ? '/login' : '/stats'} className="btn btn-ghost btn-rectangle">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5"
@@ -84,11 +88,16 @@ function MainNavigation() {
                         tabIndex={0}
                         className="menu menu-sm dropdown-content bg-base-100 text-neutral rounded-box z-[1] mt-3 w-52 p-2 shadow">
                         <li>
-                            <NavLink to="/profile" className="justify-between">
+                            <NavLink to={token === null ? '/login' : '/profile'} className="justify-between">
                                 Profile
                             </NavLink>
                         </li>
-                        <li><a href="/login">Logout</a></li>
+                        {token !== null && (
+                            <li>
+                                <a href="/login">Logout</a>
+                            </li>
+                        )}
+
                     </ul>
                 </div>
             </div>
