@@ -47,12 +47,13 @@ func main() {
 		}
 	})
 
-	w := &kafka.Writer{
-		Addr:     kafka.TCP("localhost:9092"),
-		Balancer: &kafka.LeastBytes{},
-	}
-	defer w.Close()
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
+		w := &kafka.Writer{
+			Addr:     kafka.TCP("localhost:9092"),
+			Balancer: &kafka.LeastBytes{},
+		}
+		defer w.Close()
+
 		err := w.WriteMessages(context.Background(),
 			kafka.Message{
 				Topic:     "user-answers",
