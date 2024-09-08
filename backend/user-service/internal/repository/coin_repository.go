@@ -52,9 +52,6 @@ func AddCoin(coin model.Coin) error {
 
 	// Add coins to the existing record
 	newCoinValue := existingCoin + coin.Coin
-	fmt.Println("exist ", existingCoin)
-	fmt.Println("coin ", coin.Coin)
-	fmt.Println("new ", newCoinValue)
 	queryUpdate := "UPDATE coin SET coin = ? WHERE user_id = ? AND event_id = ?"
 	_, err = db.Exec(queryUpdate, newCoinValue, coin.UserID, coin.EventID)
 	if err != nil {
