@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class GameDTOResponse {
-    private String id;
-    private Long event_id;
-    private String start_time;
+    String id;
+    Long event_id;
+    String start_time;
+    String type;
 }
