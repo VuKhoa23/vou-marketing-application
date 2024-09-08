@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-init-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-init-container
+        image: confluentinc/cp-kafka:6.1.1
+        command: [ "/bin/sh", "-c" ]
+        args:
+        - |
+          # Wait until Kafka is reachable
+          until kafka-topics --bootstrap-server kafka-service.default:9092 --list; do
+            echo "Waiting for Kafka to be available..."
+            sleep 5
+          done
+
+          echo 'Creating Kafka topics'
+          kafka-topics --bootstrap-server kafka-service.default:9092 --create --if-not-exists --topic user-answers --replication-factor 1 --partitions 1
+
+          echo 'Successfully created the following topics:'
+          kafka-topics --bootstrap-server kafka-service.default:9092 --list
+      restartPolicy: Never
+  backoffLimit: 4

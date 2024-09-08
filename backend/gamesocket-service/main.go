@@ -38,6 +38,7 @@ func main() {
 	router := gin.Default()
 	m := melody.New()
 	router.Use(corsMiddleware())
+	kafkaUrl := os.Getenv("KAFKA_URL")
 
 	router.GET("/ws", func(c *gin.Context) {
 		err := m.HandleRequest(c.Writer, c.Request)
@@ -49,7 +50,7 @@ func main() {
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
 		w := &kafka.Writer{
-			Addr:     kafka.TCP("localhost:9092"),
+			Addr:     kafka.TCP(kafkaUrl),
 			Balancer: &kafka.LeastBytes{},
 		}
 		defer w.Close()

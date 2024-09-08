@@ -30,8 +30,8 @@ cd user
 
 cd ..
 
-cd kafka
-./kafka.sh
+cd validate-answer
+./validate.sh
 
 cd ..
 
