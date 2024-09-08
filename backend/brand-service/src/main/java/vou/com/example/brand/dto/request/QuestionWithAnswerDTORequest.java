@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class QuestionWithAnswerDTORequest {
-    private String questionId;
-    private List<AnswerDTORequest> answers;
+    String question_id;
+    List<AnswerDTORequest> answers;
 }

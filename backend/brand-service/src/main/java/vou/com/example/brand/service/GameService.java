@@ -53,8 +53,10 @@ public class GameService {
         String questionId = questionResponse.getId();
 
         QuestionWithAnswerDTORequest questionWithAnswerDTORequest = new QuestionWithAnswerDTORequest();
-        questionWithAnswerDTORequest.setQuestionId(questionId);
+        questionWithAnswerDTORequest.setQuestion_id(questionId);
         questionWithAnswerDTORequest.setAnswers(createQuestionWithAnswersDTORequest.getAnswers());
+
+        System.out.println("question id " + questionId);
 
         return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
     }
