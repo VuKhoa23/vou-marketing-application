@@ -194,6 +194,7 @@ public class EventService {
 
             eventDTO.setId(event.getId());
             eventDTO.setName(event.getName());
+            eventDTO.setImageURL(event.getImageURL());
             eventDTO.setStartDate(event.getStartDate());
             eventDTO.setEndDate(event.getEndDate());
             eventDTO.setBrand(event.getBrand());
