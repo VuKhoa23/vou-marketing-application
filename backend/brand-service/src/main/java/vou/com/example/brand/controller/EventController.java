@@ -38,7 +38,7 @@ public class EventController {
     }
 
     @PostMapping("find-by-ids")
-    public List<Event> findAllByIdIn(@RequestBody IdsDTO idsDTO) {
+    public List<EventAndVoucherDTOResponse> findAllByIdIn(@RequestBody IdsDTO idsDTO) {
         List<Long> ids = idsDTO.getIds();
         return eventService.findAllByIdIn(ids);
     }

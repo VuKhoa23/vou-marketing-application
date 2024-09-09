@@ -223,8 +223,43 @@ public class EventService {
         return responseDTOList;
     }
 
-    public List<Event> findAllByIdIn(List<Long> ids) {
-        return eventRepository.findAllByIdIn(ids);
+    public List<EventAndVoucherDTOResponse> findAllByIdIn(List<Long> ids) {
+        List<EventAndVoucherDTOResponse> responseDTOList = new ArrayList<>();
+
+        List<Event> events = eventRepository.findAllByIdIn(ids);
+
+        for (Event event : events) {
+            EventDTOResponse eventDTO = new EventDTOResponse();
+
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setImageURL(event.getImageURL());
+            eventDTO.setStartDate(event.getStartDate());
+            eventDTO.setEndDate(event.getEndDate());
+            eventDTO.setBrand(event.getBrand());
+            eventDTO.setTrivia(event.isTrivia());
+            eventDTO.setShaking(event.isShaking());
+
+            VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
+            Voucher voucher = voucherRepository.findByEvent(event);
+            if(voucher != null){
+                voucherDTO.setVoucherId(voucher.getId());
+                voucherDTO.setVoucherImageURL(voucher.getImageURL());
+                voucherDTO.setVoucherValue(voucher.getValue());
+                voucherDTO.setVoucherDescription(voucher.getDescription());
+                voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherEndDate(voucher.getEndDate());
+                voucherDTO.setVoucherStatus(voucher.isStatus());
+            }
+
+            EventAndVoucherDTOResponse responseDTO = new EventAndVoucherDTOResponse();
+            responseDTO.setEvent(eventDTO);
+            responseDTO.setVoucher(voucherDTO);
+
+            responseDTOList.add(responseDTO);
+        }
+
+        return responseDTOList;
     }
 
     public EventAndVoucherDTOResponse findById(Long eventId) {

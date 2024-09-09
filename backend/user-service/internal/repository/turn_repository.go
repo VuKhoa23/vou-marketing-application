@@ -16,7 +16,7 @@ func CreateTurn(turn model.Turn) error {
 	}
 
 	query := "INSERT INTO turn (user_id, event_id, turn) VALUES (?, ?, ?)"
-	_, err := db.Exec(query, turn.UserID, turn.EventID, 0)
+	_, err := db.Exec(query, turn.UserID, turn.EventID, 10)
 	if err != nil {
 		// Handle specific error if needed (e.g., unique constraint violation)
 		return fmt.Errorf("failed to create turn: %w", err)
@@ -105,4 +105,47 @@ func Subtractturn(turn model.Turn) error {
 	}
 
 	return nil
+}
+
+func ShowTurn(userID int64, eventID int64) (int64, error) {
+	if !isUserExist(userID) {
+		return 0, fmt.Errorf("user with ID %d does not exist", userID)
+	}
+
+	if !isEventExist(eventID) {
+		return 0, fmt.Errorf("event with ID %d does not exist", eventID)
+	}
+
+	// Check if the turn record exists
+	var existingTurn int64
+	queryCheck := "SELECT turn FROM turn WHERE user_id = ? AND event_id = ?"
+	err := db.QueryRow(queryCheck, userID, eventID).Scan(&existingTurn)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Record does not exist, create it
+			newTurn := model.Turn{
+				UserID:  userID,
+				EventID: eventID,
+				Turn:    10, // Default turn amount
+			}
+			CreateTurn(newTurn)
+		} else {
+			// Error querying the database
+			return 0, fmt.Errorf("error checking if turn record exists: %w", err)
+		}
+	}
+
+	var turnAmount int64
+	query := `SELECT turn FROM turn WHERE user_id = ? AND event_id = ?`
+	row := db.QueryRow(query, userID, eventID)
+	err = row.Scan(&turnAmount)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil // No record found
+		}
+		return 0, err // Other errors
+	}
+
+	return turnAmount, nil
 }
