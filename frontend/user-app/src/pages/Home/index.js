@@ -14,6 +14,7 @@ import {
     Flex,
     useDisclosure,
 } from '@chakra-ui/react';
+import { version } from 'react';
 
 function Home() {
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -46,17 +47,6 @@ function Home() {
         return gameType;
     }
 
-    function getImageNameFromPath(fullPath) {
-        // Sử dụng phương thức split để tách các phần của đường dẫn theo dấu '/'
-        const pathParts = fullPath.split('/');
-
-        // Phần tử cuối cùng trong mảng pathParts sẽ là tên tệp
-        const imageName = pathParts[pathParts.length - 1];
-
-        return imageName;
-    }
-
-
     return (
         <>
             <div className='flex flex-col md:flex-row justify-center items-center m-10'>
@@ -81,32 +71,39 @@ function Home() {
                     </svg>
                 </label>
             </div>
+
+
             <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
                 <Await resolve={events}>
                     {(resolvedEvents) => (
-                        <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
-                            {resolvedEvents.map((event) => (
-                                <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
-                                    <Event
-                                        id={event.event.id}
-                                        image={`/event-banner.jpg`}
-                                        name={event.event.name}
-                                        startDate={formatDate(event.event.startDate)}
-                                        endDate={formatDate(event.event.endDate)}
-                                        brand={event.event.brand.username}
-                                        voucher={event.voucher.voucherQuantities}
-                                        isTrivia={event.event.trivia}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
+                        resolvedEvents.length === 0 ? (
+                            <p style={{ textAlign: 'center', marginTop: '20px' }}>Không có sự kiện nào</p>
+                        ) : (
+                            <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
+                                {resolvedEvents.map((event) => (
+                                    <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                        <Event
+                                            id={event.event.id}
+                                            image={event.event.imageURL}
+                                            name={event.event.name}
+                                            startDate={formatDate(event.event.startDate)}
+                                            endDate={formatDate(event.event.endDate)}
+                                            brand={event.event.brand.username}
+                                            voucher={event.voucher.voucherQuantities}
+                                            gameType={getGameType(event.event)}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        )
+
                     )}
                 </Await>
             </Suspense>
 
 
             {selectedEvent && (
-                <Modal isCentered isOpen={isOpen} onClose={onClose}>
+                <Modal isCentered isOpen={isOpen} onClose={onClose} size="3xl">
                     <ModalOverlay
                         bg="blackAlpha.300"
                         backdropFilter="blur(10px) hue-rotate(90deg)"
@@ -116,15 +113,14 @@ function Home() {
                             <Flex>
                                 <Box flex="1" p={4}>
                                     <Image
-                                        //src={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(selectedEvent.event.imageURL)}`}
-                                        //alt={selectedEvent.event.name}
+                                        src={selectedEvent.voucher.voucherImageURL}
                                         borderRadius="md"
                                         boxSize="100%"
                                         objectFit="cover"
                                     />
                                 </Box>
                                 <Box flex="1" p={4}>
-                                    <Text fontSize="2xl" fontWeight="bold" mb={4}>{selectedEvent.event.name}</Text>
+                                    <Text fontSize="2xl" mb={4} fontWeight="bold" whiteSpace="normal" overflowWrap="break-word" wordBreak="break-word">{selectedEvent.event.name}</Text>
                                     <Text fontSize="md" mb={4}>{selectedEvent.voucher.voucherDescription}</Text>
                                     <Text fontSize="sm" mb={2}>Số lượng voucher: {selectedEvent.voucher.voucherQuantities}</Text>
                                     <Text fontSize="sm" mb={2}>Loại trò chơi: {getGameType(selectedEvent.event)}</Text>
@@ -136,8 +132,12 @@ function Home() {
                         </ModalBody>
                         <ModalFooter>
                             <Button className='mr-2'>
-                                {selectedEvent.event.trivia === true ? <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink> : <NavLink to='/game'>Chơi game</NavLink>}
-
+                                {
+                                    selectedEvent.event.trivia === true ?
+                                        <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                        :
+                                        <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                }
                             </Button>
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>
@@ -160,8 +160,7 @@ function formatDate(dateStr) {
 
 async function loadEvents() {
     try {
-        const response = await fetch('http://localhost/api/brand/event/find-all');
-
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/find-all`);
         if (!response.ok) {
             // Log the detailed error information to the console
             console.error('Failed to fetch events:', response.status, response.statusText);
