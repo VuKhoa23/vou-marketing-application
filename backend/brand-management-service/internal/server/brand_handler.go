@@ -3,10 +3,11 @@ package server
 import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/repository"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type BrandReq struct {

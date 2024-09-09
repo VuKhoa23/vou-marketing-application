@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Button, Text, Box, chakra, Flex, useToast, Heading } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
+import { Button, Text, Box, chakra, Flex, Heading } from "@chakra-ui/react";
 import Lottie from "react-lottie";
 import animation from "./lotties/man-holding-tablet";
 
-function TriviaGame({ gameId, eventName }) {
+function TriviaGame() {
+    const { eventId } = useParams();
+
+    const [gameId, setGameId] = useState(null);
     const [gameEnd, setGameEnd] = useState(false);
 
     const [script, setScript] = useState("");
@@ -24,49 +28,73 @@ function TriviaGame({ gameId, eventName }) {
     };
 
     useEffect(() => {
-        const ws = new WebSocket(`ws://localhost/ws?gameId=66d80adbf4dea4981787bf0c&instant=true`);
-
-        ws.onopen = () => {
-            console.log("Connected to the WebSocket server");
-            setScript("Bạn vui lòng chờ một chút nhé!");
-        };
-
-        ws.onmessage = (event) => {
+        async function fetchGameId() {
             try {
-                const parsedData = JSON.parse(event.data);
-
-                if (parsedData.code === "GAME_NEARLY_READY") {
-                    setScript("Trò chơi sẽ sớm bắt đầu!");
-                    setSeconds(5);
-                } else if (parsedData.code === "GAME_ENDED") {
-                    setAnswered(false);
-                    setAnswers([]);
-                    setGameEnd(true);
-                    setScript("Cảm ơn bạn đã tham gia!");
+                const response = await fetch(
+                    `http://localhost/api/brand/game/get-game/by-event/${eventId}`
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setGameId(data[0].id);
                 } else {
-                    setScript(parsedData.title);
-                    setAnswers(parsedData.answers);
-                    setAnswered(false);
-                    setSeconds(15);
-                    setSelectedAnswerIndex(null);
+                    console.error("Error fetching game ID:", response.status, response.statusText);
                 }
             } catch (error) {
-                console.error("Error parsing message:", error);
+                console.error("Error fetching game ID:", error);
             }
-        };
+        }
 
-        ws.onclose = (event) => {
-            console.log("WebSocket connection closed:", event.reason);
-            setScript("Bạn đã bị mất kết nối với VOU. Hãy thử lại sau nhé.");
-        };
+        fetchGameId();
+    }, [eventId]);
 
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
+    useEffect(() => {
+        if (gameId) {
+            const ws = new WebSocket(`ws://localhost/ws?gameId=${gameId}&instant=true`);
 
-        return () => {
-            ws.close();
-        };
+            ws.onopen = () => {
+                console.log("Connected to the WebSocket server");
+                setScript("Bạn vui lòng chờ một chút nhé!");
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const parsedData = JSON.parse(event.data);
+
+                    if (parsedData.code === "GAME_NEARLY_READY") {
+                        setScript("Trò chơi sẽ sớm bắt đầu!");
+                        setSeconds(5);
+                    } else if (parsedData.code === "GAME_ENDED") {
+                        setAnswered(false);
+                        setAnswers([]);
+                        setGameEnd(true);
+                        setScript("Cảm ơn bạn đã tham gia!");
+                    } else {
+                        setScript(parsedData.title);
+                        setAnswers(parsedData.answers);
+                        setAnswered(false);
+                        setSeconds(15);
+                        setSelectedAnswerIndex(null);
+                    }
+                } catch (error) {
+                    console.error("Error parsing message:", error);
+                }
+            };
+
+            ws.onclose = (event) => {
+                console.log("WebSocket connection closed:", event.reason);
+                setScript("Bạn đã bị mất kết nối với VOU. Hãy thử lại sau nhé.");
+            };
+
+            ws.onerror = (error) => {
+                console.error("WebSocket error:", error);
+            };
+
+            return () => {
+                ws.close();
+            };
+        } else {
+            setScript("Đã có lỗi xảy ra với game này. Hãy thử lại sau nhé.");
+        }
     }, [gameId]);
 
     useEffect(() => {

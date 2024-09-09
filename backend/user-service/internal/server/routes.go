@@ -39,5 +39,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.POST("/api/user/add-turn", middleware.AuthenticationMiddleware, s.AddTurnHandler)
 	r.POST("/api/user/subtract-turn", middleware.AuthenticationMiddleware, s.SubtractTurnHandler)
+
+	r.GET("/api/user/info", middleware.AuthenticationMiddleware, s.GetUserInfoHandler)
+
+	r.POST("/api/user/exchange-voucher", middleware.AuthenticationMiddleware, s.ExchangeVoucherHandler)
+	r.GET("/api/user/get-coins", middleware.AuthenticationMiddleware, s.GetCoinsHandler)
+	r.GET("/api/user/get-turns", middleware.AuthenticationMiddleware, s.GetTurnsHandler)
+	r.GET("/api/user/get-vouchers", middleware.AuthenticationMiddleware, s.GetVouchersHandler)
 	return r
 }

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validate-answer-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validate-answer-service-deployment
+  template:
+    metadata:
+      labels:
+        app: validate-answer-service-deployment
+    spec:
+      containers:
+      - name: validate-answer-cont
+        image: vukhoa23/validate-answer-service:1  
+        env:
+        - name: PORT
+          value: "8085"
+        - name: DB_HOST
+          value: "validatedb-service.default"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USERNAME
+          value: root
+        - name: DB_ROOT_PASSWORD
+          value: root
+        - name: DB_PASSWORD
+          value: root
+        - name: DB_DATABASE
+          value: vouValidate
+        - name: KAFKA_URL
+          value: kafka-service.default:9092
+

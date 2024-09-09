@@ -9,7 +9,7 @@ import { CalendarIcon } from '@chakra-ui/icons';
 import DatePicker from 'react-datepicker';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEvents, updateEvent } from '../../../store/eventsSlice';
+import { setEvents, updateEvent } from '../../../store/slices/eventsSlice';
 
 
 const columnHelper = createColumnHelper();
@@ -411,7 +411,7 @@ export default function EventList() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/brand/voucher/update?eventId=${voucherModalData.id}&quantities=${totalQuantity}`, {
+      const response = await fetch(`http://localhost/api/brand/voucher/update?eventId=${voucherModalData.id}&quantities=${totalQuantity}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -489,7 +489,7 @@ export default function EventList() {
       };
 
       // Gọi API để cập nhật sự kiện
-      const response = await fetch(`http://localhost:8080/api/brand/event/update?eventId=${eventModalData.id}`, {
+      const response = await fetch(`http://localhost/api/brand/event/update?eventId=${eventModalData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

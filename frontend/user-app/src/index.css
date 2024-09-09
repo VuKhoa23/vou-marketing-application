@@ -17,3 +17,8 @@ body > #root > div {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+.form-error-msg {
+    color: #9f1239;
+    font-size: 0.75rem;
+}

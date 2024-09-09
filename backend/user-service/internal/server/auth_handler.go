@@ -13,6 +13,7 @@ type RegisterReq struct {
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
 	Gender   string `json:"gender"`
+	ImageURL string `json:"imageURL"`
 }
 
 type LoginReq struct {
@@ -34,6 +35,7 @@ func (s Server) registerHandler(c *gin.Context) {
 		Password: req.Password,
 		Phone:    req.Phone,
 		Gender:   req.Gender,
+		ImageURL: req.ImageURL,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

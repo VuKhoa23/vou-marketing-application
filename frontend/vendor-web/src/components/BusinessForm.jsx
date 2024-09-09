@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setStep } from '../store/stepSlice';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setStep } from "../store/slices/stepSlice";
 import {
     Box,
     FormControl,
@@ -13,54 +13,52 @@ import {
     HStack,
     FormErrorMessage,
     Image,
-    Text
-} from '@chakra-ui/react';
-import { useDropzone } from 'react-dropzone';
+    Text,
+} from "@chakra-ui/react";
+import { useDropzone } from "react-dropzone";
 
 function BusinessForm() {
-
     const dispatch = useDispatch();
 
     const [formValues, setFormValues] = useState({
         image: null,
-        brandName: '',
-        address: '',
-        phone: '',
-        email: '',
-        info: ''
+        brandName: "",
+        address: "",
+        phone: "",
+        email: "",
+        info: "",
     });
 
     const [errors, setErrors] = useState({
-        brandName: '',
-        address: '',
-        phone: '',
-        email: ''
+        brandName: "",
+        address: "",
+        phone: "",
+        email: "",
     });
 
-
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        accept: 'image/*',
+        accept: "image/*",
         onDrop: (acceptedFiles) => {
             const file = acceptedFiles[0];
             if (file) {
-                setFormValues(prevValues => ({
+                setFormValues((prevValues) => ({
                     ...prevValues,
-                    image: URL.createObjectURL(file)
+                    image: URL.createObjectURL(file),
                 }));
             }
-        }
+        },
     });
 
     function handleInputChange(identifier, value) {
-        setFormValues(prevValues => ({
+        setFormValues((prevValues) => ({
             ...prevValues,
-            [identifier]: value
+            [identifier]: value,
         }));
 
         // Clear the error for this field when user starts typing
-        setErrors(prevErrors => ({
+        setErrors((prevErrors) => ({
             ...prevErrors,
-            [identifier]: ''
+            [identifier]: "",
         }));
     }
 
@@ -70,51 +68,52 @@ function BusinessForm() {
 
     function validateField(identifier) {
         const value = formValues[identifier];
-        let errorMessage = '';
+        let errorMessage = "";
 
         switch (identifier) {
-            case 'brandName':
+            case "brandName":
                 if (!value) {
-                    errorMessage = 'Tên doanh nghiệp không được bỏ trống.';
+                    errorMessage = "Tên doanh nghiệp không được bỏ trống.";
                 }
                 break;
-            case 'address':
+            case "address":
                 if (!value) {
-                    errorMessage = 'Địa chỉ không được bỏ trống.';
+                    errorMessage = "Địa chỉ không được bỏ trống.";
                 }
                 break;
-            case 'phone':
+            case "phone":
                 const phonePattern = /^[0-9]{10,11}$/;
                 if (!value) {
-                    errorMessage = 'Số điện thoại không được bỏ trống.';
+                    errorMessage = "Số điện thoại không được bỏ trống.";
                 } else if (!phonePattern.test(value)) {
-                    errorMessage = 'Số điện thoại phải là 10-11 chữ số.';
+                    errorMessage = "Số điện thoại phải là 10-11 chữ số.";
                 }
                 break;
-            case 'email':
+            case "email":
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!value) {
-                    errorMessage = 'Email không được bỏ trống.';
+                    errorMessage = "Email không được bỏ trống.";
                 } else if (!emailPattern.test(value)) {
-                    errorMessage = 'Email không hợp lệ. Phải có ký tự "@" và ".", và có chữ giữa "@" và ".".';
+                    errorMessage =
+                        'Email không hợp lệ. Phải có ký tự "@" và ".", và có chữ giữa "@" và ".".';
                 }
                 break;
             default:
                 break;
         }
 
-        setErrors(prevErrors => ({
+        setErrors((prevErrors) => ({
             ...prevErrors,
-            [identifier]: errorMessage
+            [identifier]: errorMessage,
         }));
     }
 
     function handleNavigate(event) {
         event.preventDefault();
-        const fields = ['brandName', 'address', 'phone', 'email'];
+        const fields = ["brandName", "address", "phone", "email"];
         let formIsValid = true;
 
-        fields.forEach(field => {
+        fields.forEach((field) => {
             if (!formValues[field]) {
                 validateField(field);
                 formIsValid = false;
@@ -122,21 +121,21 @@ function BusinessForm() {
         });
 
         if (formIsValid) {
-            dispatch(setStep(2))
+            dispatch(setStep(2));
         }
     }
 
     return (
         <Box className="p-4 max-w-4xl mx-auto" bg="gray.50" borderRadius="md" boxShadow="md">
             <form>
-                <Grid templateColumns={{ base: '1fr', md: '1fr 2fr' }} gap={6}>
+                <Grid templateColumns={{ base: "1fr", md: "1fr 2fr" }} gap={6}>
                     <Box>
                         <FormControl>
                             <FormLabel htmlFor="image">Hình ảnh doanh nghiệp</FormLabel>
                             <Box
                                 {...getRootProps()}
                                 border="2px dashed"
-                                borderColor={isDragActive ? 'blue.500' : 'gray.300'}
+                                borderColor={isDragActive ? "blue.500" : "gray.300"}
                                 p={4}
                                 borderRadius="md"
                                 cursor="pointer"
@@ -151,7 +150,12 @@ function BusinessForm() {
                             </Box>
                             {formValues.image && (
                                 <Box mt={2}>
-                                    <Image src={formValues.image} alt="Preview" boxSize="full" objectFit="contain" />
+                                    <Image
+                                        src={formValues.image}
+                                        alt="Preview"
+                                        boxSize="full"
+                                        objectFit="contain"
+                                    />
                                 </Box>
                             )}
                         </FormControl>
@@ -161,15 +165,17 @@ function BusinessForm() {
                         <FormControl isInvalid={!!errors.brandName}>
                             <FormLabel htmlFor="brandName">
                                 Tên doanh nghiệp
-                                <Text as="span" color="red.500" ml={1}>*</Text>
+                                <Text as="span" color="red.500" ml={1}>
+                                    *
+                                </Text>
                             </FormLabel>
                             <Input
                                 id="brandName"
                                 type="text"
                                 value={formValues.brandName}
-                                onChange={(e) => handleInputChange('brandName', e.target.value)}
-                                onBlur={() => handleInputBlur('brandName')}
-                                placeholder='We Marketing'
+                                onChange={(e) => handleInputChange("brandName", e.target.value)}
+                                onBlur={() => handleInputBlur("brandName")}
+                                placeholder="We Marketing"
                             />
                             <FormErrorMessage>{errors.brandName}</FormErrorMessage>
                         </FormControl>
@@ -177,15 +183,17 @@ function BusinessForm() {
                         <FormControl isInvalid={!!errors.address}>
                             <FormLabel htmlFor="address">
                                 Địa chỉ
-                                <Text as="span" color="red.500" ml={1}>*</Text>
+                                <Text as="span" color="red.500" ml={1}>
+                                    *
+                                </Text>
                             </FormLabel>
                             <Input
                                 id="address"
                                 type="text"
                                 value={formValues.address}
-                                onChange={(e) => handleInputChange('address', e.target.value)}
-                                onBlur={() => handleInputBlur('address')}
-                                placeholder='123/4 Đường 567, Phường 8, Quận 9, Thành phố Hồ Chí Minh'
+                                onChange={(e) => handleInputChange("address", e.target.value)}
+                                onBlur={() => handleInputBlur("address")}
+                                placeholder="123/4 Đường 567, Phường 8, Quận 9, Thành phố Hồ Chí Minh"
                             />
                             <FormErrorMessage>{errors.address}</FormErrorMessage>
                         </FormControl>
@@ -193,15 +201,17 @@ function BusinessForm() {
                         <FormControl isInvalid={!!errors.phone}>
                             <FormLabel htmlFor="phone">
                                 Số điện thoại
-                                <Text as="span" color="red.500" ml={1}>*</Text>
+                                <Text as="span" color="red.500" ml={1}>
+                                    *
+                                </Text>
                             </FormLabel>
                             <Input
                                 id="phone"
                                 type="tel"
                                 value={formValues.phone}
-                                onChange={(e) => handleInputChange('phone', e.target.value)}
-                                onBlur={() => handleInputBlur('phone')}
-                                placeholder='0999999999'
+                                onChange={(e) => handleInputChange("phone", e.target.value)}
+                                onBlur={() => handleInputBlur("phone")}
+                                placeholder="0999999999"
                             />
                             <FormErrorMessage>{errors.phone}</FormErrorMessage>
                         </FormControl>
@@ -209,15 +219,17 @@ function BusinessForm() {
                         <FormControl isInvalid={!!errors.email}>
                             <FormLabel htmlFor="email">
                                 Email
-                                <Text as="span" color="red.500" ml={1}>*</Text>
+                                <Text as="span" color="red.500" ml={1}>
+                                    *
+                                </Text>
                             </FormLabel>
                             <Input
                                 id="email"
                                 type="email"
                                 value={formValues.email}
-                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                onBlur={() => handleInputBlur('email')}
-                                placeholder='httkcompany@email.com'
+                                onChange={(e) => handleInputChange("email", e.target.value)}
+                                onBlur={() => handleInputBlur("email")}
+                                placeholder="httkcompany@email.com"
                             />
                             <FormErrorMessage>{errors.email}</FormErrorMessage>
                         </FormControl>
@@ -227,7 +239,7 @@ function BusinessForm() {
                             <Textarea
                                 id="info"
                                 value={formValues.info}
-                                onChange={(e) => handleInputChange('info', e.target.value)}
+                                onChange={(e) => handleInputChange("info", e.target.value)}
                             />
                         </FormControl>
 
@@ -235,15 +247,12 @@ function BusinessForm() {
                             <Button
                                 variant="outline"
                                 bg="white"
-                                onClick={() => alert('Quay lại để chỉnh sửa thông tin')}
+                                onClick={() => alert("Quay lại để chỉnh sửa thông tin")}
                             >
                                 Quay Lại
                             </Button>
 
-                            <Button
-                                colorScheme="teal"
-                                onClick={handleNavigate}
-                            >
+                            <Button colorScheme="teal" onClick={handleNavigate}>
                                 Tiếp theo
                             </Button>
                         </HStack>

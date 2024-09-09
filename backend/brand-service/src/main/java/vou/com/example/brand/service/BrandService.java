@@ -1,6 +1,11 @@
 package vou.com.example.brand.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,7 +23,8 @@ import java.util.Optional;
 public class BrandService {
     private BrandRepository brandRepository;
     private RestTemplate restTemplate;
-    private static final String gameURL = "http://game-service.default:8081/api/game";
+//    private static final String gameURL = "http://game-service.default:8081/api/game";
+    private static final String gameURL = "http://127.0.0.1:7781/api/game";
     private static final String createGameURL = gameURL;
     private static final String createQuestionURL = gameURL + "/create-question";
     private static final String createAnswerURL = gameURL + "/create-answers";
@@ -27,6 +33,16 @@ public class BrandService {
     public BrandService(BrandRepository brandRepository, RestTemplate restTemplate){
         this.brandRepository = brandRepository;
         this.restTemplate = restTemplate;
+    }
+
+    public Brand getInfo(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Brand brand = brandRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("Brand not found with name: " + username));
+
+        return brand;
     }
 
     public Optional<Brand> findByName(String name){
@@ -50,35 +66,8 @@ public class BrandService {
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
     }
 
-    public String getGame(String gameId) {
-        return restTemplate.getForObject(createGameURL + "/" + gameId, String.class);
-    }
-
-    public GameDTOResponse createGame(GameDTORequest gameDTORequest) {
-        System.out.println("Sending request to game service: " + gameDTORequest);
-        return restTemplate.postForObject(createGameURL, gameDTORequest, GameDTOResponse.class);
-    }
-
-    public String createQuestionAndAnswers(CreateQuestionWithAnswersDTORequest createQuestionWithAnswersDTORequest) {
-        QuestionDTOResponse questionResponse = restTemplate.postForObject(createQuestionURL, createQuestionWithAnswersDTORequest.getQuestionDTORequest(), QuestionDTOResponse.class);
-
-        String questionId = questionResponse.getId();
-
-        QuestionWithAnswerDTORequest questionWithAnswerDTORequest = new QuestionWithAnswerDTORequest();
-        questionWithAnswerDTORequest.setQuestionId(questionId);
-        questionWithAnswerDTORequest.setAnswers(createQuestionWithAnswersDTORequest.getAnswers());
-
-        return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
-    }
-
-
 //    public QuestionDTOResponse createQuestion(QuestionDTORequest questionDTORequest) {
 //        System.out.println("Sending request to game service: " + questionDTORequest);
 //        return restTemplate.postForObject(createQuestionURL, questionDTORequest, QuestionDTOResponse.class);
-//    }
-
-//    public String createAnswer(QuestionWithAnswerDTORequest questionWithAnswerDTORequest) {
-//        System.out.println("Sending request to game service: " + questionWithAnswerDTORequest);
-//        return restTemplate.postForObject(createAnswerURL, questionWithAnswerDTORequest, String.class);
 //    }
 }

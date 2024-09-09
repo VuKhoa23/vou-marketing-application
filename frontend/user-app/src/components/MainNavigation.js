@@ -54,13 +54,13 @@ function MainNavigation() {
                     </div>
                     <ul
                         tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                        className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                         <li>
                             <NavLink to="/profile" className="justify-between">
                                 Profile
                             </NavLink>
                         </li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="/login">Logout</a></li>
                     </ul>
                 </div>
             </div>

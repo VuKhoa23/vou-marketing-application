@@ -4,6 +4,7 @@ import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/utils"
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,11 +13,11 @@ import (
 )
 
 func CreateUser(user model.User) (model.User, error) {
-	query := "INSERT INTO user (username, password, phone, gender) VALUES (?, ?, ?, ?)"
+	query := "INSERT INTO user (username, password, phone, gender, imageURL) VALUES (?, ?, ?, ?, ?)"
 
 	hashedPassword := utils.HashPassword(user.Password)
 
-	_, err := db.Exec(query, user.Username, hashedPassword, user.Phone, user.Gender)
+	_, err := db.Exec(query, user.Username, hashedPassword, user.Phone, user.Gender, user.ImageURL)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -28,7 +29,7 @@ func LoginUser(user model.User) (string, error) {
 
 	userFromDb := model.User{}
 	row := db.QueryRow(query, user.Username)
-	err := row.Scan(&userFromDb.ID, &userFromDb.Username, &userFromDb.Password, &userFromDb.Phone, &userFromDb.Gender)
+	err := row.Scan(&userFromDb.ID, &userFromDb.Username, &userFromDb.Password, &userFromDb.Phone, &userFromDb.Gender, &userFromDb.ImageURL)
 	if err != nil {
 		return "", err
 	}
@@ -41,6 +42,21 @@ func LoginUser(user model.User) (string, error) {
 		return "", err
 	}
 	return token, nil
+}
+
+func GetUserInfo(userID int64) (model.User, error) {
+	var user model.User
+	query := "SELECT * FROM user WHERE id=?"
+
+	err := db.QueryRow(query, userID).Scan(&user.ID, &user.Username, &user.Password, &user.Phone, &user.Gender, &user.ImageURL)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, fmt.Errorf("user with ID %d not found", userID)
+		}
+		return user, err
+	}
+
+	return user, nil
 }
 
 func GetJsonResponse(url string, result interface{}) error {
@@ -125,7 +141,9 @@ func isEventExist(eventID int64) bool {
 	}
 
 	var eventResponse struct {
-		ID int64 `json:"id"`
+		Event struct {
+			ID int64 `json:"id"`
+		} `json:"event"`
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -140,5 +158,5 @@ func isEventExist(eventID int64) bool {
 		return false
 	}
 
-	return eventResponse.ID == eventID
+	return eventResponse.Event.ID == eventID
 }
