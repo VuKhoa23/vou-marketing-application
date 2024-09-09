@@ -17,13 +17,13 @@ import {
 import CollabImg from '../../assets/collab.jpg';
 import { useSelector } from 'react-redux';
 
+
 function EventsPage() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
     const token = useSelector((state) => state.auth.accessToken);
-
 
     const openModal = (event) => {
         setSelectedEvent(event);
@@ -47,17 +47,6 @@ function EventsPage() {
         }
         return gameType;
     }
-
-    function getImageNameFromPath(fullPath) {
-        // Sử dụng phương thức split để tách các phần của đường dẫn theo dấu '/'
-        const pathParts = fullPath.split('/');
-
-        // Phần tử cuối cùng trong mảng pathParts sẽ là tên tệp
-        const imageName = pathParts[pathParts.length - 1];
-
-        return imageName;
-    }
-
 
     return (
         <>
@@ -87,24 +76,29 @@ function EventsPage() {
             <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
                 <Await resolve={events}>
                     {(resolvedEvents) => (
-                        <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
-                            {resolvedEvents.map((event) => (
-                                <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
-                                    <Event
-                                        id={event.event.id}
-                                        //image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.imageURL)}`}
-                                        name={event.event.name}
-                                        startDate={formatDate(event.event.startDate)}
-                                        endDate={formatDate(event.event.endDate)}
-                                        brand={event.event.brand.username}
-                                        voucher={event.voucher.voucherQuantities}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
+                        resolvedEvents.length === 0 ? (
+                            <p style={{ textAlign: 'center', marginTop: '20px' }}>Không có sự kiện nào</p>
+                        ) : (
+                            <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
+                                {resolvedEvents.map((event) => (
+                                    <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                        <Event
+                                            id={event.event.id}
+                                            image={event.event.imageURL}
+                                            name={event.event.name}
+                                            startDate={formatDate(event.event.startDate)}
+                                            endDate={formatDate(event.event.endDate)}
+                                            brand={event.event.brand.username}
+                                            voucher={event.voucher.voucherQuantities}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        )
                     )}
                 </Await>
             </Suspense>
+
 
 
             <div className="hero bg-base-200 p-20">
@@ -143,8 +137,7 @@ function EventsPage() {
                             <Flex>
                                 <Box flex="1" p={4}>
                                     <Image
-                                        //src={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(selectedEvent.event.imageURL)}`}
-                                        //alt={selectedEvent.event.name}
+                                        src={selectedEvent.event.imageURL}
                                         borderRadius="md"
                                         boxSize="100%"
                                         objectFit="cover"
@@ -182,7 +175,8 @@ function formatDate(dateStr) {
 }
 
 async function loadEvents() {
-    const response = await fetch('http://127.0.0.1/api/brand/event/find-all');
+    //const response = await fetch('http://localhost/api/brand/event/find-all');
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/find-all`);
 
     if (!response.ok) {
         throw json(

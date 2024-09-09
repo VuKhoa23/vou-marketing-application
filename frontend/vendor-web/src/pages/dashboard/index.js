@@ -21,11 +21,17 @@ export default function Dashboard() {
     const pageBg = "gray.100";
 
     const dispatch = useDispatch();
-    const events = useSelector(state => state.events);
+    // const events = useSelector(state => state.events);
+    // const brandId = useSelector((state) => state.brand.id);
+    const { events, brandId } = useSelector((state) => ({
+        events: state.events,
+        brandId: state.brand.id,
+    }));
+
 
     useEffect(() => {
         async function fetchEvents() {
-            const response = await fetch('http://localhost/api/brand/event/events-and-vouchers?brandId=1');
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
             if (response.ok) {
                 const apiData = await response.json();
                 const transformedData = transformData(apiData);
@@ -38,7 +44,8 @@ export default function Dashboard() {
         }
     }, [dispatch, events]);
 
-    const totalParticipants = events.reduce((total, event) => total + event.participants, 0);
+    //const totalParticipants = events.reduce((total, event) => total + event.participants, 0);
+    const totalParticipants = 4;
     const totalVouchers = events.reduce((total, event) => total + event.quantity, 0);
 
     return (

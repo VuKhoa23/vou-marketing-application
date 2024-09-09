@@ -4,9 +4,9 @@ import { Box, Button, Input, Text, VStack } from '@chakra-ui/react';
 function EditableForm() {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        phoneNumber: '0123456789',
-        email: 'example@domain.com',
-        address: '123 Đường ABC, Quận XYZ',
+        phoneNumber: '0291421631',
+        email: 'dookki@koreanfood.com',
+        address: 'NowZone Quận 1, Thành phố Hồ Chí Minh',
     });
 
     const handleInputChange = (e) => {
