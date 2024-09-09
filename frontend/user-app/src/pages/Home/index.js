@@ -132,8 +132,12 @@ function Home() {
                         </ModalBody>
                         <ModalFooter>
                             <Button className='mr-2'>
-                                {selectedEvent.event.trivia === true ? <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink> : <NavLink to='/game'>Chơi game</NavLink>}
-
+                                {
+                                    selectedEvent.event.trivia === true ?
+                                        <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                        :
+                                        <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                }
                             </Button>
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>
