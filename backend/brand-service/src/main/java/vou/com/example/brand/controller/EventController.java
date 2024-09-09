@@ -44,7 +44,7 @@ public class EventController {
     }
 
     @GetMapping("find")
-    public Event findById(@RequestParam Long id) {
+    public EventAndVoucherDTOResponse findById(@RequestParam Long id) {
         return eventService.findById(id);
     }
 

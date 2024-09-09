@@ -227,9 +227,36 @@ public class EventService {
         return eventRepository.findAllByIdIn(ids);
     }
 
-    public Event findById(Long eventId) {
+    public EventAndVoucherDTOResponse findById(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));
-        return event;
+
+        EventDTOResponse eventDTO = new EventDTOResponse();
+
+        eventDTO.setId(event.getId());
+        eventDTO.setName(event.getName());
+        eventDTO.setStartDate(event.getStartDate());
+        eventDTO.setEndDate(event.getEndDate());
+        eventDTO.setBrand(event.getBrand());
+        eventDTO.setTrivia(event.isTrivia());
+        eventDTO.setShaking(event.isShaking());
+
+        VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
+        Voucher voucher = voucherRepository.findByEvent(event);
+        if(voucher != null){
+            voucherDTO.setVoucherId(voucher.getId());
+            voucherDTO.setVoucherImageURL(voucher.getImageURL());
+            voucherDTO.setVoucherValue(voucher.getValue());
+            voucherDTO.setVoucherDescription(voucher.getDescription());
+            voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+            voucherDTO.setVoucherEndDate(voucher.getEndDate());
+            voucherDTO.setVoucherStatus(voucher.isStatus());
+        }
+
+        EventAndVoucherDTOResponse responseDTO = new EventAndVoucherDTOResponse();
+        responseDTO.setEvent(eventDTO);
+        responseDTO.setVoucher(voucherDTO);
+
+        return responseDTO;
     }
 }
