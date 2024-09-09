@@ -106,3 +106,46 @@ func SubtractCoin(coin model.Coin) error {
 
 	return nil
 }
+
+func ShowCoin(userID int64, eventID int64) (int64, error) {
+	if !isUserExist(userID) {
+		return 0, fmt.Errorf("user with ID %d does not exist", userID)
+	}
+
+	if !isEventExist(eventID) {
+		return 0, fmt.Errorf("event with ID %d does not exist", eventID)
+	}
+
+	// Check if the coin record exists
+	var existingCoin int64
+	queryCheck := "SELECT coin FROM coin WHERE user_id = ? AND event_id = ?"
+	err := db.QueryRow(queryCheck, userID, eventID).Scan(&existingCoin)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Record does not exist, create it
+			newCoin := model.Coin{
+				UserID:  userID,
+				EventID: eventID,
+				Coin:    0, // Default coin amount
+			}
+			CreateCoin(newCoin)
+		} else {
+			// Error querying the database
+			return 0, fmt.Errorf("error checking if coin record exists: %w", err)
+		}
+	}
+
+	var coinAmount int64
+	query := `SELECT coin FROM coin WHERE user_id = ? AND event_id = ?`
+	row := db.QueryRow(query, userID, eventID)
+	err = row.Scan(&coinAmount)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil // No record found
+		}
+		return 0, err // Other errors
+	}
+
+	return coinAmount, nil
+}

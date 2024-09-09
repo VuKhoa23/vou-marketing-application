@@ -92,7 +92,7 @@ func (s *Server) ShowWatchlistHandler(c *gin.Context) {
 	// Prepare the IdsDTO to send to the event service
 	idsDTO := dto.IdsDTO{Ids: eventIds}
 
-	var responseDTOs []dto.EventDTO
+	var responseDTOs []dto.EventAndVoucherDTO
 	err = repository.PostJsonResponse(url, idsDTO, &responseDTOs)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
