@@ -78,19 +78,17 @@ public class EventService {
         return fileURL;
     }
 
-    public Long addEvent(Long brandId, MultipartFile eventImage, EventDTO eventDTO){
+    public Long addEvent(Long brandId, String eventImage, EventDTO eventDTO){
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
 
         System.out.println("eventDTO " + eventDTO);
 
-        String filePath = uploadFile(eventImage);
-
         Event event = new Event();
         event.setName(eventDTO.getName());
         event.setStartDate(eventDTO.getStartDate());
         event.setEndDate(eventDTO.getEndDate());
-        event.setImageURL(filePath);
+        event.setImageURL(eventImage);
         event.setBrand(brand);
         if(eventDTO.isTrivia()){
             event.setTrivia(true);
@@ -104,17 +102,16 @@ public class EventService {
         return event.getId();
     }
 
-    public void addVoucher(Long eventId, MultipartFile voucherImage, VoucherDTO voucherDTO){
+    public void addVoucher(Long eventId, String voucherImage, VoucherDTO voucherDTO){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));
 
         System.out.println("voucherDTO " + voucherDTO);
 
         Voucher voucher = new Voucher();
-        String fileURL = uploadFile(voucherImage);
 
         voucher.setVoucherQuantities(voucherDTO.getVoucherQuantities());
-        voucher.setImageURL(fileURL);
+        voucher.setImageURL(voucherImage);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
         voucher.setEndDate(voucherDTO.getEndDate());
@@ -123,10 +120,12 @@ public class EventService {
         voucherRepository.save(voucher);
     }
 
-    public void addEventAndVoucher(Long brandId, MultipartFile eventImage, EventDTO eventDTO,
-                                   MultipartFile voucherImage, VoucherDTO voucherDTO){
+    public Long addEventAndVoucher(Long brandId, String eventImage, EventDTO eventDTO,
+                                   String voucherImage, VoucherDTO voucherDTO){
         Long eventId = addEvent(brandId, eventImage, eventDTO);
         addVoucher(eventId, voucherImage, voucherDTO);
+
+        return eventId;
     }
 
     public Page<Event> findByNameContaining(String name, Pageable pageable){
@@ -195,6 +194,7 @@ public class EventService {
 
             eventDTO.setId(event.getId());
             eventDTO.setName(event.getName());
+            eventDTO.setImageURL(event.getImageURL());
             eventDTO.setStartDate(event.getStartDate());
             eventDTO.setEndDate(event.getEndDate());
             eventDTO.setBrand(event.getBrand());
@@ -227,9 +227,36 @@ public class EventService {
         return eventRepository.findAllByIdIn(ids);
     }
 
-    public Event findById(Long eventId) {
+    public EventAndVoucherDTOResponse findById(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found with id: " + eventId));
-        return event;
+
+        EventDTOResponse eventDTO = new EventDTOResponse();
+
+        eventDTO.setId(event.getId());
+        eventDTO.setName(event.getName());
+        eventDTO.setStartDate(event.getStartDate());
+        eventDTO.setEndDate(event.getEndDate());
+        eventDTO.setBrand(event.getBrand());
+        eventDTO.setTrivia(event.isTrivia());
+        eventDTO.setShaking(event.isShaking());
+
+        VoucherDTOResponse voucherDTO = new VoucherDTOResponse();
+        Voucher voucher = voucherRepository.findByEvent(event);
+        if(voucher != null){
+            voucherDTO.setVoucherId(voucher.getId());
+            voucherDTO.setVoucherImageURL(voucher.getImageURL());
+            voucherDTO.setVoucherValue(voucher.getValue());
+            voucherDTO.setVoucherDescription(voucher.getDescription());
+            voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+            voucherDTO.setVoucherEndDate(voucher.getEndDate());
+            voucherDTO.setVoucherStatus(voucher.isStatus());
+        }
+
+        EventAndVoucherDTOResponse responseDTO = new EventAndVoucherDTOResponse();
+        responseDTO.setEvent(eventDTO);
+        responseDTO.setVoucher(voucherDTO);
+
+        return responseDTO;
     }
 }

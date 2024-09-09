@@ -17,12 +17,14 @@ import {
 
 function Home() {
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [triviaGameId, setTriviaGameId] = useState('');
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
 
     const openModal = (event) => {
         setSelectedEvent(event);
+        console.log(event);
         onOpen();
     };
 
@@ -87,12 +89,13 @@ function Home() {
                                 <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
                                     <Event
                                         id={event.event.id}
-                                        //image={`${process.env.PUBLIC_URL}/images/${getImageNameFromPath(event.event.imageURL)}`}
+                                        image={`/event-banner.jpg`}
                                         name={event.event.name}
                                         startDate={formatDate(event.event.startDate)}
                                         endDate={formatDate(event.event.endDate)}
                                         brand={event.event.brand.username}
                                         voucher={event.voucher.voucherQuantities}
+                                        isTrivia={event.event.trivia}
                                     />
                                 </li>
                             ))}
@@ -133,7 +136,8 @@ function Home() {
                         </ModalBody>
                         <ModalFooter>
                             <Button className='mr-2'>
-                                <NavLink to='/Game'>Chơi game</NavLink>
+                                {selectedEvent.event.trivia === true ? <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink> : <NavLink to='/game'>Chơi game</NavLink>}
+
                             </Button>
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>

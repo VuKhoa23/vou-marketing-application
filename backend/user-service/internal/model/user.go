@@ -1,8 +1,10 @@
 package model
 
 type User struct {
-	ID       int16  `gorm:"primary_key" json:"id"`
+	ID       int64  `gorm:"primary_key" json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	State    bool   `json:"state"`
+	Phone    string `json:"phone"`
+	Gender   string `json:"gender"`
+	ImageURL string `json:"imageURL"`
 }

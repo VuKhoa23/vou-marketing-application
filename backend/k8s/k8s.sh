@@ -30,5 +30,10 @@ cd user
 
 cd ..
 
+cd validate-answer
+./validate.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh

@@ -22,5 +22,9 @@ cd user
 call user.bat
 
 cd ..
+cd kafka
+call kafka.bat
+
+cd ..
 cd ingress
 call ingress.bat

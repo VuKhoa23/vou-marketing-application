@@ -95,6 +95,7 @@ function EventsPage() {
                                 ))}
                             </ul>
                         )
+
                     )}
                 </Await>
             </Suspense>

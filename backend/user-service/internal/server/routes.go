@@ -34,7 +34,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.POST("/api/user/watchlist/add", middleware.AuthenticationMiddleware, s.AddEventToWatchlistHandler)
 	r.GET("/api/user/watchlist", middleware.AuthenticationMiddleware, s.ShowWatchlistHandler)
 
-	r.POST("/api/user/game/join", middleware.AuthenticationMiddleware, s.CreateUserEventHandler)
-	r.POST("/api/user/game/play", middleware.AuthenticationMiddleware, s.UpdateUserEventHandler)
+	r.POST("/api/user/add-coin", middleware.AuthenticationMiddleware, s.AddCoinHandler)
+	r.POST("/api/user/subtract-coin", middleware.AuthenticationMiddleware, s.SubtractCoinHandler)
+
+	r.POST("/api/user/add-turn", middleware.AuthenticationMiddleware, s.AddTurnHandler)
+	r.POST("/api/user/subtract-turn", middleware.AuthenticationMiddleware, s.SubtractTurnHandler)
+
+	r.GET("/api/user/info", middleware.AuthenticationMiddleware, s.GetUserInfoHandler)
+
+	r.POST("/api/user/exchange-voucher", middleware.AuthenticationMiddleware, s.ExchangeVoucherHandler)
 	return r
 }

@@ -32,6 +32,8 @@ const PolicyPrivacy = () => {
         voucherDTO: { description, endDate: voucherEndDate, voucherQuantities, value },
     } = useSelector((state) => state.forms.voucherForm);
 
+    const triviaTime = useSelector((state) => state.forms.triviaTime);
+
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [error, setError] = useState("");
@@ -103,8 +105,9 @@ const PolicyPrivacy = () => {
                 );
 
                 setError("");
-                await dispatch(submitAllForms({ formData, brandId })).unwrap();
+                await dispatch(submitAllForms({ formData, brandId, triviaTime })).unwrap();
                 fetchEvents();
+
                 toast({
                     title: "Đăng ký thành công",
                     description: "Sự kiện của bạn đã được đăng ký.",
