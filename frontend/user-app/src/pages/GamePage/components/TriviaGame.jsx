@@ -31,7 +31,7 @@ function TriviaGame() {
         async function fetchGameId() {
             try {
                 const response = await fetch(
-                    `http://localhost/api/brand/game/get-game/by-event/${eventId}`
+                    `${process.env.REACT_APP_API_URL}/api/brand/game/get-game/by-event/${eventId}`
                 );
                 if (response.ok) {
                     const data = await response.json();
