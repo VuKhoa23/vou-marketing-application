@@ -46,21 +46,24 @@ export default function EventList() {
   });
   const toast = useToast();
   const dispatch = useDispatch();
+  const brandId = useSelector(state => state.brand.id);
   const tableData = useSelector(state => state.events);
 
-  // useEffect(() => {
-  //   async function fetchEvents() {
-  //     const response = await fetch('http://localhost:8080/api/brand/event/events-and-vouchers?brandId=1');
-  //     if (response.ok) {
-  //       const apiData = await response.json();
-  //       const transformedData = transformData(apiData);
-  //       dispatch(setEvents(transformedData));
-  //     }
-  //   }
-  //   if (tableData.length <= 0) {
-  //     fetchEvents();
-  //   }
-  // }, [dispatch, tableData]);
+  useEffect(() => {
+    async function fetchEvents() {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
+      if (response.ok) {
+        const apiData = await response.json();
+        const transformedData = transformData(apiData);
+        dispatch(setEvents(transformedData));
+      }
+    }
+    // if (tableData.length <= 0) {
+    //   fetchEvents();
+    // }
+
+    fetchEvents();
+  }, [dispatch, tableData]);
 
   function handleInputChange(identifier, value) {
     // Dispatch the update to Redux store
@@ -245,7 +248,8 @@ export default function EventList() {
       ),
       cell: (info) => (
         <Text color={textColor} fontSize="sm" fontWeight="700">
-          {info.getValue()}
+          {/* {info.getValue()} */}
+          {2}
         </Text>
       ),
     }),
@@ -411,7 +415,7 @@ export default function EventList() {
     }
 
     try {
-      const response = await fetch(`http://localhost/api/brand/voucher/update?eventId=${voucherModalData.id}&quantities=${totalQuantity}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/voucher/update?eventId=${voucherModalData.id}&quantities=${totalQuantity}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -489,7 +493,7 @@ export default function EventList() {
       };
 
       // Gọi API để cập nhật sự kiện
-      const response = await fetch(`http://localhost/api/brand/event/update?eventId=${eventModalData.id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/update?eventId=${eventModalData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -753,28 +757,28 @@ export default function EventList() {
   );
 }
 
-// function determineGameType(item) {
-//   const types = [];
-//   if (item.event.trivia) {
-//     types.push("Trivia");
-//   }
-//   if (item.event.shaking) {
-//     types.push("Lắc xu");
-//   }
-//   return types.length > 0 ? types.join(", ") : "Unknown";
-// }
+function determineGameType(item) {
+  const types = [];
+  if (item.event.trivia) {
+    types.push("Trivia");
+  }
+  if (item.event.shaking) {
+    types.push("Lắc xu");
+  }
+  return types.length > 0 ? types.join(", ") : "Unknown";
+}
 
-// function transformData(apiData) {
-//   return apiData.map(item => ({
-//     id: item.event.id,
-//     name: item.event.name,
-//     quantity: item.voucher.voucherQuantities,
-//     startDate: formatDate(item.event.startDate),
-//     endDate: formatDate(item.event.endDate),
-//     participants: item.participants || 0,
-//     gameType: determineGameType(item)
-//   }));
-// }
+function transformData(apiData) {
+  return apiData.map(item => ({
+    id: item.event.id,
+    name: item.event.name,
+    quantity: item.voucher.voucherQuantities,
+    startDate: formatDate(item.event.startDate),
+    endDate: formatDate(item.event.endDate),
+    participants: item.participants || 0,
+    gameType: determineGameType(item)
+  }));
+}
 
 function formatDate(dateString) {
   const date = new Date(dateString);

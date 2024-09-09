@@ -51,7 +51,7 @@ const milestones = [
     {
         title: "Dookki tổ chức sự kiện giảm giá lớn",
         description:
-            "Nhân dịp lễ hội mùa hè, Dookki tổ chức sự kiện giảm giá lớn với nhiều ưu đãi hấp dẫn cho khách hàng. Sự kiện thu hút sự tham gia đông đảo của người dân.",
+            "Nhân dịp ra mắt menu mới, Dookki tổ chức sự kiện giảm giá lớn với nhiều ưu đãi hấp dẫn cho khách hàng. Sự kiện thu hút sự tham gia đông đảo của người dân.",
         date: "Từ 01-07-2023 đến 31-08-2023",
         voucherCount: 80,
     },
@@ -123,11 +123,10 @@ const milestones = [
 function Cooperation() {
     const dispatch = useDispatch();
     const events = useSelector((state) => state.events);
+    const brandId = useSelector((state) => state.brand.id);
     useEffect(() => {
         async function fetchEvents() {
-            const response = await fetch(
-                "http://localhost/api/brand/event/events-and-vouchers?brandId=1"
-            );
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
             if (response.ok) {
                 const apiData = await response.json();
                 const transformedData = transformData(apiData);

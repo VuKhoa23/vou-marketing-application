@@ -2,8 +2,12 @@ import { Flex, Box, Avatar, Grid, GridItem, Text } from '@chakra-ui/react';
 import Stat from './components/Stat';
 import EditableForm from './components/ContactInfo';
 import Cooperation from './components/Cooperation';
+import { useSelector, useDispatch } from 'react-redux';
 
 function VendorProfile() {
+
+    const brandInfo = useSelector((state) => state.brand);
+
     return (
         <Box bg="gray.100" pb={4}>
             <Grid
@@ -14,10 +18,10 @@ function VendorProfile() {
             >
                 <GridItem rowSpan={1} colSpan={4} bg='white' px={100}>
                     <Flex>
-                        <Avatar size='2xl' name='Segun Adebayo' src='https://bit.ly/sage-adebayo' />
+                        <Avatar size='2xl' name='Segun Adebayo' src='https://www.aeonmall-binhtan.com.vn/wp-content/uploads/2019/12/dooki-logo.png' />
                         <Box bg="white" p={2} borderRadius="md" mb={4}>
-                            <Text fontWeight='bold' fontSize='4xl'>Tên Doanh Nghiệp</Text>
-                            <Text fontSize='sm'>Đây là giới thiệu ngắn về doanh nghiệp.</Text>
+                            <Text fontWeight='bold' fontSize='4xl'>{brandInfo.username}</Text>
+                            <Text fontSize='sm'>Lĩnh vực: <b>{brandInfo.category}</b></Text>
                         </Box>
                     </Flex>
                 </GridItem>

@@ -21,6 +21,7 @@ const PolicyPrivacy = () => {
     const toast = useToast();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const brandId = useSelector((state) => state.brand.id);
     const {
         eventImage,
         eventDTO: { name, startDate, endDate, isShaking, isTrivia },
@@ -38,10 +39,8 @@ const PolicyPrivacy = () => {
     const [error, setError] = useState("");
 
     async function fetchEvents() {
-        const response = await fetch(
-            "http://localhost/api/brand/event/events-and-vouchers?brandId=1"
-        );
-
+        //const response = await fetch("http://localhost/api/brand/event/events-and-vouchers?brandId=1");
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
         if (response.ok) {
             const apiData = await response.json();
             const transformedData = transformData(apiData);
@@ -51,38 +50,62 @@ const PolicyPrivacy = () => {
 
     const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
-            const formData = new FormData();
-
-            formData.append("eventImage", eventImage);
-
-            formData.append(
-                "eventDTO",
-                JSON.stringify({
-                    name,
-                    startDate,
-                    endDate,
-                    trivia: isTrivia,
-                    shaking: isShaking,
-                })
-            );
-
-            formData.append("voucherImage", voucherImage);
-
-            formData.append(
-                "voucherDTO",
-                JSON.stringify({
-                    description,
-                    endDate: voucherEndDate,
-                    voucherQuantities,
-                    value,
-                })
-            );
-
-            setError("");
-
             try {
-                await dispatch(submitAllForms({ formData, triviaTime })).unwrap();
+                // Gọi API lấy URL bảo mật cho eventImage
+                let eventImageRes = await fetch(`${process.env.REACT_APP_API_URL}/api/generate-url`);
+                let eventImageUploadUrl = await eventImageRes.text(); // Dùng response.text() thay vì response.json()
 
+                // Upload eventImage lên S3
+                await fetch(eventImageUploadUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": eventImage.type,
+                    },
+                    body: eventImage,
+                });
+
+                const eventImageS3Url = eventImageUploadUrl.split('?')[0];
+
+                // Gọi API lấy URL bảo mật cho voucherImage
+                let voucherImageRes = await fetch(`${process.env.REACT_APP_API_URL}/api/generate-url`);
+                let voucherImageUploadUrl = await voucherImageRes.text();
+
+                // Upload voucherImage lên S3
+                await fetch(voucherImageUploadUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": voucherImage.type,
+                    },
+                    body: voucherImage,
+                });
+
+                const voucherImageS3Url = voucherImageUploadUrl.split('?')[0];
+
+                const formData = new FormData();
+                formData.append("eventImage", eventImageS3Url);
+                formData.append(
+                    "eventDTO",
+                    JSON.stringify({
+                        name,
+                        startDate,
+                        endDate,
+                        trivia: isTrivia,
+                        shaking: isShaking,
+                    })
+                );
+                formData.append("voucherImage", voucherImageS3Url);
+                formData.append(
+                    "voucherDTO",
+                    JSON.stringify({
+                        description,
+                        endDate: voucherEndDate,
+                        voucherQuantities,
+                        value,
+                    })
+                );
+
+                setError("");
+                await dispatch(submitAllForms({ formData, brandId, triviaTime })).unwrap();
                 fetchEvents();
 
                 toast({
@@ -98,11 +121,14 @@ const PolicyPrivacy = () => {
                 navigate("/events", { replace: true });
             } catch (error) {
                 console.error("Form submission error:", error);
+                setError("Đã xảy ra lỗi khi tải lên hình ảnh hoặc gửi form.");
             }
         } else {
             setError("Vui lòng đồng ý với các điều khoản và chính sách bảo mật trước khi đăng ký.");
         }
     };
+
+
 
     const handleTermsChange = (e) => {
         setTermsAccepted(e.target.checked);

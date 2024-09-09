@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { setAuthUser } from '../../store/slices/authSlice';
+import { setBrandInfo } from '../../store/slices/brandSlice';
 import toast, { Toaster } from 'react-hot-toast';
 
 const loginSchema = yup.object({
@@ -30,7 +31,7 @@ const Login = () => {
 
     const handleSubmit = async (values) => {
         try {
-            const response = await fetch('http://localhost/api/brand/auth/login', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values),
@@ -42,12 +43,40 @@ const Login = () => {
                 const token = userData.accessToken.replace('Bearer ', '');
                 dispatch(setAuthUser(token));
                 toast.success('Đăng nhập thành công.');
+
+                fetchBrandInfo(token);
+
                 navigate('/');
             } else {
                 toast.error('Thông tin đăng nhập không hợp lệ.');
             }
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        }
+    };
+
+    const fetchBrandInfo = async (token) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const brandData = await response.json();
+                dispatch(setBrandInfo({
+                    id: brandData.id,
+                    username: brandData.username,
+                    category: brandData.category,
+                    address: brandData.address,
+                }));
+            } else {
+                toast.error('Không thể lấy thông tin thương hiệu.');
+            }
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra khi lấy thông tin thương hiệu.');
         }
     };
 
