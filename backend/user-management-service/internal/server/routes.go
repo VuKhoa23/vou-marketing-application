@@ -26,13 +26,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 	r.Use(corsMiddleware())
 
-	r.GET("/api/brand-management/get-all", s.getAllBrandHandler)
-
-	r.POST("/api/brand-management/create", s.createBrandHandler)
-
-	r.POST("/api/brand-management/disable/:brandId", s.disableBrandHandler)
-
-	r.POST("/api/brand-management/enable/:brandId", s.enableBrandHandler)
+	r.GET("/api/user-management/get-all", s.getAllUserHandler)
+	r.POST("/api/user-management/create", s.createUserHandler)
+	r.PUT("/api/user-management/update/:userId", s.updateUserHandler)
+	r.DELETE("/api/user-management/delete/:userId", s.deleteUserHandler)
 
 	return r
 }
