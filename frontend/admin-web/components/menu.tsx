@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logout } from "@/lib/redux/slices/authSlice";
 
 export default function Menu() {
     const pathname = usePathname();
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        router.push("/login");
+    };
 
     return (
         <ul className="menu py-6 bg-blue-500 text-white rounded-box m-2 w-56 min-w-56 max-w-56">
@@ -119,7 +128,7 @@ export default function Menu() {
                 </details>
             </li>
             <li className="mt-auto justify-self-end">
-                <a href="/login">
+                <div className="mt-6" onClick={handleLogout}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -135,7 +144,7 @@ export default function Menu() {
                         />
                     </svg>
                     Đăng xuất
-                </a>
+                </div>
             </li>
         </ul>
     );

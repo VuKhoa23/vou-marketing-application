@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '@/lib/types/User';
+import Cookies from 'js-cookie';
 
 interface UserState {
     accessToken: string | null;
@@ -18,6 +18,7 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.accessToken = null;
+      Cookies.remove("adminToken");
     },
   },
 });

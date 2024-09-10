@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/slices/authSlice';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const accessToken = useSelector((state) => state.auth.accessToken);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/login");
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -43,28 +54,30 @@ function MainNavigation() {
                     </svg>
                 </NavLink>
             </div>
-            <div className="flex-none">
-                <div className="dropdown dropdown-end ">
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                        <div className="w-10 rounded-full">
-                            <img
-                                alt="Tailwind CSS Navbar component"
-                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            {accessToken ?
+                (<div className="flex-none">
+                    <div className="dropdown dropdown-end ">
+                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div className="w-10 rounded-full">
+                                <img
+                                    alt="Tailwind CSS Navbar component"
+                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            </div>
                         </div>
+                        <ul
+                            tabIndex={0}
+                            className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                            <li>
+                                <NavLink to="/profile" className="justify-between">
+                                    Profile
+                                </NavLink>
+                            </li>
+                            <li><button onClick={handleLogout}>Log out</button></li>
+                        </ul>
                     </div>
-                    <ul
-                        tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                        <li>
-                            <NavLink to="/profile" className="justify-between">
-                                Profile
-                            </NavLink>
-                        </li>
-                        <li><a href="/login">Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                </div>) : <Link to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</Link>}
+
+        </div >
     );
 }
 
