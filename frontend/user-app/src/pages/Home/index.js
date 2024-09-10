@@ -15,8 +15,11 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { version } from 'react';
+import { useSelector } from 'react-redux';
 
 function Home() {
+
+    const token = useSelector((state) => state.auth.accessToken);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [triviaGameId, setTriviaGameId] = useState('');
     const [keyWord, setKeyWord] = useState('');
@@ -25,7 +28,6 @@ function Home() {
 
     const openModal = (event) => {
         setSelectedEvent(event);
-        console.log(event);
         onOpen();
     };
 
@@ -131,14 +133,22 @@ function Home() {
                             </Flex>
                         </ModalBody>
                         <ModalFooter>
-                            <Button className='mr-2'>
-                                {
-                                    selectedEvent.event.trivia === true ?
-                                        <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
-                                        :
-                                        <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
-                                }
-                            </Button>
+                            {
+                                token === null ?
+                                    <Button className='mr-2'>
+                                        <NavLink to='/login'>Đăng nhập</NavLink>
+                                    </Button>
+                                    :
+                                    <Button className='mr-2'>
+                                        {
+                                            selectedEvent.event.trivia === true ?
+                                                <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                                :
+                                                <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                        }
+                                    </Button>
+                            }
+
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>
                     </ModalContent>

@@ -6,26 +6,29 @@ import { FaFacebook, FaUserFriends, FaTicketAlt, FaPlus } from 'react-icons/fa';
 import { useDisclosure, Text, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton } from '@chakra-ui/react';
 import VoucherModal from './components/ExchangeVoucher';
 import { useParams } from "react-router-dom";
-
-const DUMMY_VOUCHER = {
-    image: "/voucher1.png",
-    description: "Voucher giảm giá nhân sự kiện khai trương chi nhánh mới",
-    value: "30%",
-    endDate: "30-10-2024"
-}
+import { useSelector } from 'react-redux';
 
 function GamePage() {
 
-    const { eventId } = useParams();
+    const token = useSelector((state) => state.auth.accessToken);
 
+    const { eventId } = useParams();
+    const [voucherInfo, setVoucherInfo] = useState({
+        id: null,
+        imageURL: '',
+        description: '',
+        value: null,
+        endDate: ''
+    })
     const [isShaking, setIsShaking] = useState(false);
     const [countdown, setCountdown] = useState(10);
     const [videoPlayed, setVideoPlayed] = useState(false);
     const [isCounting, setIsCounting] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
-    const [attemp, setAttemp] = useState(2);
+    const [attemp, setAttemp] = useState(0);
     const [coinReward, setCoinReward] = useState(0);
     const [userCoin, setUserCoin] = useState(0);
+    const [userVoucher, setUserVoucher] = useState(10);
     const videoRef = useRef(null);
     const bonusSectionRef = useRef(null);
     const alertRef = useRef(null);
@@ -63,6 +66,103 @@ function GamePage() {
         }
     };
 
+    // Lấy voucherInfo
+    useEffect(() => {
+        async function fetchVoucherInfo() {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/find?id=${eventId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setVoucherInfo({
+                        id: data.voucher.voucherId,
+                        imageURL: data.voucher.voucherImageURL,
+                        description: data.voucher.voucherDescription,
+                        value: data.voucher.voucherValue,
+                        endDate: formatDate(data.voucher.voucherEndDate)
+                    });
+                } else {
+                    console.error("Error fetching event:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        fetchVoucherInfo();
+    }, [])
+
+    // Lấy lượt chơi
+    useEffect(() => {
+        async function fetchTurn(token) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/get-turns?eventId=${eventId}`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setAttemp(data.turn);
+                } else {
+                    console.error("Error fetching turn:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        fetchTurn(token);
+    }, [])
+
+    // Lấy xu
+    useEffect(() => {
+        async function fetchCoin() {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/get-coins?eventId=${eventId}`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserCoin(data.coin);
+                } else {
+                    console.error("Error fetching coin:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        fetchCoin();
+    }, [])
+
+    //Lấy voucher người chơi trúng
+    useEffect(() => {
+        async function fetchTurn() {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/get-vouchers?voucherId=${voucherInfo.id}`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserVoucher(data["voucher quantities"]);
+                } else {
+                    console.error("Error fetching coin:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        if (voucherInfo.id !== null) {
+            fetchTurn();
+        }
+    }, [voucherInfo])
+
+
+
     useEffect(() => {
         if (showAlert && alertRef.current) {
             alertRef.current.focus();
@@ -85,6 +185,8 @@ function GamePage() {
             const reward = getRandomCoinReward();
             setCoinReward(reward);
             setUserCoin(prevCoin => prevCoin + reward);
+            addCoin(token, parseInt(eventId, 10), reward);
+            subtractTurn(token, parseInt(eventId, 10), 1);
             setShowAlert(true);
         }
 
@@ -136,7 +238,7 @@ function GamePage() {
                             </button>
                         </Box>
 
-                        <Box className="basis-2/5 px-4">
+                        <Box className="basis-2/5 px-1">
                             <Box className='flex justify-end items-center rounded-full border-4 border-black px-4 py-2 bg-blue-200'>
                                 <strong className="mr-auto">Lượt chơi: {attemp}</strong>
                                 <button
@@ -157,6 +259,10 @@ function GamePage() {
                                 >
                                     <FaTicketAlt />
                                 </button>
+                            </Box>
+                            <Box className='flex justify-end items-center rounded-full border-4 border-black px-4 py-2 mt-3 bg-blue-200'>
+                                <strong className="mr-auto">Số voucher hiện có: {userVoucher}</strong>
+                                <FaTicketAlt size={39} />
                             </Box>
                         </Box>
                     </Box>
@@ -218,7 +324,12 @@ function GamePage() {
                     <VoucherModal
                         isOpen={isOpen}
                         onClose={onClose}
-                        voucher={DUMMY_VOUCHER}
+                        voucher={voucherInfo}
+                        userCoin={userCoin}
+                        setUserCoin={setUserCoin}
+                        setUserVoucher={setUserVoucher}
+                        token={token}
+                        eventId={eventId}
                     />
                 </Box>
             </div>
@@ -227,3 +338,63 @@ function GamePage() {
 }
 
 export default GamePage;
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+async function subtractTurn(token, eventId, turn) {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/subtract-turn`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                eventId: eventId,
+                turn: turn
+            }),
+        });
+        if (response.ok) {
+            //const data = await response.json();
+            //console.log(data)
+        } else {
+            const errorData = await response.json();
+            console.error("Error subtract turn:", response.status, response.statusText, errorData);
+        }
+    } catch (error) {
+        console.error("Error fetching game ID:", error);
+    }
+}
+
+async function addCoin(token, eventId, coin) {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/add-coin`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                eventId: eventId,
+                coin: coin
+            }),
+        });
+        if (response.ok) {
+            //const data = await response.json();
+            //console.log(data)
+        } else {
+            const errorData = await response.json();
+            console.error("Error add coin:", response.status, response.statusText, errorData);
+        }
+    } catch (error) {
+        console.error("Error fetching game ID:", error);
+    }
+}
+
+
