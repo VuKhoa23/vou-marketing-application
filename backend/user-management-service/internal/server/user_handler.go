@@ -75,7 +75,7 @@ func (s *Server) updateUserHandler(c *gin.Context) {
 		return
 	}
 
-	userID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.Atoi(c.Param("userId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid user ID",
@@ -104,7 +104,7 @@ func (s *Server) updateUserHandler(c *gin.Context) {
 }
 
 func (s *Server) deleteUserHandler(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.Atoi(c.Param("userId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid user ID",
