@@ -21,11 +21,10 @@ import {
 import { FaTicketAlt } from 'react-icons/fa';
 import { BiCoin } from 'react-icons/bi';
 
-const VoucherModal = ({ isOpen, onClose, voucher }) => {
+const VoucherModal = ({ isOpen, onClose, voucher, userCoin, setUserCoin, setUserVoucher, eventId, token }) => {
 
     const [voucherCount, setVoucherCount] = useState(0);
     const [coinNeeded, setCoinNeeded] = useState(0);
-    const [curCoin, setCurCoin] = useState(500);
     const toast = useToast();
 
     useEffect(() => {
@@ -33,7 +32,7 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
     }, [voucherCount]);
 
     const handleRedeem = () => {
-        if (coinNeeded > curCoin) {
+        if (coinNeeded > userCoin) {
             toast({
                 title: "Lỗi",
                 description: "Bạn không có đủ xu để quy đổi voucher.",
@@ -41,8 +40,18 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
                 duration: 3000,
                 isClosable: true,
             });
+        } else if (voucherCount === 0) {
+            toast({
+                title: "Lỗi",
+                description: "Hãy chọn số lượng voucher cần đổi",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         } else {
-            setCurCoin(curCoin - coinNeeded);
+            setUserCoin(prevCoin => prevCoin - coinNeeded);
+            setUserVoucher(prevVoucher => prevVoucher + voucherCount);
+            exchageVoucher(token, voucher.id, voucherCount, parseInt(eventId, 10), coinNeeded);
             toast({
                 title: "Thành công",
                 description: `Bạn đã đổi thành công ${voucherCount} voucher.`,
@@ -72,7 +81,7 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
 
                     <Flex direction="column" align="center">
                         <Image
-                            src={voucher.image}
+                            src={voucher.imageURL}
                             alt='Voucher Image'
                             objectFit="cover"
                             mb={4}
@@ -80,7 +89,7 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
                         />
                         <Box textAlign="center" mb={4}>
                             <Text fontSize="lg" fontWeight="semibold">{voucher.description}</Text>
-                            <Text fontSize="md">Giá trị: <b>{voucher.value}</b></Text>
+                            <Text fontSize="md">Giá trị: <b>giảm giá {voucher.value}% cho tổng hóa đơn</b></Text>
                             <Text fontSize="md">Hạn sử dụng: <b>{voucher.endDate}</b></Text>
                         </Box>
                     </Flex>
@@ -137,7 +146,7 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
                                     position="absolute"
                                     bottom="-20px"
                                 >
-                                    (Số xu hiện có: {curCoin})
+                                    (Số xu hiện có: {userCoin})
                                 </Text>
                             </Flex>
                         </Flex>
@@ -153,3 +162,31 @@ const VoucherModal = ({ isOpen, onClose, voucher }) => {
 };
 
 export default VoucherModal;
+
+async function exchageVoucher(token, voucherId, voucherCount, eventId, coin) {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/exchange-voucher`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                voucherId: voucherId,
+                voucherQuantities: voucherCount,
+                eventId: eventId,
+                coin: coin,
+                userId: 1
+            }),
+        });
+        if (response.ok) {
+            //const data = await response.json();
+            //console.log(data)
+        } else {
+            const errorData = await response.json();
+            console.error("Error add coin:", response.status, response.statusText, errorData);
+        }
+    } catch (error) {
+        console.error("Error fetching game ID:", error);
+    }
+}

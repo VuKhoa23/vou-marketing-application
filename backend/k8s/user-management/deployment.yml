@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: brand-management-deployment
+  name: user-management-deployment
   labels:
-    app: brand-management
+    app: user-management
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: brand-management
+      app: user-management
   template:
     metadata:
       labels:
-        app: brand-management
+        app: user-management
     spec:
       containers:
-        - name: brand-management
-          image: tricker14/brand-management-service:2
+        - name: user-management
+          image: tricker14/user-management-service:1
           env:
           - name: PORT
-            value: "8082"
+            value: "8086"
           - name: DB_HOST
-            value: "branddb-service.default"
+            value: "userdb-service.default"
           - name: DB_PORT
             value: "3306"
           - name: DB_USERNAME
@@ -31,4 +31,4 @@ spec:
           - name: DB_PASSWORD
             value: root
           - name: DB_DATABASE
-            value: vouBrand
+            value: vouUser

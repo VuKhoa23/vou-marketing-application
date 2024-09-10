@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import Event from '../Home/components/Event';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import ProtectedRoute from '../../components/ProtectedRoute';
@@ -27,6 +28,8 @@ const updateProfileSchema = yup.object({
 
 const Profile = () => {
     const user = { id: 1, username: "huong", email: "huong@gmail.com", password: "230403" }
+    const token = useSelector((state) => state.auth.accessToken);
+    const [favoriteEvents, setFavoriteEvents] = useState([]);
     // const dispatch = useDispatch();
 
     const [updateButtonDisabled, setUpdateButtonDisabled] = useState(true);
@@ -48,6 +51,29 @@ const Profile = () => {
             setUpdateButtonDisabled(true);
         },
     });
+
+    useEffect(() => {
+        async function fetchFavoriteEvents(token) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/watchlist`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setFavoriteEvents(data.data);
+                } else {
+                    console.error("Error fetching favorite list:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+
+        fetchFavoriteEvents(token);
+    }, [])
 
     return (
         <ProtectedRoute>
@@ -174,9 +200,56 @@ const Profile = () => {
                 <div className='col-span-6'>
                     <h3 className="font-bold text-xl">Voucher của tôi</h3>
                 </div>
+                <div className='col-span-4 border-4'>
+                    <h3 className="font-bold text-xl">Sự kiện yêu thích</h3>
+                    <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
+                        {favoriteEvents.map((event) => {
+                            return (
+                                <li key={event.event.Id} className='m-4 hover:shadow-lg'>
+                                    <Event
+                                        id={event.event.Id}
+                                        image={event.event.ImageURL}
+                                        name={event.event.Name}
+                                        startDate={formatDate(event.event.StartDate)}
+                                        endDate={formatDate(event.event.EndDate)}
+                                        brand={event.event.brand.username}
+                                        voucher={event.voucher.voucherQuantities}
+                                        gameType={getGameType(event.event)}
+                                        isHome={false}
+                                    />
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
             </div>
         </ProtectedRoute>
     );
 };
 
 export default Profile;
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+function getGameType(event) {
+    let gameType = "";
+
+    if (event.shaking) {
+        gameType += "Lắc xu";
+    }
+
+    if (event.trivia) {
+        if (gameType !== "") {
+            gameType += ", ";
+        }
+        gameType += "Trivia (câu hỏi trắc nghiệm)";
+    }
+
+    return gameType;
+}

@@ -90,6 +90,7 @@ function EventsPage() {
                                             endDate={formatDate(event.event.endDate)}
                                             brand={event.event.brand.username}
                                             voucher={event.voucher.voucherQuantities}
+                                            gameType={getGameType(event.event)}
                                         />
                                     </li>
                                 ))}
@@ -128,7 +129,7 @@ function EventsPage() {
             </div>
 
             {selectedEvent && (
-                <Modal isCentered isOpen={isOpen} onClose={onClose}>
+                <Modal isCentered isOpen={isOpen} onClose={onClose} size="3xl">
                     <ModalOverlay
                         bg="blackAlpha.300"
                         backdropFilter="blur(10px) hue-rotate(90deg)"
@@ -138,7 +139,7 @@ function EventsPage() {
                             <Flex>
                                 <Box flex="1" p={4}>
                                     <Image
-                                        src={selectedEvent.event.imageURL}
+                                        src={selectedEvent.voucher.voucherImageURL}
                                         borderRadius="md"
                                         boxSize="100%"
                                         objectFit="cover"

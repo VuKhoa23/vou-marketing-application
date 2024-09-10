@@ -17,7 +17,7 @@ type UpdateTurnReq struct {
 func (s *Server) AddTurnHandler(c *gin.Context) {
 	var req UpdateTurnReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -44,7 +44,7 @@ func (s *Server) AddTurnHandler(c *gin.Context) {
 		EventID: req.EventID,
 		Turn:    req.Turn,
 	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update turn: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -55,7 +55,7 @@ func (s *Server) AddTurnHandler(c *gin.Context) {
 func (s *Server) SubtractTurnHandler(c *gin.Context) {
 	var req UpdateTurnReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -81,7 +81,7 @@ func (s *Server) SubtractTurnHandler(c *gin.Context) {
 		EventID: req.EventID,
 		Turn:    req.Turn,
 	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update turn: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -111,13 +111,13 @@ func (s *Server) GetTurnsHandler(c *gin.Context) {
 	eventIDStr := c.Query("eventId")
 	eventID, err := strconv.ParseInt(eventIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid eventId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	turnAmount, err := repository.ShowTurn(userIDInt64, eventID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve turns"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

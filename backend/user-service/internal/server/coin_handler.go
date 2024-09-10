@@ -17,7 +17,7 @@ type UpdateCoinReq struct {
 func (s *Server) AddCoinHandler(c *gin.Context) {
 	var req UpdateCoinReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -45,7 +45,7 @@ func (s *Server) AddCoinHandler(c *gin.Context) {
 		EventID: req.EventID,
 		Coin:    req.Coin,
 	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update coin: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -57,7 +57,7 @@ func (s *Server) AddCoinHandler(c *gin.Context) {
 func (s *Server) SubtractCoinHandler(c *gin.Context) {
 	var req UpdateCoinReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -85,7 +85,7 @@ func (s *Server) SubtractCoinHandler(c *gin.Context) {
 		EventID: req.EventID,
 		Coin:    req.Coin,
 	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update coin: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -115,7 +115,7 @@ func (s *Server) GetCoinsHandler(c *gin.Context) {
 	eventIDStr := c.Query("eventId")
 	eventID, err := strconv.ParseInt(eventIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid eventId"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -123,7 +123,7 @@ func (s *Server) GetCoinsHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to retrieve coins",
-			"message": err.Error(),
+			"message": err,
 		})
 		return
 	}
