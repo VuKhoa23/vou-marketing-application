@@ -6,6 +6,7 @@ import GamePage from './pages/GamePage';
 import UserProfile from './pages/UserProfile';
 import TriviaGame from './pages/GamePage/components/TriviaGame';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import store from './redux/store';
 import { Provider } from 'react-redux';
 
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: 'login', element: <Login /> },
+  { path: 'signup', element: <Signup /> },
 ]);
 
 function App() {
