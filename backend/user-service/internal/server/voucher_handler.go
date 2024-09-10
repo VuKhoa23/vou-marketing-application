@@ -10,7 +10,6 @@ import (
 )
 
 type ExchangeVoucherReq struct {
-	UserID            int64 `json:"userId"`
 	VoucherID         int64 `json:"voucherId"`
 	VoucherQuantities int64 `json:"voucherQuantities"`
 	Coin              int64 `json:"coin"`
@@ -24,14 +23,34 @@ func (s *Server) ExchangeVoucherHandler(c *gin.Context) {
 		return
 	}
 
+	userId, exists := c.Get("id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		return
+	}
+
+	// Convert userId to int64 if it's an int16
+	var userIdInt64 int64
+	switch id := userId.(type) {
+	case int64:
+		userIdInt64 = id
+	case int16:
+		userIdInt64 = int64(id) // Convert int16 to int64
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
+		return
+	}
+
 	coin := model.Coin{
-		UserID:  req.UserID,
+		UserID:  userIdInt64,
 		EventID: req.EventID,
 		Coin:    req.Coin,
 	}
 
 	userVoucher := model.UserVoucher{
-		UserID:            req.UserID,
+		UserID:            userIdInt64,
 		VoucherID:         req.VoucherID,
 		VoucherQuantities: req.VoucherQuantities,
 	}

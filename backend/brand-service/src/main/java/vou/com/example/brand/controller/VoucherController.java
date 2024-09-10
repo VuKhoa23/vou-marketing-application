@@ -33,12 +33,27 @@ public class VoucherController {
     }
 
     @PutMapping("update")
-    public Voucher updateVoucher(@RequestParam Long eventId, @RequestParam int quantities){
-        return voucherService.updateVoucherQuantities(eventId, quantities);
+    public void updateVoucher(@RequestParam Long eventId, @RequestParam int quantities){
+        voucherService.updateVoucherQuantities(eventId, quantities);
+    }
+
+    @PutMapping("add-by-id")
+    public void addVoucherById(@RequestParam Long voucherId, @RequestParam int quantities){
+        voucherService.addVoucherQuantities(voucherId, quantities);
+    }
+
+    @PutMapping("subtract-by-id")
+    public void subtractVoucherById(@RequestParam Long voucherId, @RequestParam int quantities){
+        voucherService.subtractVoucherQuantities(voucherId, quantities);
     }
 
     @GetMapping("quantities")
     public Integer getTotalVoucherQuantities(@RequestParam Long brandId) {
         return voucherService.getTotalVouchersByBrand(brandId);
+    }
+
+    @GetMapping("quantities-by-id")
+    public Integer getVoucherQuantitiesById(@RequestParam Long voucherId) {
+        return voucherService.getVoucherQuantitiesById(voucherId);
     }
 }

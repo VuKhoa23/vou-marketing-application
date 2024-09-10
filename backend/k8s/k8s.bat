@@ -22,6 +22,10 @@ cd user
 call user.bat
 
 cd ..
+cd validate-answer
+call validate.bat
+
+cd ..
 cd kafka
 call kafka.bat
 

@@ -4,6 +4,7 @@ import (
 	"brand-management-service/internal/model"
 	"database/sql"
 	"fmt"
+	"os"
 )
 
 func CreateUserVoucher(userVoucher model.UserVoucher) error {
@@ -23,6 +24,10 @@ func CreateUserVoucher(userVoucher model.UserVoucher) error {
 func AddVoucher(userVoucher model.UserVoucher) error {
 	if !isUserExist(userVoucher.UserID) {
 		return fmt.Errorf("user with ID %d does not exist", userVoucher.UserID)
+	}
+
+	if voucherQuantitiesLeft(userVoucher.VoucherID) < userVoucher.VoucherQuantities {
+		return fmt.Errorf("voucher with ID %d does not have enough quantities", userVoucher.VoucherID)
 	}
 
 	// Check if the voucher record exists
@@ -47,8 +52,18 @@ func AddVoucher(userVoucher model.UserVoucher) error {
 	queryVoucherUpdate := "UPDATE user_voucher SET voucher_quantities = ? WHERE user_id = ? AND voucher_id = ?"
 	_, err = db.Exec(queryVoucherUpdate, newVoucherQuantities, userVoucher.UserID, userVoucher.VoucherID)
 	if err != nil {
-		return err
+    return err
+
+	// Prepare data for the updateVoucher API
+	updateData := map[string]interface{}{
+		"voucherId":  userVoucher.VoucherID,
+		"quantities": userVoucher.VoucherQuantities,
 	}
+
+	// Call the updateVoucher API to subtract quantities
+	baseURL := os.Getenv("API_BRAND_URL")
+	url := fmt.Sprintf("%s/voucher/subtract-by-id?voucherId=%d&quantities=%d", baseURL, userVoucher.VoucherID, userVoucher.VoucherQuantities)
+	PutJsonResponse(url, updateData, nil)
 
 	return nil
 }

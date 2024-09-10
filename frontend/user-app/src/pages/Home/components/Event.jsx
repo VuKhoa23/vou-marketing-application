@@ -130,4 +130,3 @@ async function removeFromWatchList(token, eventId) {
         console.error("Error fetching game ID:", error);
     }
 }
-
