@@ -53,8 +53,8 @@ const PolicyPrivacy = () => {
     async function uploadToS3(file, bucketName) {
         // Configure AWS SDK
         AWS.config.update({
-            accessKeyId: process.env.ACCESS_KEY_ID, // Your IAM user's access key
-            secretAccessKey: process.env.SECRET_ACCESS_KEY, // Your IAM user's secret key
+            accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID, // Your IAM user's access key
+            secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY, // Your IAM user's secret key
             region: 'ap-southeast-2', // Example: 'us-east-1'
         });
         const s3 = new AWS.S3({

@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: brand
-          image: tricker14/brand-service:8
+          image: tricker14/brand-service:9
           ports:
             - containerPort: 8080
