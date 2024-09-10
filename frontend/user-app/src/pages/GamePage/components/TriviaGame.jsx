@@ -3,11 +3,13 @@ import { useParams } from "react-router-dom";
 import { Button, Text, Box, chakra, Flex, Heading } from "@chakra-ui/react";
 import Lottie from "react-lottie";
 import animation from "./lotties/man-holding-tablet";
+import ProtectedRoute from "../../../components/ProtectedRoute";
 
 function TriviaGame() {
     const { eventId } = useParams();
 
     const [gameId, setGameId] = useState(null);
+    const [eventName, setEventName] = useState(null);
     const [gameEnd, setGameEnd] = useState(false);
 
     const [script, setScript] = useState("");
@@ -33,9 +35,11 @@ function TriviaGame() {
                 const response = await fetch(
                     `http://localhost/api/brand/game/get-game/by-event/${eventId}`
                 );
+
                 if (response.ok) {
                     const data = await response.json();
                     setGameId(data[0].id);
+                    setEventName(data[0].name);
                 } else {
                     console.error("Error fetching game ID:", response.status, response.statusText);
                 }
@@ -127,110 +131,120 @@ function TriviaGame() {
     };
 
     return (
-        <div className="m-10">
-            <Heading as="h4" size="lg" textAlign="center" my={4}>
-                Sự kiện: Sự kiện của Grab
-            </Heading>
-            <div className="flex">
-                <div className="flex-col w-1/5 mr-10">
-                    <Box
-                        w="100%"
-                        height="inherit"
-                        borderWidth="1px"
-                        borderRadius="lg"
-                        overflow="hidden"
-                        boxShadow="md"
-                        p={6}
-                        marginBottom="auto"
-                        marginTop={"5"}
-                    >
-                        <Text fontSize="4xl" fontWeight="semibold" align="center">
-                            {seconds}
-                        </Text>
-                    </Box>
-                    <Box
-                        w="100%"
-                        height="inherit"
-                        borderWidth="1px"
-                        borderRadius="lg"
-                        overflow="hidden"
-                        boxShadow="md"
-                        p={6}
-                        marginBottom="auto"
-                        marginTop={"5"}
-                    >
-                        <div className="flex justify-center">
-                            <Text fontSize="3xl" fontWeight="semibold" mr={4} align="center">
-                                {score}
+        <ProtectedRoute>
+            <div className="m-10">
+                {eventName && (
+                    <Heading as="h4" size="lg" textAlign="center" my={4}>
+                        Sự kiện: {eventName}
+                    </Heading>
+                )}
+
+                <div className="flex">
+                    <div className="flex-col w-1/5 mr-10">
+                        <Box
+                            w="100%"
+                            height="inherit"
+                            borderWidth="1px"
+                            borderRadius="lg"
+                            overflow="hidden"
+                            boxShadow="md"
+                            p={6}
+                            marginBottom="auto"
+                            marginTop={"5"}
+                        >
+                            <Text fontSize="4xl" fontWeight="semibold" align="center">
+                                {seconds}
                             </Text>
-                            <img src="/coin-svgrepo-com.svg" alt="coin" height="24" width="24" />
-                        </div>
+                        </Box>
+                        <Box
+                            w="100%"
+                            height="inherit"
+                            borderWidth="1px"
+                            borderRadius="lg"
+                            overflow="hidden"
+                            boxShadow="md"
+                            p={6}
+                            marginBottom="auto"
+                            marginTop={"5"}
+                        >
+                            <div className="flex justify-center">
+                                <Text fontSize="3xl" fontWeight="semibold" mr={4} align="center">
+                                    {score}
+                                </Text>
+                                <img
+                                    src="/coin-svgrepo-com.svg"
+                                    alt="coin"
+                                    height="24"
+                                    width="24"
+                                />
+                            </div>
+                        </Box>
+                    </div>
+                    <Box
+                        minW="45%"
+                        maxW="45%"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        boxShadow="md"
+                        p={6}
+                        margin="auto"
+                        marginTop={"5"}
+                    >
+                        {answered ? (
+                            <Text fontSize="xl" fontWeight="bold">
+                                Vui lòng chờ câu hỏi tiếp theo...
+                            </Text>
+                        ) : answers.length > 0 ? (
+                            <Flex direction="column">
+                                {answers.map((answer, index) => (
+                                    <Button
+                                        key={index}
+                                        my={2}
+                                        variant="outline"
+                                        isDisabled={
+                                            selectedAnswerIndex !== null &&
+                                            selectedAnswerIndex !== index
+                                        }
+                                        onClick={() => handleAnswer(index)}
+                                        value={answer}
+                                    >
+                                        <chakra.span
+                                            dangerouslySetInnerHTML={{ __html: answer.content }}
+                                        />
+                                    </Button>
+                                ))}
+                            </Flex>
+                        ) : gameEnd === true ? (
+                            <Text fontSize="xl" fontWeight="bold">
+                                Trò chơi đã kết thúc.
+                            </Text>
+                        ) : (
+                            <Text fontSize="xl" fontWeight="bold">
+                                Đang chuẩn bị trò chơi...
+                            </Text>
+                        )}
                     </Box>
+                    <Box
+                        w="30%"
+                        height="inherit"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        boxShadow="md"
+                        p={6}
+                        marginLeft={12}
+                        marginBottom="auto"
+                        marginTop={"5"}
+                    >
+                        <Text fontSize="xl" fontWeight="bold">
+                            {script}
+                        </Text>
+                    </Box>
+                    <Lottie options={animOptions} height={400} width={300} />
                 </div>
-                <Box
-                    minW="45%"
-                    maxW="45%"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                    boxShadow="md"
-                    p={6}
-                    margin="auto"
-                    marginTop={"5"}
-                >
-                    {answered ? (
-                        <Text fontSize="xl" fontWeight="bold">
-                            Vui lòng chờ câu hỏi tiếp theo...
-                        </Text>
-                    ) : answers.length > 0 ? (
-                        <Flex direction="column">
-                            {answers.map((answer, index) => (
-                                <Button
-                                    key={index}
-                                    my={2}
-                                    variant="outline"
-                                    isDisabled={
-                                        selectedAnswerIndex !== null &&
-                                        selectedAnswerIndex !== index
-                                    }
-                                    onClick={() => handleAnswer(index)}
-                                    value={answer}
-                                >
-                                    <chakra.span
-                                        dangerouslySetInnerHTML={{ __html: answer.content }}
-                                    />
-                                </Button>
-                            ))}
-                        </Flex>
-                    ) : gameEnd === true ? (
-                        <Text fontSize="xl" fontWeight="bold">
-                            Trò chơi đã kết thúc.
-                        </Text>
-                    ) : (
-                        <Text fontSize="xl" fontWeight="bold">
-                            Đang chuẩn bị trò chơi...
-                        </Text>
-                    )}
-                </Box>
-                <Box
-                    w="30%"
-                    height="inherit"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                    boxShadow="md"
-                    p={6}
-                    marginLeft={12}
-                    marginBottom="auto"
-                    marginTop={"5"}
-                >
-                    <Text fontSize="xl" fontWeight="bold">
-                        {script}
-                    </Text>
-                </Box>
-                <Lottie options={animOptions} height={400} width={300} />
             </div>
-        </div>
+        </ProtectedRoute>
     );
 }
 

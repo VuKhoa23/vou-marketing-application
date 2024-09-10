@@ -2,18 +2,21 @@ import React from 'react';
 import Game from "./components/Game";
 import '../GamePage/style/index.css';
 import Regulations from './components/Regulation';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 function GamePage() {
     return (
-        <div className="flex">
-            <div className="w-1/2">
-                <Regulations />
-            </div>
+        <ProtectedRoute>
+            <div className="flex">
+                <div className="w-1/2">
+                    <Regulations />
+                </div>
 
-            <div className="w-1/2">
-                <Game />
+                <div className="w-1/2">
+                    <Game />
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     );
 }
 
