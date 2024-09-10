@@ -35,5 +35,10 @@ cd validate-answer
 
 cd ..
 
+cd user-management
+./user-management.sh
+
+cd ..
+
 cd ingress
 ./ingress.sh
