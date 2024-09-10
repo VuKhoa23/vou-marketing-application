@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { version } from 'react';
 import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 function Home() {
 
@@ -25,6 +26,7 @@ function Home() {
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
+    const [favoriteEvents, setFavoriteEvents] = useState([]);
 
     const openModal = (event) => {
         setSelectedEvent(event);
@@ -48,6 +50,31 @@ function Home() {
         }
         return gameType;
     }
+
+    useEffect(() => {
+        async function fetchFavoriteEvents(token) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/watchlist`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setFavoriteEvents(data.data);
+                } else {
+                    console.error("Error fetching favorite list:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        if (token !== null) {
+            fetchFavoriteEvents(token);
+        }
+
+    }, [token])
 
     return (
         <>
@@ -82,23 +109,28 @@ function Home() {
                             <p style={{ textAlign: 'center', marginTop: '20px' }}>Không có sự kiện nào</p>
                         ) : (
                             <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
-                                {resolvedEvents.map((event) => (
-                                    <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
-                                        <Event
-                                            id={event.event.id}
-                                            image={event.event.imageURL}
-                                            name={event.event.name}
-                                            startDate={formatDate(event.event.startDate)}
-                                            endDate={formatDate(event.event.endDate)}
-                                            brand={event.event.brand.username}
-                                            voucher={event.voucher.voucherQuantities}
-                                            gameType={getGameType(event.event)}
-                                        />
-                                    </li>
-                                ))}
+                                {resolvedEvents.map((event) => {
+                                    // Kiểm tra nếu event hiện tại có trong favoriteEvents
+                                    const isFavorite = favoriteEvents.some(favEvent => favEvent.event.Id === event.event.id);
+                                    return (
+                                        <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                            <Event
+                                                id={event.event.id}
+                                                image={event.event.imageURL}
+                                                name={event.event.name}
+                                                startDate={formatDate(event.event.startDate)}
+                                                endDate={formatDate(event.event.endDate)}
+                                                brand={event.event.brand.username}
+                                                voucher={event.voucher.voucherQuantities}
+                                                gameType={getGameType(event.event)}
+                                                isFavorite={isFavorite}
+                                                isHome={true}
+                                            />
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         )
-
                     )}
                 </Await>
             </Suspense>
