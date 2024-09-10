@@ -8,6 +8,7 @@ import vou.com.example.brand.dto.VoucherDTO;
 import vou.com.example.brand.entity.Brand;
 import vou.com.example.brand.entity.Event;
 import vou.com.example.brand.entity.Voucher;
+import vou.com.example.brand.exception.InvalidArgumentException;
 import vou.com.example.brand.exception.NotFoundException;
 import vou.com.example.brand.repository.BrandRepository;
 import vou.com.example.brand.repository.EventRepository;
@@ -94,15 +95,35 @@ public class VoucherService {
 
         voucherRepository.save(voucher);
     }
-    public Voucher updateVoucherQuantities(Long eventId, int quantities) {
+    public void updateVoucherQuantities(Long eventId, int quantities) {
         Voucher voucher = voucherRepository.findByEvent_Id(eventId);
-//        Voucher voucher = voucherRepository.findById(voucherId)
-//                .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
 
         voucher.setVoucherQuantities(quantities);
         voucherRepository.save(voucher);
+    }
 
-        return voucher;
+    public void addVoucherQuantities(Long voucherId, int quantities) {
+        Voucher voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
+
+        int newQuantities = voucher.getVoucherQuantities() + quantities;
+        voucher.setVoucherQuantities(newQuantities);
+        voucherRepository.save(voucher);
+    }
+
+    public void subtractVoucherQuantities(Long voucherId, int quantities) {
+        Voucher voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
+
+        int newQuantities = voucher.getVoucherQuantities() - quantities;
+
+        if (newQuantities < 0) {
+            throw new InvalidArgumentException("Insufficient voucher quantities. Current quantities: "
+                    + voucher.getVoucherQuantities());
+        }
+
+        voucher.setVoucherQuantities(newQuantities);
+        voucherRepository.save(voucher);
     }
 
     public Integer getTotalVouchersByBrand(Long brandId){
@@ -112,6 +133,12 @@ public class VoucherService {
         return vouchers.stream()
                 .mapToInt(Voucher::getVoucherQuantities)
                 .sum();
+    }
+
+    public Integer getVoucherQuantitiesById(Long voucherId){
+        Voucher voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
+        return voucher.getVoucherQuantities();
     }
 }
 
