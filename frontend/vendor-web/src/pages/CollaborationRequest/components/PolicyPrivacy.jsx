@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AWS from 'aws-sdk';
 import {
     Box,
     Checkbox,
@@ -48,38 +49,46 @@ const PolicyPrivacy = () => {
         }
     }
 
+    // Function to handle S3 upload
+    async function uploadToS3(file, bucketName) {
+        // Configure AWS SDK
+        AWS.config.update({
+            accessKeyId: process.env.ACCESS_KEY_ID, // Your IAM user's access key
+            secretAccessKey: process.env.SECRET_ACCESS_KEY, // Your IAM user's secret key
+            region: 'ap-southeast-2', // Example: 'us-east-1'
+        });
+        const s3 = new AWS.S3({
+            apiVersion: '2012-10-17',
+            params: { Bucket: bucketName },
+        });
+
+        const params = {
+            Bucket: bucketName,
+            Key: `${file.name}`, // Folder (if required) + file name
+            Body: file,
+            ContentType: file.type,
+        };
+
+        try {
+            // Upload file to S3
+            const data = await s3.upload(params).promise();
+            return data.Location; // Return the uploaded file URL
+        } catch (error) {
+            console.error('Error uploading to S3:', error);
+            throw error;
+        }
+    }
+
     const handleSubmit = async () => {
         if (termsAccepted && privacyAccepted) {
+            const bucketName = 'first-time-using-s3-bucket'; // Your S3 bucket name
             try {
-                // Gọi API lấy URL bảo mật cho eventImage
-                let eventImageRes = await fetch(`${process.env.REACT_APP_API_URL}/api/generate-url`);
-                let eventImageUploadUrl = await eventImageRes.text(); // Dùng response.text() thay vì response.json()
 
-                // Upload eventImage lên S3
-                await fetch(eventImageUploadUrl, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": eventImage.type,
-                    },
-                    body: eventImage,
-                });
+                const eventImageS3Url = await uploadToS3(eventImage, bucketName);
+                console.log('Event Image uploaded to:', eventImageS3Url);
 
-                const eventImageS3Url = eventImageUploadUrl.split('?')[0];
-
-                // Gọi API lấy URL bảo mật cho voucherImage
-                let voucherImageRes = await fetch(`${process.env.REACT_APP_API_URL}/api/generate-url`);
-                let voucherImageUploadUrl = await voucherImageRes.text();
-
-                // Upload voucherImage lên S3
-                await fetch(voucherImageUploadUrl, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": voucherImage.type,
-                    },
-                    body: voucherImage,
-                });
-
-                const voucherImageS3Url = voucherImageUploadUrl.split('?')[0];
+                const voucherImageS3Url = await uploadToS3(voucherImage, bucketName);
+                console.log('Voucher Image uploaded to:', voucherImageS3Url);
 
                 const formData = new FormData();
                 formData.append("eventImage", eventImageS3Url);

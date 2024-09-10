@@ -1,4 +1,4 @@
-function Event({ id, name, brand, image, voucher, startDate, endDate }) {
+function Event({ id, name, brand, image, voucher, startDate, endDate, gameType }) {
 
     function parseDate(dateString) {
         const [day, month, year] = dateString.split('-');
@@ -30,6 +30,7 @@ function Event({ id, name, brand, image, voucher, startDate, endDate }) {
                 </h2>
                 <p>Thương hiệu: {brand}</p>
                 <p>Số lượng voucher: {voucher}</p>
+                <p>Loại sự kiện: {gameType === 'Lắc xu' ? "Game lắc xu" : "Game Trivia"}</p>
                 <p>Thời gian: {startDate} đến {endDate}</p>
                 <div className="card-actions flex items-center justify-end space-x-2">
                     {statusBadge}
