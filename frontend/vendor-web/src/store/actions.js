@@ -19,7 +19,7 @@ export const submitAllForms = createAsyncThunk(
             const data = await response.json();
 
             if (triviaTime !== null) {
-                const response = await fetch("http://localhost/api/brand/game/create-game", {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/game/create-game`, {
                     method: "POST",
                     body: JSON.stringify({
                         event_id: data.eventId,

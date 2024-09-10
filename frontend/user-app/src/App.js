@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home />, loader: eventsLoader },
       {
-        path: 'game',
+        path: 'game/:eventId',
         children: [
           { index: true, element: <GamePage /> }
         ],
