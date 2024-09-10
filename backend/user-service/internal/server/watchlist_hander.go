@@ -18,7 +18,7 @@ type AddEventToWatchlistReq struct {
 func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
 	var req AddEventToWatchlistReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -50,7 +50,7 @@ func (s *Server) AddEventToWatchlistHandler(c *gin.Context) {
 	err := repository.AddEventToWatchlist(watchlist)
 	fmt.Printf("Request Body: %+v\n", req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add event to watchlist: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -85,7 +85,7 @@ func (s *Server) ShowWatchlistHandler(c *gin.Context) {
 
 	eventIds, err := repository.ShowWatchlist(userIdInt64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event IDs: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

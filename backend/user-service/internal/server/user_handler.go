@@ -63,9 +63,9 @@ func (s Server) GetUserInfoHandler(c *gin.Context) {
 	user, err := repository.GetUserInfo(userIdInt64)
 	if err != nil {
 		if err.Error() == fmt.Sprintf("user with ID %d not found", userIdInt64) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, gin.H{"error": err})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		}
 		return
 	}

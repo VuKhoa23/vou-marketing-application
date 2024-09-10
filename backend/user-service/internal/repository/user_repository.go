@@ -51,7 +51,7 @@ func GetUserInfo(userID int64) (model.User, error) {
 	err := db.QueryRow(query, userID).Scan(&user.ID, &user.Username, &user.Password, &user.Phone, &user.Gender, &user.ImageURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("user with ID %d not found", userID)
+			return user, err
 		}
 		return user, err
 	}
@@ -62,7 +62,7 @@ func GetUserInfo(userID int64) (model.User, error) {
 func GetJsonResponse(url string, result interface{}) error {
 	resp, err := http.Get(url)
 	if err != nil {
-		return fmt.Errorf("failed to make request: %w", err)
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -72,12 +72,12 @@ func GetJsonResponse(url string, result interface{}) error {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		return err
 	}
 
 	err = json.Unmarshal(body, result)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal JSON response: %w", err)
+		return err
 	}
 
 	return nil
@@ -87,13 +87,13 @@ func PostJsonResponse(url string, requestData interface{}, result interface{}) e
 	// Marshal the request data to JSON
 	jsonData, err := json.Marshal(requestData)
 	if err != nil {
-		return fmt.Errorf("failed to marshal request data: %w", err)
+		return err
 	}
 
 	// Perform the POST request
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		return fmt.Errorf("failed to make request: %w", err)
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -103,12 +103,12 @@ func PostJsonResponse(url string, requestData interface{}, result interface{}) e
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		return err
 	}
 
 	err = json.Unmarshal(body, result)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal JSON response: %w", err)
+		return err
 	}
 
 	return nil
@@ -131,7 +131,6 @@ func isEventExist(eventID int64) bool {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("error checking if event exists: %v\n", err)
 		return false
 	}
 	defer resp.Body.Close()
@@ -148,13 +147,11 @@ func isEventExist(eventID int64) bool {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("failed to read response body: %v\n", err)
 		return false
 	}
 
 	err = json.Unmarshal(body, &eventResponse)
 	if err != nil {
-		fmt.Printf("failed to unmarshal JSON response: %v\n", err)
 		return false
 	}
 
