@@ -3,13 +3,16 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+	"path"
+	"path/filepath"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/mattes/migrate/source/file"
-	"log"
-	"os"
 )
 
 // Service represents a service that interacts with a database.
@@ -49,15 +52,13 @@ func New() Service {
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
+	p, err := filepath.Abs("F://Documents//Code//Spring//vou-marketing-application//backend//user-service")
+	p = filepath.ToSlash(p)
+	p = path.Join(p, "migrations")
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://"+cwd+"/migrations",
-		"mysql",
-		driver)
+		fmt.Sprintf("file://%s", p),
+		"mysql", driver)
 
 	if err != nil {
 		log.Fatal(err)

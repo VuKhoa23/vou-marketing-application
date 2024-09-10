@@ -15,17 +15,21 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { version } from 'react';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 function Home() {
+
+    const token = useSelector((state) => state.auth.accessToken);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [triviaGameId, setTriviaGameId] = useState('');
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
+    const [favoriteEvents, setFavoriteEvents] = useState([]);
 
     const openModal = (event) => {
         setSelectedEvent(event);
-        console.log(event);
         onOpen();
     };
 
@@ -46,6 +50,31 @@ function Home() {
         }
         return gameType;
     }
+
+    useEffect(() => {
+        async function fetchFavoriteEvents(token) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/watchlist`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setFavoriteEvents(data.data);
+                } else {
+                    console.error("Error fetching favorite list:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        if (token !== null) {
+            fetchFavoriteEvents(token);
+        }
+
+    }, [token])
 
     return (
         <>
@@ -80,23 +109,28 @@ function Home() {
                             <p style={{ textAlign: 'center', marginTop: '20px' }}>Không có sự kiện nào</p>
                         ) : (
                             <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
-                                {resolvedEvents.map((event) => (
-                                    <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
-                                        <Event
-                                            id={event.event.id}
-                                            image={event.event.imageURL}
-                                            name={event.event.name}
-                                            startDate={formatDate(event.event.startDate)}
-                                            endDate={formatDate(event.event.endDate)}
-                                            brand={event.event.brand.username}
-                                            voucher={event.voucher.voucherQuantities}
-                                            gameType={getGameType(event.event)}
-                                        />
-                                    </li>
-                                ))}
+                                {resolvedEvents.map((event) => {
+                                    // Kiểm tra nếu event hiện tại có trong favoriteEvents
+                                    const isFavorite = favoriteEvents.some(favEvent => favEvent.event.Id === event.event.id);
+                                    return (
+                                        <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                            <Event
+                                                id={event.event.id}
+                                                image={event.event.imageURL}
+                                                name={event.event.name}
+                                                startDate={formatDate(event.event.startDate)}
+                                                endDate={formatDate(event.event.endDate)}
+                                                brand={event.event.brand.username}
+                                                voucher={event.voucher.voucherQuantities}
+                                                gameType={getGameType(event.event)}
+                                                isFavorite={isFavorite}
+                                                isHome={true}
+                                            />
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         )
-
                     )}
                 </Await>
             </Suspense>
@@ -131,14 +165,22 @@ function Home() {
                             </Flex>
                         </ModalBody>
                         <ModalFooter>
-                            <Button className='mr-2'>
-                                {
-                                    selectedEvent.event.trivia === true ?
-                                        <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
-                                        :
-                                        <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
-                                }
-                            </Button>
+                            {
+                                token === null ?
+                                    <Button className='mr-2'>
+                                        <NavLink to='/login'>Đăng nhập</NavLink>
+                                    </Button>
+                                    :
+                                    <Button className='mr-2'>
+                                        {
+                                            selectedEvent.event.trivia === true ?
+                                                <NavLink to={`/trivia/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                                :
+                                                <NavLink to={`/game/${selectedEvent.event.id}`}>Chơi game</NavLink>
+                                        }
+                                    </Button>
+                            }
+
                             <Button onClick={onClose}>Đóng</Button>
                         </ModalFooter>
                     </ModalContent>

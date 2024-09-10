@@ -19,7 +19,7 @@ type ExchangeVoucherReq struct {
 func (s *Server) ExchangeVoucherHandler(c *gin.Context) {
 	var req ExchangeVoucherReq
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -56,16 +56,16 @@ func (s *Server) ExchangeVoucherHandler(c *gin.Context) {
 	}
 
 	if err := repository.SubtractCoin(coin); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to subtract coins: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	if err := repository.AddVoucher(userVoucher); err != nil {
 		if err := repository.AddCoin(coin); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add coins: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			return
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add voucher: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -102,7 +102,7 @@ func (s *Server) GetVouchersHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to retrieve coins",
-			"message": err.Error(),
+			"message": err,
 		})
 		return
 	}

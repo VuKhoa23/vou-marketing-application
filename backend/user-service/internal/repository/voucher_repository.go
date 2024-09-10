@@ -16,7 +16,7 @@ func CreateUserVoucher(userVoucher model.UserVoucher) error {
 	_, err := db.Exec(query, userVoucher.UserID, userVoucher.VoucherID, 0)
 	if err != nil {
 		// Handle specific error if needed (e.g., unique constraint violation)
-		return fmt.Errorf("failed to create voucher for user: %w", err)
+		return err
 	}
 	return nil
 }
@@ -39,11 +39,11 @@ func AddVoucher(userVoucher model.UserVoucher) error {
 		if err == sql.ErrNoRows {
 			// Record does not exist, create it
 			if err := CreateUserVoucher(userVoucher); err != nil {
-				return fmt.Errorf("failed to create voucher record: %w", err)
+				return err
 			}
 		} else {
 			// Error querying the database
-			return fmt.Errorf("error checking if voucher record exists: %w", err)
+			return err
 		}
 	}
 
@@ -52,8 +52,7 @@ func AddVoucher(userVoucher model.UserVoucher) error {
 	queryVoucherUpdate := "UPDATE user_voucher SET voucher_quantities = ? WHERE user_id = ? AND voucher_id = ?"
 	_, err = db.Exec(queryVoucherUpdate, newVoucherQuantities, userVoucher.UserID, userVoucher.VoucherID)
 	if err != nil {
-		return fmt.Errorf("failed to add voucher quantities for user: %w", err)
-	}
+    return err
 
 	// Prepare data for the updateVoucher API
 	updateData := map[string]interface{}{
@@ -90,7 +89,7 @@ func ShowVoucher(userID int64, voucherID int64) (int64, error) {
 			CreateUserVoucher(newVoucher)
 		} else {
 			// Error querying the database
-			return 0, fmt.Errorf("error checking if voucher record exists: %w", err)
+			return 0, err
 		}
 	}
 

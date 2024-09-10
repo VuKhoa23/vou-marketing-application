@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { setAuthUser } from "@/lib/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import Cookies from "js-cookie";
 
 const loginSchema = yup.object({
     username: yup.string().required("Vui lòng điền tên đăng nhập"),
@@ -37,6 +38,7 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json();
                 dispatch(setAuthUser(data));
+                Cookies.set("adminToken", data.accessToken, { expires: 7 });
                 toast.success("Đăng nhập thành công.");
                 router.push("/");
             } else {

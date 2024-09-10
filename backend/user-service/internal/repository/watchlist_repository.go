@@ -18,7 +18,7 @@ func AddEventToWatchlist(watchlist model.Watchlist) error {
 	_, err := db.Exec(query, watchlist.UserID, watchlist.EventID)
 	if err != nil {
 		// Handle specific error if needed (e.g., unique constraint violation)
-		return fmt.Errorf("failed to add event to watchlist: %w", err)
+		return err
 	}
 	return nil
 }
@@ -31,7 +31,7 @@ func ShowWatchlist(userID int64) ([]int64, error) {
 	query := "SELECT event_id FROM watchlist WHERE user_id = ?"
 	rows, err := db.Query(query, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch watchlist: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -39,13 +39,13 @@ func ShowWatchlist(userID int64) ([]int64, error) {
 	for rows.Next() {
 		var eventID int64
 		if err := rows.Scan(&eventID); err != nil {
-			return nil, fmt.Errorf("failed to scan row: %w", err)
+			return nil, err
 		}
 		watchlist = append(watchlist, eventID)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error occurred during row iteration: %w", err)
+		return nil, err
 	}
 	return watchlist, nil
 }

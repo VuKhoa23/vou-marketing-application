@@ -30,5 +30,9 @@ cd kafka
 call kafka.bat
 
 cd ..
+cd user-management
+call user-management.bat
+
+cd ..
 cd ingress
 call ingress.bat
