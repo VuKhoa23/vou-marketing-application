@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { setAuthUser } from '../../redux/slices/authSlice';
+import { setAuthUser } from '../../store/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
 
 const signupSchema = yup.object({
