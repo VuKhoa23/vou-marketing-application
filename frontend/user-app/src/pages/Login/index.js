@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { setAuthUser } from '../../redux/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 const loginSchema = yup.object({
     username: yup
@@ -41,6 +42,7 @@ const Login = () => {
                 const userData = await response.json();
                 const token = userData.accessToken.replace('Bearer ', '');
                 dispatch(setAuthUser(token));
+                Cookies.set("userToken", userData.accessToken, { expires: 7 });
                 toast.success('Đăng nhập thành công.');
                 navigate('/');
             } else {
