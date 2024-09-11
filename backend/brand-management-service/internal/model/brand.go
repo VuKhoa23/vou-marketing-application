@@ -6,7 +6,7 @@ type Brand struct {
 	Password string `json:"password,omitempty"`
 	Category string `json:"category,omitempty"`
 	Address  string `json:"address,omitempty"`
-	Long     string `json:"long,omitempty"`
+	Lon      string `json:"lon,omitempty"`
 	Lat      string `json:"lat,omitempty"`
 	State    bool   `json:"state"`
 }

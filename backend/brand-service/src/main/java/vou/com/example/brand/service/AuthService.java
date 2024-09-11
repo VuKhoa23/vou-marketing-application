@@ -38,16 +38,16 @@ public class AuthService {
         String password = registerDTO.getPassword();
         String category = registerDTO.getCategory();
         String address = registerDTO.getAddress();
-        String longitude = registerDTO.getLongitude();
-        String latitude = registerDTO.getLatitude();
+        String longitude = registerDTO.getLon();
+        String latitude = registerDTO.getLat();
 
         Brand brand = new Brand();
         brand.setUsername(name);
         brand.setPassword(passwordEncoder.encode(password));
         brand.setCategory(category);
         brand.setAddress(address);
-        brand.setLongitude(longitude);
-        brand.setLatitude(latitude);
+        brand.setLon(longitude);
+        brand.setLat(latitude);
 
         brandRepository.save(brand);
     }
