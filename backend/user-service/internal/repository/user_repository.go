@@ -14,7 +14,7 @@ import (
 )
 
 func CreateUser(user model.User) (model.User, error) {
-	query := "INSERT INTO user (username, password, phone, gender, imageURL) VALUES (?, ?, ?, ?, ?)"
+	query := "INSERT INTO user (username, password, phone, gender, image_url) VALUES (?, ?, ?, ?, ?)"
 
 	hashedPassword := utils.HashPassword(user.Password)
 

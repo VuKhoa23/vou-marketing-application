@@ -1,0 +1,2 @@
+ALTER TABLE user
+RENAME COLUMN imageURL TO image_url;
