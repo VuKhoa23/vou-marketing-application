@@ -5,6 +5,7 @@ import Event from '../Home/components/Event';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import { Flex, Image, Text, Box } from '@chakra-ui/react';
 
 const updateProfileSchema = yup.object({
     username: yup
@@ -31,6 +32,25 @@ const Profile = () => {
     const token = useSelector((state) => state.auth.accessToken);
     const [favoriteEvents, setFavoriteEvents] = useState([]);
     // const dispatch = useDispatch();
+
+    const [vouchers, setVouchers] = useState([
+        {
+            id: 1,
+            image: "/vc1.jpg",
+            quantity: 2,
+            description: "Voucher giảm giá 10% cho tổng hóa đơn",
+            value: "10%",
+            expiryDate: "31-12-2024"
+        },
+        {
+            id: 2,
+            image: "/vc6.jpg",
+            quantity: 1,
+            description: "Voucher giảm giá 20% cho đơn hàng từ 500k",
+            value: "20%",
+            expiryDate: "30-11-2024"
+        }
+    ]);
 
     const [updateButtonDisabled, setUpdateButtonDisabled] = useState(true);
 
@@ -199,8 +219,31 @@ const Profile = () => {
 
                 <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Voucher của tôi</h3>
+                    <ul className='flex flex-wrap justify-center'>
+                        {vouchers.map((voucher) => {
+                            return (
+                                <li key={voucher.id} className='m-4 p-4 border rounded-lg hover:shadow-lg'>
+                                    <Flex direction="column" align="left">
+                                        <Image
+                                            src={voucher.image}
+                                            alt='Voucher Image'
+                                            objectFit="cover"
+                                            mb={4}
+                                            background="transparent"
+                                        />
+                                        <Box textAlign="left" mb={4}>
+                                            <Text fontSize="lg" textAlign="center" fontWeight="semibold">{voucher.description}</Text>
+                                            <Text fontSize="md">Giá trị: <b>giảm giá {voucher.value} cho tổng hóa đơn</b></Text>
+                                            <Text fontSize="md">Hạn sử dụng: <b>{voucher.expiryDate}</b></Text>
+                                            <Text fontSize="md">Sở hữu: <b>{voucher.quantity} cái</b></Text>
+                                        </Box>
+                                    </Flex>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </div>
-                <div className='col-span-4 border-4'>
+                <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Sự kiện yêu thích</h3>
                     <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
                         {favoriteEvents.map((event) => {
