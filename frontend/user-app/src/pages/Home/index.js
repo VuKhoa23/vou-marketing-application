@@ -15,14 +15,15 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { version } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { setCurrentEvent } from '../../redux/slices/currentEventSlice';
 
 function Home() {
-
     const token = useSelector((state) => state.auth.accessToken);
+    const dispatch = useDispatch();
+
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [triviaGameId, setTriviaGameId] = useState('');
     const [keyWord, setKeyWord] = useState('');
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
@@ -113,7 +114,12 @@ function Home() {
                                     // Kiểm tra nếu event hiện tại có trong favoriteEvents
                                     const isFavorite = favoriteEvents.some(favEvent => favEvent.event.Id === event.event.id);
                                     return (
-                                        <li key={event.event.id} className='m-4 hover:shadow-lg' onClick={() => openModal(event)}>
+                                        <li key={event.event.id}
+                                            className='m-4 hover:shadow-lg'
+                                            onClick={() => {
+                                                dispatch(setCurrentEvent(event));
+                                                openModal(event);
+                                            }}>
                                             <Event
                                                 id={event.event.id}
                                                 image={event.event.imageURL}
@@ -134,7 +140,6 @@ function Home() {
                     )}
                 </Await>
             </Suspense>
-
 
             {selectedEvent && (
                 <Modal isCentered isOpen={isOpen} onClose={onClose} size="3xl">

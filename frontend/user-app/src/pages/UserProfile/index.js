@@ -7,28 +7,9 @@ import { Flex, Image, Text, Box } from '@chakra-ui/react';
 
 const Profile = () => {
     const user = useSelector((state) => state.user);
+    const vouchers = useSelector((state) => state.voucher.vouchers);
     const token = useSelector((state) => state.auth.accessToken);
     const [favoriteEvents, setFavoriteEvents] = useState([]);
-    // const dispatch = useDispatch();
-
-    const [vouchers, setVouchers] = useState([
-        {
-            id: 1,
-            image: "/vc1.jpg",
-            quantity: 2,
-            description: "Voucher giảm giá 10% cho tổng hóa đơn",
-            value: "10%",
-            expiryDate: "31-12-2024"
-        },
-        {
-            id: 2,
-            image: "/vc6.jpg",
-            quantity: 1,
-            description: "Voucher giảm giá 20% cho đơn hàng từ 500k",
-            value: "20%",
-            expiryDate: "30-11-2024"
-        }
-    ]);
 
     useEffect(() => {
         async function fetchFavoriteEvents(token) {

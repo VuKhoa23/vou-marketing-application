@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const accessToken = useSelector((state) => state.auth.accessToken);
     const [request, setRequest] = useState([
         { id: 1 },
@@ -22,6 +23,14 @@ function MainNavigation() {
     const handleLogout = () => {
         dispatch(logout());
         navigate("/login");
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(prevState => !prevState);
+    };
+
+    const closeDropdown = () => {
+        setIsDropdownOpen(false);
     };
 
     const handleAccept = (id) => {
@@ -42,7 +51,7 @@ function MainNavigation() {
             fetchUserInfo(accessToken);
             setFetched(true);
         }
-    }, []);
+    }, [accessToken, dispatch, fetchUserInfo, fetched]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -124,23 +133,26 @@ function MainNavigation() {
                     </div>
                     <div className="flex-none">
                         <div className="dropdown dropdown-end ">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={toggleDropdown}>
                                 <div className="w-10 rounded-full">
                                     <img
                                         alt="Tailwind CSS Navbar component"
                                         src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                                 </div>
                             </div>
-                            <ul
-                                tabIndex={0}
-                                className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                                <li>
-                                    <NavLink to="/profile" className="justify-between">
-                                        Hồ sơ
-                                    </NavLink>
-                                </li>
-                                <li><button onClick={handleLogout}>Đăng xuất</button></li>
-                            </ul>
+                            {isDropdownOpen && (
+                                <ul
+                                    tabIndex={0}
+                                    className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+                                >
+                                    <li>
+                                        <NavLink to='/profile' className="justify-between" onClick={closeDropdown}>
+                                            Hồ sơ
+                                        </NavLink>
+                                    </li>
+                                    <li><button onClick={handleLogout}>Đăng xuất</button></li>
+                                </ul>
+                            )}
                         </div>
                     </div>
 

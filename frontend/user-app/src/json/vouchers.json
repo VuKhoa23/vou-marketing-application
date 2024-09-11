@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "image": "/vc1.jpg",
+        "quantity": 2,
+        "description": "Voucher giảm giá 10% cho tổng hóa đơn",
+        "value": "10%",
+        "expiryDate": "31-12-2024"
+    },
+    {
+        "id": 2,
+        "image": "/vc6.jpg",
+        "quantity": 1,
+        "description": "Voucher giảm giá 20% cho đơn hàng từ 500k",
+        "value": "20%",
+        "expiryDate": "30-11-2024"
+    }
+]

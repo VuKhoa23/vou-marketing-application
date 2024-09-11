@@ -20,7 +20,7 @@ const userSlice = createSlice({
             state.image_url = image_url;
             state.gender = gender;
         },
-        resetUserInfo(state) {
+        resetUserInfo() {
             return initialState;
         }
     },

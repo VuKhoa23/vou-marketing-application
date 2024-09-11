@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button, Text, Box, chakra, Flex, Heading } from "@chakra-ui/react";
 import Lottie from "react-lottie";
 import animation from "./lotties/man-holding-tablet";
 import ProtectedRoute from "../../../components/ProtectedRoute";
+import { useSelector } from "react-redux";
+import toast, { Toaster } from "react-hot-toast";
 
 function TriviaGame() {
     const { eventId } = useParams();
+    const navigate = useNavigate();
+
+    const accessToken = useSelector((state) => state.auth.accessToken);
+    const user = useSelector((state) => state.user);
+    const currentEvent = useSelector((state) => state.currentEvent);
 
     const [gameId, setGameId] = useState(null);
-    const [eventName, setEventName] = useState(null);
     const [gameEnd, setGameEnd] = useState(false);
 
     const [script, setScript] = useState("");
@@ -19,6 +25,12 @@ function TriviaGame() {
     const [seconds, setSeconds] = useState(0);
     const [score, setScore] = useState(0);
     const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+
+    const scoreRef = useRef(score);
+
+    useEffect(() => {
+        scoreRef.current = score;
+    }, [score]);
 
     const animOptions = {
         loop: true,
@@ -39,7 +51,6 @@ function TriviaGame() {
                 if (response.ok) {
                     const data = await response.json();
                     setGameId(data[0].id);
-                    setEventName(data[0].name);
                 } else {
                     console.error("Error fetching game ID:", response.status, response.statusText);
                 }
@@ -49,7 +60,7 @@ function TriviaGame() {
         }
 
         fetchGameId();
-    }, [eventId]);
+    }, [currentEvent, eventId, navigate]);
 
     useEffect(() => {
         if (gameId) {
@@ -72,6 +83,7 @@ function TriviaGame() {
                         setAnswers([]);
                         setGameEnd(true);
                         setScript("Cảm ơn bạn đã tham gia!");
+                        handleGameEnd(scoreRef.current);
                     } else {
                         setScript(parsedData.title);
                         setAnswers(parsedData.answers);
@@ -123,7 +135,9 @@ function TriviaGame() {
                 setScore(score + 40);
                 setAnswers([]);
             } else {
-                setScript(`Câu trả lời đúng là ${answers[correctAnswerIndex].content}`);
+                setScript(
+                    `Thật đáng tiếc, câu trả lời đúng là "${answers[correctAnswerIndex].content}".`
+                );
             }
 
             setAnswered(true);
@@ -133,53 +147,61 @@ function TriviaGame() {
     return (
         <ProtectedRoute>
             <div className="m-10">
-                {eventName && (
-                    <Heading as="h4" size="lg" textAlign="center" my={4}>
-                        Sự kiện: {eventName}
-                    </Heading>
-                )}
-
+                <Toaster />
+                <Heading as="h4" size="lg" textAlign="center" my={4}>
+                    Sự kiện {currentEvent.name} của thương hiệu {currentEvent.brandName}
+                </Heading>
                 <div className="flex">
-                    <div className="flex-col w-1/5 mr-10">
-                        <Box
-                            w="100%"
-                            height="inherit"
-                            borderWidth="1px"
-                            borderRadius="lg"
-                            overflow="hidden"
-                            boxShadow="md"
-                            p={6}
-                            marginBottom="auto"
-                            marginTop={"5"}
-                        >
-                            <Text fontSize="4xl" fontWeight="semibold" align="center">
-                                {seconds}
-                            </Text>
-                        </Box>
-                        <Box
-                            w="100%"
-                            height="inherit"
-                            borderWidth="1px"
-                            borderRadius="lg"
-                            overflow="hidden"
-                            boxShadow="md"
-                            p={6}
-                            marginBottom="auto"
-                            marginTop={"5"}
-                        >
-                            <div className="flex justify-center">
-                                <Text fontSize="3xl" fontWeight="semibold" mr={4} align="center">
-                                    {score}
+                    {gameEnd === false ? (
+                        <div className="flex-col w-1/5 mr-10">
+                            <Box
+                                w="100%"
+                                height="inherit"
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                overflow="hidden"
+                                boxShadow="md"
+                                p={6}
+                                marginBottom="auto"
+                                marginTop={"5"}
+                            >
+                                <Text fontSize="4xl" fontWeight="semibold" align="center">
+                                    {seconds}
                                 </Text>
-                                <img
-                                    src="/coin-svgrepo-com.svg"
-                                    alt="coin"
-                                    height="24"
-                                    width="24"
-                                />
-                            </div>
-                        </Box>
-                    </div>
+                            </Box>
+                            <Box
+                                w="100%"
+                                height="inherit"
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                overflow="hidden"
+                                boxShadow="md"
+                                p={6}
+                                marginBottom="auto"
+                                marginTop={"5"}
+                            >
+                                <div className="flex justify-center">
+                                    <Text
+                                        fontSize="3xl"
+                                        fontWeight="semibold"
+                                        mr={4}
+                                        align="center"
+                                    >
+                                        {score}
+                                    </Text>
+                                    <img
+                                        src="/coin-svgrepo-com.svg"
+                                        alt="coin"
+                                        height="24"
+                                        width="24"
+                                    />
+                                </div>
+                            </Box>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+
                     <Box
                         minW="45%"
                         maxW="45%"
@@ -216,9 +238,23 @@ function TriviaGame() {
                                 ))}
                             </Flex>
                         ) : gameEnd === true ? (
-                            <Text fontSize="xl" fontWeight="bold">
-                                Trò chơi đã kết thúc.
-                            </Text>
+                            <div>
+                                <Text fontSize="xl" fontWeight="bold">
+                                    Trò chơi đã kết thúc! Bạn giành được
+                                </Text>
+                                <Text fontSize="xl" fontWeight="bold" color="#008000">
+                                    {score} xu
+                                </Text>
+                                <Text fontSize="xl" fontWeight="bold">
+                                    tương đương với
+                                </Text>
+                                <Text fontSize="xl" fontWeight="bold" color="#008000">
+                                    {Math.floor(score / 50)} voucher
+                                </Text>
+                                <Text fontSize="xl" fontWeight="bold">
+                                    Voucher sẽ tự động được đổi và lưu vào tài khoản của bạn.
+                                </Text>
+                            </div>
                         ) : (
                             <Text fontSize="xl" fontWeight="bold">
                                 Đang chuẩn bị trò chơi...
@@ -246,6 +282,55 @@ function TriviaGame() {
             </div>
         </ProtectedRoute>
     );
+
+    async function handleGameEnd(score) {
+        try {
+            fetch("http://localhost/api/user/add-coin", {
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ eventId: parseInt(eventId), coin: score }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        toast.error("Lỗi gửi dữ liệu xu về máy chủ.");
+                        throw new Error("Error sending coin data");
+                    }
+                })
+                .then(() => {
+                    fetch("http://localhost/api/user/exchange-voucher", {
+                        method: "POST",
+                        headers: {
+                            Authorization: "Bearer " + accessToken,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            userId: user.id,
+                            voucherId: currentEvent.voucherId,
+                            voucherQuantities: Math.floor(score / 50),
+                            coin: 50,
+                            eventId: parseInt(eventId),
+                        }),
+                    });
+                })
+                .then((response) => {
+                    if (!response.ok) {
+                        toast.error("Lỗi đổi voucher từ máy chủ.");
+                        throw new Error("Error exchanging vouchers");
+                    }
+
+                    toast.success("Voucher đã được đổi thành công.");
+                    console.log("Game finalized.");
+                })
+                .catch((error) => {
+                    console.log("Error finalizing game: " + error);
+                });
+        } catch (error) {
+            console.log("Error finalizing game: " + error);
+        }
+    }
 }
 
 export default TriviaGame;
