@@ -63,7 +63,7 @@ function GamePage() {
                 isClosable: true,
             });
             // Gọi API để gửi request ở đây
-            requestTurn(token, parseInt(friendId, 10));
+            requestTurn(token, parseInt(friendId, 10), parseInt(eventId, 10));
             onFriendModalClose();
         } else {
             toast({
@@ -527,7 +527,7 @@ async function addTurn(token, eventId, turn) {
     }
 }
 
-async function requestTurn(token, targetId) {
+async function requestTurn(token, targetId, eventId) {
     try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/request-turn`, {
             method: 'POST',
@@ -537,6 +537,7 @@ async function requestTurn(token, targetId) {
             },
             body: JSON.stringify({
                 target_id: targetId,
+                event_id: eventId
             }),
         });
         if (response.ok) {

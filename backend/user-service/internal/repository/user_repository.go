@@ -294,7 +294,7 @@ func AcceptTurnRequest(requestId int64) error {
 	}
 
 	query = "UPDATE turn_request SET state = ? WHERE id = ?"
-	_, err = db.Exec(query, 1, requestID)
+	_, err = db.Exec(query, 1, requestId)
 	if err != nil {
 		return err
 	}
