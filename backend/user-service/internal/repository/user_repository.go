@@ -293,11 +293,16 @@ func AcceptTurnRequest(requestId int64) error {
 		return err
 	}
 
+	query = "UPDATE turn_request SET state = ? WHERE id = ?"
+	_, err = db.Exec(query, 1, requestID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func GetTurnRequest(userId int64) ([]model.TurnRequestRes, error) {
-	query := "SELECT request_id, event_id FROM turn_request WHERE response_id = ?"
+	query := "SELECT id, request_id, event_id, state FROM turn_request WHERE response_id = ?"
 
 	rows, err := db.QueryContext(context.Background(), query, userId)
 	if err != nil {
@@ -308,7 +313,7 @@ func GetTurnRequest(userId int64) ([]model.TurnRequestRes, error) {
 	var requests []model.TurnRequestRes
 	for rows.Next() {
 		var req model.TurnRequestRes
-		if err := rows.Scan(&req.RequestId, &req.EventId); err != nil {
+		if err := rows.Scan(&req.Id, &req.RequestId, &req.EventId, &req.State); err != nil {
 			return nil, err
 		}
 		requests = append(requests, req)

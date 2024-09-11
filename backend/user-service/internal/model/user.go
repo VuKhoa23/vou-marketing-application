@@ -20,8 +20,10 @@ type UserGetAllResponses struct {
 }
 
 type TurnRequestRes struct {
+	Id        int64 `json:"id"`
 	RequestId int64 `json:"request_id"`
 	EventId   int64 `json:"event_id"`
+	State     bool  `json:"state"`
 }
 
 type AcceptTurnReq struct {

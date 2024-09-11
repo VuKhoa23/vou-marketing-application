@@ -1,0 +1,3 @@
+ALTER TABLE turn_request
+ADD COLUMN state TINYINT(1) DEFAULT 0;
+
