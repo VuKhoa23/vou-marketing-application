@@ -39,6 +39,10 @@ function MainNavigation() {
         dispatch(setDestination('/stats'));
     };
 
+    const handleLogin = () => {
+        dispatch(setDestination('/'));
+    };
+
     return (
         <div
             className={`sticky top-0 z-50 navbar ${isScrolled ? 'bg-blue-500 bg-opacity-60' : 'bg-blue-500'} text-primary-content flex justify-center items-center transition-all duration-300 ease-in-out`}
@@ -98,7 +102,7 @@ function MainNavigation() {
                     </div>
                 </div>
                 :
-                <NavLink to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</NavLink>
+                <NavLink to="/login" className="btn btn-ghost btn-rectangle" onClick={() => handleLogin()}>Đăng nhập</NavLink>
             }
         </div>
     );

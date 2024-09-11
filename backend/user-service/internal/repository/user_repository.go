@@ -271,7 +271,7 @@ type Turn struct {
 func AcceptTurnRequest(requestId int64) error {
 	query := "SELECT request_id, event_id FROM turn_request WHERE id = ?"
 
-	var requestID int
+	var requestID int64
 	var eventID int
 
 	err := db.QueryRow(query, requestId).Scan(&requestID, &eventID)
@@ -283,7 +283,7 @@ func AcceptTurnRequest(requestId int64) error {
 	}
 
 	turn := model.Turn{
-		UserID:  requestId,
+		UserID:  requestID,
 		EventID: int64(eventID),
 		Turn:    1,
 	}
@@ -294,7 +294,7 @@ func AcceptTurnRequest(requestId int64) error {
 	}
 
 	query = "UPDATE turn_request SET state = ? WHERE id = ?"
-	_, err = db.Exec(query, 1, requestID)
+	_, err = db.Exec(query, 1, requestId)
 	if err != nil {
 		return err
 	}
