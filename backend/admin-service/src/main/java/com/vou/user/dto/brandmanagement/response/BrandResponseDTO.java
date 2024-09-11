@@ -13,5 +13,7 @@ public class BrandResponseDTO {
     private Integer id;
     private String username;
     private String category;
+    private String lat;
+    private String lon;
     private Boolean state;
 }

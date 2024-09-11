@@ -16,7 +16,7 @@ import java.util.Arrays;
 @RequestMapping("/api/admin/brand-management")
 public class BrandManagementController {
 
-    private final String brandUrl = "http://brand-management-service.default:8082/api/brand-management";
+    private final String brandUrl = "http://localhost:8082/api/brand-management";
 
     @Autowired
     public RestTemplate restTemplate;

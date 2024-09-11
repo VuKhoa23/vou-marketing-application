@@ -13,5 +13,7 @@ public class BrandRequestDTO {
     private String username;
     private String password;
     private String category;
+    private String lat;
+    private String lon;
     private Boolean state;
 }

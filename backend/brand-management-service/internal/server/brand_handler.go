@@ -3,6 +3,7 @@ package server
 import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/repository"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ type BrandReq struct {
 func (s *Server) getAllBrandHandler(c *gin.Context) {
 	var brands []model.Brand
 	brands, err := repository.GetAllBrands()
+	fmt.Println(brands)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
