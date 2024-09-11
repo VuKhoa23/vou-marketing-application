@@ -3,6 +3,7 @@ package repository
 import (
 	"brand-management-service/internal/model"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -26,11 +27,11 @@ func CreateTurn(turn model.Turn) error {
 
 func Addturn(turn model.Turn) error {
 	if !isUserExist(turn.UserID) {
-		return fmt.Errorf("user with ID %d does not exist", turn.UserID)
+		return errors.New("user with ID does not exist")
 	}
 
 	if !isEventExist(turn.EventID) {
-		return fmt.Errorf("event with ID %d does not exist", turn.EventID)
+		return errors.New("event with ID does not exist")
 	}
 
 	// Check if the turn record exists

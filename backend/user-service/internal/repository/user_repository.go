@@ -4,6 +4,7 @@ import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/utils"
 	"bytes"
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -226,4 +227,96 @@ func voucherQuantitiesLeft(voucherID int64) int64 {
 	}
 
 	return quantity
+}
+
+func GetAllUsers() ([]model.UserGetAllResponses, error) {
+	query := "SELECT id, username FROM `user`"
+
+	rows, err := db.QueryContext(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []model.UserGetAllResponses
+	for rows.Next() {
+		var user model.UserGetAllResponses
+		if err := rows.Scan(&user.Id, &user.Username); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func RequestTurn(requestId int64, responseId int64, eventId int64) error {
+	query := "INSERT INTO `turn_request` (request_id, response_id, event_id) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, requestId, responseId, eventId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type Turn struct {
+	UserID  int64
+	EventID int
+}
+
+func AcceptTurnRequest(requestId int64) error {
+	query := "SELECT request_id, event_id FROM turn_request WHERE id = ?"
+
+	var requestID int
+	var eventID int
+
+	err := db.QueryRow(query, requestId).Scan(&requestID, &eventID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("no turn request found with id %d", requestId)
+		}
+		return err
+	}
+
+	turn := model.Turn{
+		UserID:  requestId,
+		EventID: int64(eventID),
+		Turn:    1,
+	}
+
+	err = Addturn(turn)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetTurnRequest(userId int64) ([]model.TurnRequestRes, error) {
+	query := "SELECT request_id, event_id FROM turn_request WHERE response_id = ?"
+
+	rows, err := db.QueryContext(context.Background(), query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var requests []model.TurnRequestRes
+	for rows.Next() {
+		var req model.TurnRequestRes
+		if err := rows.Scan(&req.RequestId, &req.EventId); err != nil {
+			return nil, err
+		}
+		requests = append(requests, req)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return requests, nil
 }

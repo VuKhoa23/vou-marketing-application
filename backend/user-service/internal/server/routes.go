@@ -46,5 +46,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/api/user/get-coins", middleware.AuthenticationMiddleware, s.GetCoinsHandler)
 	r.GET("/api/user/get-turns", middleware.AuthenticationMiddleware, s.GetTurnsHandler)
 	r.GET("/api/user/get-vouchers", middleware.AuthenticationMiddleware, s.GetVouchersHandler)
+
+	r.GET("/api/user/get-all", s.GetAllUserHandler)
+	r.POST("/api/user/request-turn", middleware.AuthenticationMiddleware, s.RequestTurnHandler)
+	r.POST("/api/user/accept-turn-request", middleware.AuthenticationMiddleware, s.AcceptTurnHandler)
+	r.GET("/api/user/get-turn-request", middleware.AuthenticationMiddleware, s.GetTurnRequestHandler)
 	return r
 }
