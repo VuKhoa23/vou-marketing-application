@@ -23,8 +23,8 @@ import java.util.Optional;
 public class BrandService {
     private BrandRepository brandRepository;
     private RestTemplate restTemplate;
-//    private static final String gameURL = "http://game-service.default:8081/api/game";
-    private static final String gameURL = "http://127.0.0.1:7781/api/game";
+    private static final String gameURL = "http://game-service.default:8081/api/game";
+    //private static final String gameURL = "http://127.0.0.1:7781/api/game";
     private static final String createGameURL = gameURL;
     private static final String createQuestionURL = gameURL + "/create-question";
     private static final String createAnswerURL = gameURL + "/create-answers";
