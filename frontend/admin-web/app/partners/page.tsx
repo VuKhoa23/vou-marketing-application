@@ -349,6 +349,7 @@ export default function Partners() {
                                     className="input input-bordered w-full"
                                     value={addFormik.values.address}
                                     onChange={addFormik.handleChange}
+                                    onBlur={randCoords}
                                 />
                                 {addFormik.touched.address && addFormik.errors.address && (
                                     <div className="form-error-msg">{addFormik.errors.address}</div>
@@ -582,7 +583,7 @@ export default function Partners() {
                             className="btn btn-error"
                             onClick={(e) => {
                                 e.preventDefault();
-                                
+
                                 const deleted = data.filter((u) => {
                                     if (editingPartner) {
                                         return u.id != editingPartner.id;
@@ -620,5 +621,21 @@ export default function Partners() {
         } catch (error) {
             console.error("Error fetching partners: ", error);
         }
+    }
+
+    function randCoords() {
+        // long limits
+        const lonMin = 102.15;
+        const lonMax = 109.4;
+
+        // lat limits
+        const latMin = 8.57;
+        const latMax = 23.38;
+
+        const longitude = Math.random() * (lonMax - lonMin) + lonMin;
+        const latitude = Math.random() * (latMax - latMin) + latMin;
+
+        addFormik.setFieldValue("lon", longitude.toFixed(6));
+        addFormik.setFieldValue("lat", latitude.toFixed(6));
     }
 }
