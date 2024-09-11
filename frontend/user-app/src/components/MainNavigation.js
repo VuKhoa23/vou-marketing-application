@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
+import { FaBell } from 'react-icons/fa';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const accessToken = useSelector((state) => state.auth.accessToken);
+    const [request, setRequest] = useState([
+        { id: 1 },
+        { id: 2 }
+    ]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -14,6 +19,21 @@ function MainNavigation() {
         dispatch(logout());
         navigate("/login");
     };
+
+    const handleAccept = (id) => {
+        setRequest((prevRequests) => prevRequests.filter((req) => req.id !== id));
+        console.log(`Chấp nhận yêu cầu từ ${id}`);
+        // Logic khác xử lý khi chấp nhận yêu cầu
+    };
+
+    const handleReject = (id) => {
+        setRequest((prevRequests) => prevRequests.filter((req) => req.id !== id));
+        console.log(`Từ chối yêu cầu từ ${id}`);
+        // Logic khác xử lý khi từ chối yêu cầu
+    };
+
+
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -54,28 +74,71 @@ function MainNavigation() {
                     </svg>
                 </NavLink>
             </div>
-            {accessToken ?
-                (<div className="flex-none">
-                    <div className="dropdown dropdown-end ">
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                            <div className="w-10 rounded-full">
-                                <img
-                                    alt="Tailwind CSS Navbar component"
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            {accessToken ? (
+                <>
+                    <div>
+                        <div className="dropdown dropdown-end mr-2">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                <div className="rounded-lg">
+                                    <FaBell size={30} />
+                                </div>
+                                {request.length > 0 && (
+                                    <span className="absolute top-0 right-0 rounded-full bg-red-500 text-white text-xs px-2 py-1">
+                                        {request.length}
+                                    </span>
+                                )}
                             </div>
+                            <ul
+                                tabIndex={0}
+                                className="dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 shadow">
+                                {request.map((req) => (
+                                    <li key={req.id} className="flex flex-col justify-between items-center p-2 border-b round-lg">
+                                        <span>{`Người bạn với id là ${req.id} xin lượt chơi game lắc xu từ bạn`}</span>
+                                        <div>
+                                            <button
+                                                className="btn btn-xs btn-success mr-2"
+                                                onClick={() => handleAccept(req.id)}
+                                            >
+                                                Chấp nhận
+                                            </button>
+                                            <button
+                                                className="btn btn-xs btn-error"
+                                                onClick={() => handleReject(req.id)}
+                                            >
+                                                Từ chối
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <ul
-                            tabIndex={0}
-                            className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                            <li>
-                                <NavLink to="/profile" className="justify-between">
-                                    Profile
-                                </NavLink>
-                            </li>
-                            <li><button onClick={handleLogout}>Log out</button></li>
-                        </ul>
                     </div>
-                </div>) : <Link to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</Link>}
+                    <div className="flex-none">
+                        <div className="dropdown dropdown-end ">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                <div className="w-10 rounded-full">
+                                    <img
+                                        alt="Tailwind CSS Navbar component"
+                                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                </div>
+                            </div>
+                            <ul
+                                tabIndex={0}
+                                className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                                <li>
+                                    <NavLink to="/profile" className="justify-between">
+                                        Profile
+                                    </NavLink>
+                                </li>
+                                <li><button onClick={handleLogout}>Log out</button></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </>
+            )
+                :
+                <Link to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</Link>}
 
         </div >
     );

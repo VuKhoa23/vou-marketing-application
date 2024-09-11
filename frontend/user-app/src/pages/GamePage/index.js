@@ -4,7 +4,17 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import React, { useState, useRef, useEffect } from 'react';
 import { BiCoin } from 'react-icons/bi';
 import { FaFacebook, FaUserFriends, FaTicketAlt, FaPlus } from 'react-icons/fa';
-import { useDisclosure, Text, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton } from '@chakra-ui/react';
+import {
+    useDisclosure, Text, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton, Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
+    ModalFooter,
+    Button,
+    Flex,
+    Input,
+    useToast
+} from '@chakra-ui/react';
 import VoucherModal from './components/ExchangeVoucher';
 import { useParams } from "react-router-dom";
 import { useSelector } from 'react-redux';
@@ -12,7 +22,7 @@ import { useSelector } from 'react-redux';
 function GamePage() {
 
     const token = useSelector((state) => state.auth.accessToken);
-
+    const toast = useToast();
     const { eventId } = useParams();
     const [voucherInfo, setVoucherInfo] = useState({
         id: null,
@@ -21,7 +31,7 @@ function GamePage() {
         value: null,
         endDate: ''
     })
-    
+
     const [isShaking, setIsShaking] = useState(false);
     const [countdown, setCountdown] = useState(10);
     const [videoPlayed, setVideoPlayed] = useState(false);
@@ -36,6 +46,34 @@ function GamePage() {
     const alertRef = useRef(null);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [friendId, setFriendId] = useState('');
+    const { isOpen: isFriendModalOpen, onOpen: onFriendModalOpen, onClose: onFriendModalClose } = useDisclosure();
+
+
+    const handleSendFriendId = () => {
+        if (friendId.trim() !== "" && Number(friendId) >= 0) {
+            //console.log("Gửi yêu cầu xin lượt chơi từ bạn với ID:", friendId);
+            toast({
+                title: "Thành công",
+                description: `Xin lượt chơi từ bạn có ID: ${friendId} thành công. Hãy chờ xác nhận`,
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
+            // Logic để gửi yêu cầu với ID friendId
+            // Gọi API để gửi request ở đây
+            onFriendModalClose();
+        } else {
+            toast({
+                title: "Lỗi",
+                description: "ID không hợp lệ. Vui lòng nhập một số lớn hơn hoặc bằng 0.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+            //console.error("ID không hợp lệ. Vui lòng nhập một số lớn hơn hoặc bằng 0.");
+        }
+    };
 
     const handleShake = () => {
         if (attemp > 0) {
@@ -275,12 +313,15 @@ function GamePage() {
                             <Box className='flex items-center p-4 border-2 border-blue-500 bg-white shadow-md'>
                                 <FaUserFriends className='text-blue-500 text-4xl mr-4' />
                                 <Box className='flex-1'>
-                                    <Text className='text-xl font-semibold mb-2'>
+                                    <button
+                                        onClick={onFriendModalOpen}
+                                        className='flex-1 game-btn bg-blue-200 px-2 h-[40px] text-lg rounded-lg bru-shadow mb-2'
+                                    >
                                         Xin từ bạn bè
-                                    </Text>
+                                    </button>
                                     <Text className='text-md'>
                                         Để có thêm lượt chơi, hãy yêu cầu bạn bè gửi cho bạn lượt chơi.
-                                        Bạn có thể mời họ qua tin nhắn hoặc thông qua các ứng dụng mạng xã hội.
+                                        Bạn có thể xin thêm lượt chơi bằng cách nhập id của bạn bè và chờ họ xác nhận.
                                     </Text>
                                 </Box>
                             </Box>
@@ -331,6 +372,38 @@ function GamePage() {
                         token={token}
                         eventId={eventId}
                     />
+
+                    {/* Modal for requesting turns from friends */}
+                    <Modal isOpen={isFriendModalOpen} onClose={onFriendModalClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalBody>
+                                <Text className='text-center text-2xl font-bold mb-4'>XIN LƯỢT CHƠI TỪ BẠN BÈ</Text>
+                                <Flex direction="row" justify="center" align="center">
+                                    {/* <Text mr={4}>Nhập ID bạn bè: </Text> */}
+                                    <Input
+                                        type="number"
+                                        min={0}
+                                        placeholder="Nhập ID bạn bè"
+                                        value={friendId}
+                                        onChange={(e) => setFriendId(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-' || e.key === '.') {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
+                                </Flex>
+                            </ModalBody>
+
+                            <ModalFooter>
+                                <Button colorScheme="blue" mr={3} onClick={handleSendFriendId}>
+                                    Gửi
+                                </Button>
+                                <Button variant="ghost" onClick={onFriendModalClose}>Đóng</Button>
+                            </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                 </Box>
             </div>
         </div>
@@ -396,3 +469,5 @@ async function addCoin(token, eventId, coin) {
         console.error("Error fetching game ID:", error);
     }
 }
+
+
