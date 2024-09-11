@@ -75,32 +75,36 @@ function MainNavigation() {
                     </svg>
                 </NavLink>
             </div>
-            <div className="flex-none">
-                <div className="dropdown dropdown-end">
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                        <div className="w-10 rounded-full">
-                            <img
-                                alt="Tailwind CSS Navbar component"
-                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            {token !== null ?
+                <div className="flex-none">
+                    <div className="dropdown dropdown-end">
+                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div className="w-10 rounded-full">
+                                <img
+                                    alt="Tailwind CSS Navbar component"
+                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            </div>
                         </div>
-                    </div>
-                    <ul
-                        tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 text-neutral rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                        <li>
-                            <NavLink to={token === null ? '/login' : '/profile'} className="justify-between">
-                                Profile
-                            </NavLink>
-                        </li>
-                        {token !== null && (
+                        <ul
+                            tabIndex={0}
+                            className="menu menu-sm dropdown-content bg-base-100 text-neutral rounded-box z-[1] mt-3 w-52 p-2 shadow">
                             <li>
-                                <a href="/login">Logout</a>
+                                <NavLink to='/profile' className="justify-between">
+                                    Hồ sơ
+                                </NavLink>
                             </li>
-                        )}
 
-                    </ul>
+                            <li>
+                                <NavLink to="/login">Đăng xuất</NavLink>
+                            </li>
+
+
+                        </ul>
+                    </div>
                 </div>
-            </div>
+                :
+                <NavLink to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</NavLink>
+            }
         </div>
     );
 }

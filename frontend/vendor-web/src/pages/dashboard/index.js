@@ -29,20 +29,20 @@ export default function Dashboard() {
     }));
 
 
-    useEffect(() => {
-        async function fetchEvents() {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
-            if (response.ok) {
-                const apiData = await response.json();
-                const transformedData = transformData(apiData);
-                dispatch(setEvents(transformedData));
-            }
-        }
+    // useEffect(() => {
+    //     async function fetchEvents() {
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
+    //         if (response.ok) {
+    //             const apiData = await response.json();
+    //             const transformedData = transformData(apiData);
+    //             dispatch(setEvents(transformedData));
+    //         }
+    //     }
 
-        if (events.length <= 0) {
-            fetchEvents();
-        }
-    }, [dispatch, events]);
+    //     if (events.length <= 0) {
+    //         fetchEvents();
+    //     }
+    // }, [dispatch, events]);
 
     //const totalParticipants = events.reduce((total, event) => total + event.participants, 0);
     const totalParticipants = 4;

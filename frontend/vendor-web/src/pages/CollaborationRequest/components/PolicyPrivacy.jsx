@@ -39,7 +39,7 @@ const PolicyPrivacy = () => {
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [error, setError] = useState("");
 
-    async function fetchEvents() {
+    async function fetchEvents(brandId) {
         //const response = await fetch("http://localhost/api/brand/event/events-and-vouchers?brandId=1");
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
         if (response.ok) {
@@ -115,7 +115,7 @@ const PolicyPrivacy = () => {
 
                 setError("");
                 await dispatch(submitAllForms({ formData, brandId, triviaTime })).unwrap();
-                fetchEvents();
+                fetchEvents(brandId);
 
                 toast({
                     title: "Đăng ký thành công",

@@ -125,7 +125,7 @@ function Cooperation() {
     const events = useSelector((state) => state.events);
     const brandId = useSelector((state) => state.brand.id);
     useEffect(() => {
-        async function fetchEvents() {
+        async function fetchEvents(brandId) {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
             if (response.ok) {
                 const apiData = await response.json();
@@ -133,10 +133,12 @@ function Cooperation() {
                 dispatch(setEvents(transformedData));
             }
         }
-        if (events.length <= 0) {
-            fetchEvents();
-        }
-    }, [dispatch, events]);
+        // if (events.length <= 0) {
+        //     fetchEvents(brandId);
+        // }
+        fetchEvents(brandId);
+
+    }, []);
 
     const sortedEvents = [...events].sort((a, b) => {
         const dateA = new Date(a.startDate.split("-").reverse().join("-"));
