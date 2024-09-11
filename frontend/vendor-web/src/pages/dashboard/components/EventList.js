@@ -63,7 +63,7 @@ export default function EventList() {
     // }
 
     fetchEvents(brandId);
-  }, []);
+  }, [brandId]);
 
   function handleInputChange(identifier, value) {
     // Dispatch the update to Redux store
@@ -230,25 +230,25 @@ export default function EventList() {
         </Text>
       ),
     }),
-    columnHelper.accessor('participants', {
-      id: 'participants',
-      header: () => (
-        <Text
-          justifyContent="space-between"
-          align="center"
-          fontSize={{ sm: '10px', lg: '12px' }}
-          color="gray.400"
-        >
-          SỐ LƯỢNG NGƯỜI THAM GIA
-        </Text>
-      ),
-      cell: (info) => (
-        <Text color={textColor} fontSize="sm" fontWeight="700">
-          {/* {info.getValue()} */}
-          {2}
-        </Text>
-      ),
-    }),
+    // columnHelper.accessor('participants', {
+    //   id: 'participants',
+    //   header: () => (
+    //     <Text
+    //       justifyContent="space-between"
+    //       align="center"
+    //       fontSize={{ sm: '10px', lg: '12px' }}
+    //       color="gray.400"
+    //     >
+    //       SỐ LƯỢNG NGƯỜI THAM GIA
+    //     </Text>
+    //   ),
+    //   cell: (info) => (
+    //     <Text color={textColor} fontSize="sm" fontWeight="700">
+    //       {/* {info.getValue()} */}
+    //       {2}
+    //     </Text>
+    //   ),
+    // }),
     columnHelper.accessor('quantity', {
       id: 'quantity',
       header: () => (

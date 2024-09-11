@@ -38,57 +38,12 @@ export const barChartDataNumberOfParticipants = [
     }
   },
   {
-    "name": "HỘI CHỢ THƯƠNG MẠI NFT",
+    "name": "THREE OCLOCK HAPPY VALENTINE DAY",
     "data": {
       "Tuần 1": [60, 70, 55, 75, 65, 80, 70],
       "Tuần 2": [70, 80, 65, 85, 75, 90, 85],
       "Tuần 3": [50, 55, 60, 70, 65, 75, 60],
       "Tuần 4": [80, 90, 85, 95, 100, 105, 110]
-    }
-  },
-  {
-    "name": "CHƯƠNG TRÌNH KHUYẾN MÃI GIẢM GIÁ TẠI LOTTE MART",
-    "data": {
-      "Tuần 1": [40, 50, 35, 60, 55, 65, 55],
-      "Tuần 2": [50, 60, 45, 70, 65, 75, 70],
-      "Tuần 3": [30, 40, 35, 50, 45, 55, 60],
-      "Tuần 4": [55, 65, 60, 75, 70, 80, 70]
-    }
-  },
-  {
-    "name": "LỄ HỘI ẨM THỰC TẠI SÀI GÒN",
-    "data": {
-      "Tuần 1": [140, 170, 150, 200, 180, 210, 190],
-      "Tuần 2": [170, 180, 160, 220, 200, 230, 210],
-      "Tuần 3": [160, 150, 180, 200, 190, 220, 200],
-      "Tuần 4": [190, 220, 210, 230, 240, 250, 240]
-    }
-  },
-  {
-    "name": "ĐẠI NHẠC HỘI MUSIC FESTIVAL 2024",
-    "data": {
-      "Tuần 1": [30, 50, 60, 40, 30, 20, 25],
-      "Tuần 2": [50, 60, 70, 50, 35, 25, 15],
-      "Tuần 3": [40, 55, 65, 45, 30, 20, 10],
-      "Tuần 4": [60, 70, 80, 55, 40, 30, 25]
-    }
-  },
-  {
-    "name": "HỘI NGHỊ KHOA HỌC QUỐC TẾ",
-    "data": {
-      "Tuần 1": [55, 65, 60, 75, 70, 85, 80],
-      "Tuần 2": [65, 75, 70, 85, 80, 95, 90],
-      "Tuần 3": [50, 60, 55, 70, 65, 80, 75],
-      "Tuần 4": [75, 85, 80, 95, 90, 105, 100]
-    }
-  },
-  {
-    "name": "LỄ KHAI TRƯƠNG SIÊU THỊ MỚI",
-    "data": {
-      "Tuần 1": [35, 45, 30, 50, 55, 60, 55],
-      "Tuần 2": [45, 55, 40, 60, 65, 70, 65],
-      "Tuần 3": [30, 40, 35, 50, 55, 60, 55],
-      "Tuần 4": [50, 60, 50, 65, 70, 75, 70]
     }
   }
 ];
@@ -218,12 +173,7 @@ export const eventNames = [
   "SỰ KIỆN ĐẶC BIỆT CỦA HIGHLANDS COFFEE",
   "KHUYẾN MÃI GIẢM GIÁ CỦA BOBAPOP",
   "RA MẮT SẢN PHẨM MỚI TỪ KFC",
-  "HỘI CHỢ THƯƠNG MẠI NFT",
-  "CHƯƠNG TRÌNH KHUYẾN MÃI GIẢM GIÁ TẠI LOTTE MART",
-  "LỄ HỘI ẨM THỰC TẠI SÀI GÒN",
-  "ĐẠI NHẠC HỘI MUSIC FESTIVAL 2024",
-  "HỘI NGHỊ KHOA HỌC QUỐC TẾ",
-  "LỄ KHAI TRƯƠNG SIÊU THỊ MỚI"
+  "THREE OCLOCK HAPPY VALENTINE DAY",
 ];
 
 
@@ -302,8 +252,8 @@ export const barChartOptionsConsumption = {
   },
   legend: {
     show: true,
-    position: 'bottom', 
-    horizontalAlign: 'left', 
+    position: 'bottom',
+    horizontalAlign: 'left',
     fontSize: '14px',
     labels: {
       colors: '#A3AED0',
@@ -348,7 +298,7 @@ export const pieChartOptions = {
     fontSize: '18px',
     fontWeight: '900',
     labels: {
-      colors: 'gray.600', 
+      colors: 'gray.600',
     },
     itemMargin: {
       horizontal: 10,

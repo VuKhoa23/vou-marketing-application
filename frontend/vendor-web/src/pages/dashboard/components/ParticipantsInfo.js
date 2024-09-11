@@ -84,7 +84,7 @@ export default function ParticipantsInfo(props) {
 
       <Box bg="white" mt={4} >
         <Text fontSize="lg" fontWeight="bold" >
-          *Note: Số thứ tự của mỗi cột tương ứng với các sự kiện ở bảng "SỰ KIỆN"
+          *NOTE: Số thứ tự của mỗi cột tương ứng với các sự kiện ở bảng "SỰ KIỆN"
         </Text>
       </Box>
     </Card>

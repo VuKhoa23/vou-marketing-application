@@ -18,7 +18,7 @@ function VendorProfile() {
             >
                 <GridItem rowSpan={1} colSpan={4} bg='white' px={100}>
                     <Flex>
-                        <Avatar size='2xl' name='Segun Adebayo' src='https://www.aeonmall-binhtan.com.vn/wp-content/uploads/2019/12/dooki-logo.png' />
+                        <Avatar padding="3px" size='2xl' name='Segun Adebayo' src='https://th.bing.com/th/id/R.65f99c0fc75e15cb680e152e384b629b?rik=d5kPFD1MEy6ZDA&pid=ImgRaw&r=0' />
                         <Box bg="white" p={2} borderRadius="md" mb={4}>
                             <Text fontWeight='bold' fontSize='4xl'>{brandInfo.username}</Text>
                             <Text fontSize='sm'>Lĩnh vực: <b>{brandInfo.category}</b></Text>

@@ -147,48 +147,53 @@ function Cooperation() {
     });
 
     return (
-        <Stepper index={-1} orientation="vertical" height="auto" spacing={6} m={4}>
-            {sortedEvents.map((event, index) => (
-                <Step key={index}>
-                    <StepIndicator borderColor="blue.500">
-                        <StepIcon as={CustomHornIcon} boxSize={6} color="blue.500" />
-                    </StepIndicator>
-                    <StepSeparator />
-                    <VStack align="start" spacing={4} ml={6}>
-                        <Box mt={2}>
-                            <Text fontSize="sm" fontWeight="bold" color="blue.800">
-                                Từ {event.startDate} đến {event.endDate}
-                            </Text>
-                        </Box>
-                        <Box
-                            p={4}
-                            borderWidth={1}
-                            borderRadius="md"
-                            boxShadow="md"
-                            bg="white"
-                            borderColor="blue.200"
-                        >
-                            <Text
-                                fontSize="lg"
-                                fontWeight="bold"
-                                color="blue.600"
-                                whiteSpace="normal"
-                                overflowWrap="break-word"
-                                wordBreak="break-word"
+        <>
+            <h1 className='text-3xl font-bold mt-5 flex justify-center'> LỊCH SỬ HỢP TÁC</h1>
+            <Stepper index={-1} orientation="vertical" height="auto" spacing={6} m={4}>
+                {sortedEvents.map((event, index) => (
+                    <Step key={index}>
+                        <StepIndicator borderColor="blue.500">
+                            <StepIcon as={CustomHornIcon} boxSize={6} color="blue.500" />
+                        </StepIndicator>
+                        <StepSeparator />
+                        <VStack align="start" spacing={4} ml={6}>
+                            <Box mt={2}>
+                                <Text fontSize="sm" fontWeight="bold" color="blue.800">
+                                    Từ {event.startDate} đến {event.endDate}
+                                </Text>
+                            </Box>
+                            <Box
+                                p={4}
+                                borderWidth={1}
+                                borderRadius="md"
+                                boxShadow="md"
+                                bg="white"
+                                borderColor="blue.200"
                             >
-                                {event.name}
-                            </Text>
-                            <Text fontSize="md" color="gray.600">
-                                {milestones[index].description}
-                            </Text>
-                            <Text fontSize="md" fontWeight="bold" color="teal.600">
-                                Số lượng voucher: {event.quantity}
-                            </Text>
-                        </Box>
-                    </VStack>
-                </Step>
-            ))}
-        </Stepper>
+                                <Text
+                                    fontSize="lg"
+                                    fontWeight="bold"
+                                    color="blue.600"
+                                    whiteSpace="normal"
+                                    overflowWrap="break-word"
+                                    wordBreak="break-word"
+                                >
+                                    {event.name}
+                                </Text>
+                                <Text fontSize="md" color="gray.600">
+                                    {/* {milestones[index].description} */}
+                                    {event.voucherDescription}
+                                </Text>
+                                <Text fontSize="md" fontWeight="bold" color="teal.600">
+                                    Số lượng voucher: {event.quantity}
+                                </Text>
+                            </Box>
+                        </VStack>
+                    </Step>
+                ))}
+            </Stepper>
+        </>
+
     );
 }
 
@@ -221,5 +226,6 @@ function transformData(apiData) {
         endDate: formatDate(item.event.endDate),
         participants: item.participants || 0,
         gameType: determineGameType(item),
+        voucherDescription: item.voucher.voucherDescription
     }));
 }

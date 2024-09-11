@@ -15,7 +15,8 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import CollabImg from '../../assets/collab.jpg';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDestination } from '../../store/slices/authSlice';
 
 
 function EventsPage() {
@@ -24,6 +25,7 @@ function EventsPage() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { events } = useLoaderData();
     const token = useSelector((state) => state.auth.accessToken);
+    const dispatch = useDispatch();
 
     const openModal = (event) => {
         setSelectedEvent(event);
@@ -115,7 +117,10 @@ function EventsPage() {
                             Chúng tôi cung cấp dịch vụ tạo sự kiện trò chơi sáng tạo giúp bạn thu hút sự chú ý và kết nối sâu sắc với khách hàng. Đừng bỏ lỡ cơ hội để làm nổi bật thương hiệu và sản phẩm của bạn thông qua các trải nghiệm tương tác đầy ấn tượng. Hãy hợp tác với chúng tôi và biến mỗi sự kiện thành một chiến lược quảng cáo hiệu quả!
                         </p>
                         {token === null ?
-                            <NavLink to='/login' className="btn btn-primary">
+                            <NavLink
+                                to='/login'
+                                onClick={() => dispatch(setDestination('/events/form'))}
+                                className="btn btn-primary">
                                 Đăng nhập để tạo sự kiện
                             </NavLink>
                             :
@@ -123,6 +128,7 @@ function EventsPage() {
                                 Đăng ký ngay
                             </NavLink>
                         }
+
 
                     </div>
                 </div>
