@@ -1,9 +1,9 @@
 export type Partner = {
     id: number,
-    name: string,
-    industry: string,
+    username: string,
+    category: string,
     address: string,
-    long: string,
+    lon: string,
     lat: string,
-    isActivated: boolean
+    state: boolean
 }

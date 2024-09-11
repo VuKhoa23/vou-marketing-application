@@ -18,6 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     useEffect(() => {
         const storedAccessToken = Cookies.get("adminToken");
+
         if (storedAccessToken && !accessToken) {
             dispatch(setAuthUser({ accessToken: storedAccessToken }));
         } else if (!accessToken) {
@@ -29,7 +30,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         return null;
     }
 
-    return <>{children}</>;
+    return <div>{children}</div>;
 };
 
 export default ProtectedRoute;

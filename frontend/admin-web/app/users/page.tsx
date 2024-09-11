@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useFormik, FormikValues } from "formik";
+import { useFormik } from "formik";
 import * as yup from "yup";
 import Table from "@/components/Table";
 import { User } from "@/lib/types/User";
-import userData from "@/lib/mock_data/users.json";
 import Modal from "@/components/Modal";
 import NavLayout from "../NavLayout";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/redux/store";
+import { setUsers } from "@/lib/redux/slices/usersSlice";
+import toast, { Toaster } from "react-hot-toast";
+import * as AWS from "aws-sdk";
 
-// duplicate data & get current max ID to generate new iD when adding users
-// TODO: REMOVE WHEN CONNECTED TO BACKEND)
-let data = [...userData];
-let maxId: number = Math.max(...data.map((item) => item.id));
+// S3 bucket name
+const bucketName = "first-time-using-s3-bucket";
 
 // add form validation schema
 export const addSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền họ và tên"),
-    email: yup.string().required("Vui lòng điền địa chỉ email").email("Địa chỉ email không hợp lệ"),
     username: yup.string().required("Vui lòng điền tên người dùng"),
     phone: yup
         .string()
@@ -28,8 +28,6 @@ export const addSchema = yup.object().shape({
 
 // edit form validation schema
 export const editSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền họ và tên"),
-    email: yup.string().required("Vui lòng điền địa chỉ email").email("Địa chỉ email không hợp lệ"),
     username: yup.string().required("Vui lòng điền tên người dùng"),
     phone: yup
         .string()
@@ -38,8 +36,17 @@ export const editSchema = yup.object().shape({
 });
 
 export default function Users() {
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const data = useSelector((state: RootState) => state.users.users);
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    const [fetched, setFetched] = useState(false);
+
     const [addOpen, setAddOpen] = useState(false);
     const handleToggleAdd = () => setAddOpen((prev) => !prev);
+
+    const [avatarToAdd, setAvatarToAdd] = useState<File>();
 
     const [editingUser, setEditingUser] = useState<User>();
 
@@ -56,15 +63,22 @@ export default function Users() {
         if (editingUser) {
             editFormik.setValues({
                 id: editingUser.id,
-                name: editingUser.name,
                 username: editingUser.username,
-                email: editingUser.email,
                 phone: editingUser.phone,
-                role: editingUser.role,
-                isActivated: editingUser.isActivated,
+                gender: editingUser.gender,
             });
         }
     }, [editingUser]);
+
+    useEffect(() => {
+        setTableData(data);
+    }, [data]);
+
+    useEffect(() => {
+        if (!fetched) {
+            fetchUsers();
+        }
+    }, [accessToken]);
 
     // define columns for user table
     const columnHelper = createColumnHelper<User>();
@@ -75,42 +89,33 @@ export default function Users() {
             cell: (info) => info.getValue(),
             header: () => <span>ID</span>,
         }),
-        columnHelper.accessor((row) => row.name, {
-            id: "name",
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Họ tên</span>,
+        columnHelper.accessor((row) => row.image_url, {
+            id: "avatar",
+            cell: (info) => (
+                <div className="mask mask-squircle h-12 w-12">
+                    {info.getValue() !== "" ? (
+                        <img src={info.getValue()} alt="user_avatar" />
+                    ) : (
+                        "Không có"
+                    )}
+                </div>
+            ),
+            header: () => <span>Ảnh đại diện</span>,
         }),
         columnHelper.accessor((row) => row.username, {
             id: "username",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Tên người dùng</span>,
         }),
-        columnHelper.accessor((row) => row.email, {
-            id: "email",
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Địa chỉ email</span>,
-        }),
         columnHelper.accessor((row) => row.phone, {
             id: "phone",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Số điện thoại</span>,
         }),
-        columnHelper.accessor((row) => row.role, {
-            id: "role",
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: () => <span>Quyền hạn</span>,
-        }),
-        columnHelper.accessor((row) => row.isActivated, {
-            id: "active-status",
-            cell: (info) => (
-                <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm"
-                    disabled
-                    checked={info.getValue()}
-                />
-            ),
-            header: () => <span>Đã kích hoạt?</span>,
+        columnHelper.accessor((row) => row.gender, {
+            id: "gender",
+            cell: (info) => <span>{info.getValue() === "male" ? "Nam" : "Nữ"}</span>,
+            header: () => <span>Giới tính</span>,
         }),
         columnHelper.accessor((row) => row, {
             id: "edit-del",
@@ -174,28 +179,52 @@ export default function Users() {
     // add form
     const addFormik = useFormik({
         initialValues: {
-            name: "",
             username: "",
             email: "",
             phone: "",
-            role: "Người dùng",
-            isActivated: false,
+            gender: "male",
         },
         validationSchema: addSchema,
         onSubmit: async (values) => {
-            const newUser: User = {
-                id: maxId ? ++maxId : 1,
-                name: values.name!,
-                username: values.username!,
-                email: values.email!,
-                phone: values.phone!,
-                role: values.role!,
-                isActivated: values.isActivated!,
-            };
+            try {
+                let imgUrl = "";
 
-            data = [...data, newUser];
+                if (avatarToAdd !== undefined) {
+                    imgUrl = await uploadToS3(avatarToAdd, bucketName);
+                }
 
-            setTableData(data);
+                const newUser = {
+                    username: values.username!,
+                    password: "initpass",
+                    email: values.email!,
+                    phone: values.phone!,
+                    gender: values.gender!,
+                    image_url: imgUrl,
+                };
+
+                const response = await fetch("http://localhost/api/admin/user-management/create", {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + accessToken,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newUser),
+                });
+
+                if (response.ok) {
+                    fetchUsers();
+                    setAvatarToAdd(undefined);
+                    toast.success("Thêm người dùng thành công.");
+                } else {
+                    console.error("Error fetching users: ", response.status, response.statusText);
+
+                    toast.error("Tên người dùng đã tồn tại.");
+                }
+            } catch (error) {
+                console.error("Error fetching users: ", error);
+                toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            }
+
             addFormik.resetForm();
 
             handleToggleAdd();
@@ -206,28 +235,47 @@ export default function Users() {
     const editFormik = useFormik({
         initialValues: {
             id: editingUser?.id,
-            name: editingUser?.name,
             username: editingUser?.username,
-            email: editingUser?.email,
             phone: editingUser?.phone,
-            role: editingUser?.role,
-            isActivated: editingUser?.isActivated,
+            gender: editingUser?.gender,
         },
         validationSchema: editSchema,
         onSubmit: async (values) => {
-            const newUser: User = {
+            const newUser = {
                 id: values.id!,
-                name: values.name!,
                 username: values.username!,
-                email: values.email!,
                 phone: values.phone!,
-                role: values.role!,
-                isActivated: values.isActivated!,
+                gender: values.gender!,
+                image_url: editingUser?.image_url,
             };
 
-            data = data.map((u) => (u.id === newUser.id ? { ...newUser } : u));
+            try {
+                const response = await fetch(
+                    `http://localhost/api/admin/user-management/update/${values.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            Authorization: "Bearer " + accessToken,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(newUser),
+                    }
+                );
 
-            setTableData(data);
+                if (response.ok) {
+                    fetchUsers();
+                    toast.success("Chỉnh sửa thông tin người dùng thành công.");
+                } else {
+                    console.error("Error fetching users: ", response.status, response.statusText);
+
+                    toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+                }
+            } catch (error) {
+                console.error("Error fetching users: ", error);
+                toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            }
+
+            addFormik.resetForm();
 
             handleToggleEdit();
         },
@@ -236,6 +284,7 @@ export default function Users() {
     return (
         <NavLayout>
             <div className="flex-col">
+                <Toaster />
                 <h1>Quản lý người dùng</h1>
 
                 <div className="flex justify-end mb-4">
@@ -262,23 +311,6 @@ export default function Users() {
                         <div>
                             <label className="form-control w-full mt-3">
                                 <div className="label">
-                                    <span className="label-text font-bold">Họ và tên</span>
-                                </div>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    placeholder="Họ và tên"
-                                    className="input input-bordered w-full"
-                                    value={addFormik.values.name}
-                                    onChange={addFormik.handleChange}
-                                />
-                                {addFormik.touched.name && addFormik.errors.name && (
-                                    <div className="form-error-msg">{addFormik.errors.name}</div>
-                                )}
-                            </label>
-
-                            <label className="form-control w-full mt-3">
-                                <div className="label">
                                     <span className="label-text font-bold">Tên người dùng</span>
                                 </div>
                                 <input
@@ -293,23 +325,6 @@ export default function Users() {
                                     <div className="form-error-msg">
                                         {addFormik.errors.username}
                                     </div>
-                                )}
-                            </label>
-
-                            <label className="form-control w-full mt-3">
-                                <div className="label">
-                                    <span className="label-text font-bold">Địa chỉ email</span>
-                                </div>
-                                <input
-                                    name="email"
-                                    type="text"
-                                    placeholder="Địa chỉ email"
-                                    className="input input-bordered w-full"
-                                    value={addFormik.values.email}
-                                    onChange={addFormik.handleChange}
-                                />
-                                {addFormik.touched.email && addFormik.errors.email && (
-                                    <div className="form-error-msg">{addFormik.errors.email}</div>
                                 )}
                             </label>
 
@@ -332,37 +347,37 @@ export default function Users() {
 
                             <label className="form-control w-full mt-3">
                                 <div className="label">
-                                    <span className="label-text font-bold">Quyền hạn</span>
+                                    <span className="label-text font-bold">Giới tính</span>
                                 </div>
                                 <select
-                                    name="role"
-                                    value={addFormik.values.role}
+                                    name="gender"
+                                    value={addFormik.values.gender}
                                     className="select select-bordered w-full"
                                     onChange={addFormik.handleChange}
                                     onBlur={addFormik.handleBlur}
                                 >
-                                    <option value="Admin" label="Admin" selected>
-                                        Admin
+                                    <option value="male" label="Nam" selected>
+                                        Nam
                                     </option>
-                                    <option value="Người dùng" label="Người dùng">
-                                        Người dùng
+                                    <option value="female" label="Nữ">
+                                        Nữ
                                     </option>
                                 </select>
                             </label>
 
-                            <div className="form-control w-full mt-3">
-                                <label className="label cursor-pointer">
-                                    <span className="label-text font-bold">
-                                        Kích hoạt tài khoản
-                                    </span>
-                                    <input
-                                        type="checkbox"
-                                        name="isActivated"
-                                        onChange={addFormik.handleChange}
-                                        className="checkbox"
-                                    />
-                                </label>
-                            </div>
+                            <label className="form-control w-full mt-3">
+                                <div className="label">
+                                    <span className="label-text font-bold">Ảnh đại diện</span>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept=".jpg, .jpeg, .png"
+                                    multiple={false}
+                                    className="file-input file-input-bordered w-full"
+                                    onChange={handleImgInputChange}
+                                />
+                                <div className="label"></div>
+                            </label>
                         </div>
 
                         <div className="modal-action">
@@ -408,23 +423,6 @@ export default function Users() {
 
                             <label className="form-control w-full mt-3">
                                 <div className="label">
-                                    <span className="label-text font-bold">Họ và tên</span>
-                                </div>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    placeholder="Họ và tên"
-                                    className="input input-bordered w-full"
-                                    value={editFormik.values.name}
-                                    onChange={editFormik.handleChange}
-                                />
-                                {editFormik.touched.name && editFormik.errors.name && (
-                                    <div className="form-error-msg">{editFormik.errors.name}</div>
-                                )}
-                            </label>
-
-                            <label className="form-control w-full mt-3">
-                                <div className="label">
                                     <span className="label-text font-bold">Tên người dùng</span>
                                 </div>
                                 <input
@@ -439,23 +437,6 @@ export default function Users() {
                                     <div className="form-error-msg">
                                         {editFormik.errors.username}
                                     </div>
-                                )}
-                            </label>
-
-                            <label className="form-control w-full mt-3">
-                                <div className="label">
-                                    <span className="label-text font-bold">Địa chỉ email</span>
-                                </div>
-                                <input
-                                    name="email"
-                                    type="text"
-                                    placeholder="Địa chỉ email"
-                                    className="input input-bordered w-full"
-                                    value={editFormik.values.email}
-                                    onChange={editFormik.handleChange}
-                                />
-                                {editFormik.touched.email && editFormik.errors.email && (
-                                    <div className="form-error-msg">{editFormik.errors.email}</div>
                                 )}
                             </label>
 
@@ -478,38 +459,23 @@ export default function Users() {
 
                             <label className="form-control w-full mt-3">
                                 <div className="label">
-                                    <span className="label-text font-bold">Quyền hạn</span>
+                                    <span className="label-text font-bold">Giới tính</span>
                                 </div>
                                 <select
-                                    name="role"
-                                    value={editFormik.values.role}
+                                    name="gender"
+                                    value={editFormik.values.gender}
                                     className="select select-bordered w-full"
                                     onChange={editFormik.handleChange}
                                     onBlur={editFormik.handleBlur}
                                 >
-                                    <option value="Admin" label="Admin" selected>
-                                        Admin
+                                    <option value="male" label="Nam" selected>
+                                        Nam
                                     </option>
-                                    <option value="Người dùng" label="Người dùng">
-                                        Người dùng
+                                    <option value="female" label="Nữ">
+                                        Nữ
                                     </option>
                                 </select>
                             </label>
-
-                            <div className="form-control w-full mt-3">
-                                <label className="label cursor-pointer">
-                                    <span className="label-text font-bold">
-                                        Kích hoạt tài khoản
-                                    </span>
-                                    <input
-                                        type="checkbox"
-                                        name="isActivated"
-                                        onChange={editFormik.handleChange}
-                                        checked={editFormik.values.isActivated}
-                                        className="checkbox"
-                                    />
-                                </label>
-                            </div>
                         </div>
 
                         <div className="modal-action mt-3">
@@ -542,14 +508,7 @@ export default function Users() {
                             className="btn btn-error"
                             onClick={(e) => {
                                 e.preventDefault();
-                                data = data.filter((u) => {
-                                    if (editingUser) {
-                                        return u.id != editingUser.id;
-                                    }
-                                });
-
-                                setTableData(data);
-                                handleToggleDelete();
+                                handleDelete();
                             }}
                         >
                             Xóa
@@ -559,4 +518,87 @@ export default function Users() {
             </div>
         </NavLayout>
     );
+
+    async function fetchUsers() {
+        try {
+            const response = await fetch("http://localhost/api/admin/user-management/get-all", {
+                method: "GET",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const resData = await response.json();
+                dispatch(setUsers(resData.data));
+                setFetched(true);
+            } else {
+                console.error("Error fetching users: ", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+        }
+    }
+
+    async function handleDelete() {
+        try {
+            const response = await fetch(
+                `http://localhost/api/admin/user-management/delete/${editingUser?.id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + accessToken,
+                    },
+                }
+            );
+
+            if (response.ok) {
+                fetchUsers();
+                toast.success("Xóa người dùng thành công.");
+                handleToggleDelete();
+            } else {
+                console.error("Error fetching users: ", response.status, response.statusText);
+                toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            }
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+            toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+        }
+    }
+
+    function handleImgInputChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        const file = (e.target as HTMLInputElement).files![0];
+
+        if (file) {
+            setAvatarToAdd(file);
+        }
+    }
+
+    async function uploadToS3(file: File, bucketName: string): Promise<string> {
+        AWS.config.update({
+            accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY!,
+            region: "ap-southeast-2",
+        });
+        const s3 = new AWS.S3({
+            apiVersion: "2012-10-17",
+            params: { Bucket: bucketName },
+        });
+
+        const params = {
+            Bucket: bucketName,
+            Key: `${file.name}`,
+            Body: file as any,
+            ContentType: file.type,
+        };
+
+        try {
+            const data = await s3.upload(params).promise();
+            return data.Location;
+        } catch (error) {
+            console.error("Error uploading to S3: ", error);
+            throw error;
+        }
+    }
 }

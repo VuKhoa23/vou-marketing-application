@@ -6,21 +6,19 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import Table from "@/components/Table";
 import { Partner } from "@/lib/types/Partner";
-import partnerData from "@/lib/mock_data/partners.json";
 import Modal from "@/components/Modal";
 import NavLayout from "../NavLayout";
-
-// duplicate data & get current max ID to generate new iD when adding users
-// TODO: REMOVE WHEN CONNECTED TO BACKEND)
-let data = [...partnerData];
-let maxId: number = Math.max(...data.map((item) => item.id));
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/redux/store";
+import { setPartners } from "@/lib/redux/slices/partnersSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 // add form validation schema
 export const addSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền tên thương hiệu"),
-    industry: yup.string().required("Vui lòng điền tên lĩnh vực"),
+    username: yup.string().required("Vui lòng điền tên thương hiệu"),
+    category: yup.string().required("Vui lòng điền tên lĩnh vực"),
     address: yup.string().required("Vui lòng điền địa chỉ"),
-    long: yup
+    lon: yup
         .string()
         .required("Vui lòng điền kinh độ")
         .matches(/^[0-9.]*$/, "Kinh độ không hợp lệ"),
@@ -32,10 +30,10 @@ export const addSchema = yup.object().shape({
 
 // edit form validation schema
 export const editSchema = yup.object().shape({
-    name: yup.string().required("Vui lòng điền tên thương hiệu"),
-    industry: yup.string().required("Vui lòng điền tên lĩnh vực"),
+    username: yup.string().required("Vui lòng điền tên thương hiệu"),
+    category: yup.string().required("Vui lòng điền tên lĩnh vực"),
     address: yup.string().required("Vui lòng điền địa chỉ"),
-    long: yup
+    lon: yup
         .string()
         .required("Vui lòng điền kinh độ")
         .matches(/^[0-9.]*$/, "Kinh độ không hợp lệ"),
@@ -46,6 +44,13 @@ export const editSchema = yup.object().shape({
 });
 
 export default function Partners() {
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const data = useSelector((state: RootState) => state.partners.partners);
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    const [fetched, setFetched] = useState(false);
+
     const [addOpen, setAddOpen] = useState(false);
     const handleToggleAdd = () => setAddOpen((prev) => !prev);
 
@@ -64,15 +69,25 @@ export default function Partners() {
         if (editingPartner) {
             editFormik.setValues({
                 id: editingPartner.id,
-                name: editingPartner.name,
-                industry: editingPartner.industry,
+                username: editingPartner.username,
+                category: editingPartner.category,
                 address: editingPartner.address,
-                long: editingPartner.long,
+                lon: editingPartner.lon,
                 lat: editingPartner.lat,
-                isActivated: editingPartner.isActivated,
+                state: editingPartner.state,
             });
         }
     }, [editingPartner]);
+
+    useEffect(() => {
+        setTableData(data);
+    }, [data]);
+
+    useEffect(() => {
+        if (!fetched) {
+            fetchPartners();
+        }
+    }, [accessToken]);
 
     // define columns for user table
     const columnHelper = createColumnHelper<Partner>();
@@ -83,13 +98,13 @@ export default function Partners() {
             cell: (info) => info.getValue(),
             header: () => <span>ID</span>,
         }),
-        columnHelper.accessor((row) => row.name, {
-            id: "name",
+        columnHelper.accessor((row) => row.username, {
+            id: "username",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Tên thương hiệu</span>,
         }),
-        columnHelper.accessor((row) => row.industry, {
-            id: "industry",
+        columnHelper.accessor((row) => row.category, {
+            id: "category",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Lĩnh vực</span>,
         }),
@@ -98,12 +113,12 @@ export default function Partners() {
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Địa chỉ</span>,
         }),
-        columnHelper.accessor((row) => `${row.long}, ${row.lat}`, {
+        columnHelper.accessor((row) => `${row.lon}, ${row.lat}`, {
             id: "gps",
             cell: (info) => <span>{info.getValue()}</span>,
             header: () => <span>Tọa độ GPS</span>,
         }),
-        columnHelper.accessor((row) => row.isActivated, {
+        columnHelper.accessor((row) => row.state, {
             id: "active-status",
             cell: (info) => (
                 <input
@@ -177,28 +192,52 @@ export default function Partners() {
     // add form
     const addFormik = useFormik({
         initialValues: {
-            name: "",
-            industry: "",
+            username: "",
+            category: "",
             address: "",
-            long: "",
+            lon: "",
             lat: "",
-            isActivated: false,
+            state: false,
         },
         validationSchema: addSchema,
         onSubmit: async (values) => {
-            const newPartner: Partner = {
-                id: maxId ? ++maxId : 1,
-                name: values.name!,
-                industry: values.industry!,
+            const newPartner = {
+                username: values.username!,
+                password: "initpass",
+                category: values.category!,
                 address: values.address!,
-                long: values.long!,
+                lon: values.lon!,
                 lat: values.lat!,
-                isActivated: values.isActivated!,
+                state: values.state!,
             };
 
-            data = [...data, newPartner];
+            try {
+                const response = await fetch("http://localhost/api/admin/brand-management/create", {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + accessToken,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newPartner),
+                });
 
-            setTableData(data);
+                if (response.ok) {
+                    fetchPartners();
+                    toast.success("Thêm thương hiệu thành công.");
+                } else {
+                    console.error(
+                        "Error fetching partners: ",
+                        response.status,
+                        response.statusText
+                    );
+
+                    toast.error("Thương hiệu đã tồn tại.");
+                }
+            } catch (error) {
+                console.error("Error fetching partners: ", error);
+                toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+            }
+
             addFormik.resetForm();
 
             handleToggleAdd();
@@ -209,28 +248,25 @@ export default function Partners() {
     const editFormik = useFormik({
         initialValues: {
             id: editingPartner?.id,
-            name: editingPartner?.name,
-            industry: editingPartner?.industry,
+            username: editingPartner?.username,
+            category: editingPartner?.category,
             address: editingPartner?.address,
-            long: editingPartner?.long,
+            lon: editingPartner?.lon,
             lat: editingPartner?.lat,
-            isActivated: editingPartner?.isActivated,
+            state: editingPartner?.state,
         },
         validationSchema: editSchema,
         onSubmit: async (values) => {
-            const newPartner: Partner = {
-                id: values.id!,
-                name: values.name!,
-                industry: values.industry!,
+            const newPartner = {
+                username: values.username!,
+                category: values.category!,
                 address: values.address!,
-                long: values.long!,
+                lon: values.lon!,
                 lat: values.lat!,
-                isActivated: values.isActivated!,
+                state: values.state!,
             };
 
-            data = data.map((p) => (p.id === newPartner.id ? { ...newPartner } : p));
-
-            setTableData(data);
+            console.log(newPartner);
 
             handleToggleEdit();
         },
@@ -239,6 +275,7 @@ export default function Partners() {
     return (
         <NavLayout>
             <div className="flex-col">
+                <Toaster />
                 <h1>Quản lý thương hiệu</h1>
 
                 <div className="flex justify-end mb-4">
@@ -268,15 +305,17 @@ export default function Partners() {
                                     <span className="label-text font-bold">Tên thương hiệu</span>
                                 </div>
                                 <input
-                                    name="name"
+                                    name="username"
                                     type="text"
                                     placeholder="Tên thương hiệu"
                                     className="input input-bordered w-full"
-                                    value={addFormik.values.name}
+                                    value={addFormik.values.username}
                                     onChange={addFormik.handleChange}
                                 />
-                                {addFormik.touched.name && addFormik.errors.name && (
-                                    <div className="form-error-msg">{addFormik.errors.name}</div>
+                                {addFormik.touched.username && addFormik.errors.username && (
+                                    <div className="form-error-msg">
+                                        {addFormik.errors.username}
+                                    </div>
                                 )}
                             </label>
 
@@ -285,16 +324,16 @@ export default function Partners() {
                                     <span className="label-text font-bold">Tên lĩnh vực</span>
                                 </div>
                                 <input
-                                    name="industry"
+                                    name="category"
                                     type="text"
                                     placeholder="Tên lĩnh vực"
                                     className="input input-bordered w-full"
-                                    value={addFormik.values.industry}
+                                    value={addFormik.values.category}
                                     onChange={addFormik.handleChange}
                                 />
-                                {addFormik.touched.industry && addFormik.errors.industry && (
+                                {addFormik.touched.category && addFormik.errors.category && (
                                     <div className="form-error-msg">
-                                        {addFormik.errors.industry}
+                                        {addFormik.errors.category}
                                     </div>
                                 )}
                             </label>
@@ -321,15 +360,15 @@ export default function Partners() {
                                     <span className="label-text font-bold">Kinh độ</span>
                                 </div>
                                 <input
-                                    name="long"
+                                    name="lon"
                                     type="text"
                                     placeholder="Kinh độ"
                                     className="input input-bordered w-full"
-                                    value={addFormik.values.long}
+                                    value={addFormik.values.lon}
                                     onChange={addFormik.handleChange}
                                 />
-                                {addFormik.touched.long && addFormik.errors.long && (
-                                    <div className="form-error-msg">{addFormik.errors.long}</div>
+                                {addFormik.touched.lon && addFormik.errors.lon && (
+                                    <div className="form-error-msg">{addFormik.errors.lon}</div>
                                 )}
                             </label>
 
@@ -357,7 +396,7 @@ export default function Partners() {
                                     </span>
                                     <input
                                         type="checkbox"
-                                        name="isActivated"
+                                        name="state"
                                         onChange={addFormik.handleChange}
                                         className="checkbox"
                                     />
@@ -411,15 +450,17 @@ export default function Partners() {
                                     <span className="label-text font-bold">Tên thương hiệu</span>
                                 </div>
                                 <input
-                                    name="name"
+                                    name="username"
                                     type="text"
                                     placeholder="Tên thương hiệu"
                                     className="input input-bordered w-full"
-                                    value={editFormik.values.name}
+                                    value={editFormik.values.username}
                                     onChange={editFormik.handleChange}
                                 />
-                                {editFormik.touched.name && editFormik.errors.name && (
-                                    <div className="form-error-msg">{editFormik.errors.name}</div>
+                                {editFormik.touched.username && editFormik.errors.username && (
+                                    <div className="form-error-msg">
+                                        {editFormik.errors.username}
+                                    </div>
                                 )}
                             </label>
 
@@ -428,16 +469,16 @@ export default function Partners() {
                                     <span className="label-text font-bold">Tên lĩnh vực</span>
                                 </div>
                                 <input
-                                    name="industry"
+                                    name="category"
                                     type="text"
                                     placeholder="Tên lĩnh vực"
                                     className="input input-bordered w-full"
-                                    value={editFormik.values.industry}
+                                    value={editFormik.values.category}
                                     onChange={editFormik.handleChange}
                                 />
-                                {editFormik.touched.industry && editFormik.errors.industry && (
+                                {editFormik.touched.category && editFormik.errors.category && (
                                     <div className="form-error-msg">
-                                        {editFormik.errors.industry}
+                                        {editFormik.errors.category}
                                     </div>
                                 )}
                             </label>
@@ -466,15 +507,15 @@ export default function Partners() {
                                     <span className="label-text font-bold">Kinh độ</span>
                                 </div>
                                 <input
-                                    name="long"
+                                    name="lon"
                                     type="text"
                                     placeholder="Kinh độ"
                                     className="input input-bordered w-full"
-                                    value={editFormik.values.long}
+                                    value={editFormik.values.lon}
                                     onChange={editFormik.handleChange}
                                 />
-                                {editFormik.touched.long && editFormik.errors.long && (
-                                    <div className="form-error-msg">{editFormik.errors.long}</div>
+                                {editFormik.touched.lon && editFormik.errors.lon && (
+                                    <div className="form-error-msg">{editFormik.errors.lon}</div>
                                 )}
                             </label>
 
@@ -502,9 +543,9 @@ export default function Partners() {
                                     </span>
                                     <input
                                         type="checkbox"
-                                        name="isActivated"
+                                        name="state"
                                         onChange={editFormik.handleChange}
-                                        checked={editFormik.values.isActivated}
+                                        checked={editFormik.values.state}
                                         className="checkbox"
                                     />
                                 </label>
@@ -541,13 +582,13 @@ export default function Partners() {
                             className="btn btn-error"
                             onClick={(e) => {
                                 e.preventDefault();
-                                data = data.filter((u) => {
+                                
+                                const deleted = data.filter((u) => {
                                     if (editingPartner) {
                                         return u.id != editingPartner.id;
                                     }
                                 });
 
-                                setTableData(data);
                                 handleToggleDelete();
                             }}
                         >
@@ -558,4 +599,26 @@ export default function Partners() {
             </div>
         </NavLayout>
     );
+
+    async function fetchPartners() {
+        try {
+            const response = await fetch("http://localhost/api/admin/brand-management/get-all", {
+                method: "GET",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const resData = await response.json();
+                dispatch(setPartners(resData.data));
+                setFetched(true);
+            } else {
+                console.error("Error fetching partners: ", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching partners: ", error);
+        }
+    }
 }
