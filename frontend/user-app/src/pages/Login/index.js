@@ -6,6 +6,7 @@ import { useFormik } from 'formik';
 import { setAuthUser } from '../../redux/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import { setUserInfo } from '../../redux/slices/userSlice';
 
 const loginSchema = yup.object({
     username: yup
@@ -41,9 +42,12 @@ const Login = () => {
 
             if (response.ok) {
                 const userData = await response.json();
-                const token = userData.accessToken.replace('Bearer%20', '');
+                const token = userData.accessToken.replace('Bearer%20', '').replace('Bearer ', '');
                 dispatch(setAuthUser(token));
-                Cookies.set("userToken", userData.accessToken, { expires: 7 });
+                Cookies.set("userToken", token, { expires: 7 });
+
+                fetchUserInfo(token);
+
                 toast.success('Đăng nhập thành công.');
 
                 if (dest === null || dest === undefined || dest === '') {
@@ -124,6 +128,32 @@ const Login = () => {
             </div>
         </div>
     );
+
+    async function fetchUserInfo(token) {
+        try {
+            const response = await fetch(`http://localhost/api/user/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                dispatch(setUserInfo({
+                    id: userData.id,
+                    username: userData.username,
+                    phone: userData.phone,
+                    gender: userData.gender,
+                    image_url: userData.image_url
+                }));
+            } else {
+                console.log("Error retrieving user info.");
+            }
+        } catch (error) {
+            console.log("Error retrieving user info:" + error);
+        }
+    };
 };
 
 export default Login;

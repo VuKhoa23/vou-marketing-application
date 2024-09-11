@@ -160,7 +160,6 @@ const Signup = () => {
                                 </label>
                             </div>
                         </div>
-
                     </label>
 
                     <button

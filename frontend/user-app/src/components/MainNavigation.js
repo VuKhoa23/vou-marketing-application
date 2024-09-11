@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
 import { FaBell } from 'react-icons/fa';
+import { setUserInfo } from '../redux/slices/userSlice';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -32,8 +33,9 @@ function MainNavigation() {
         // Logic khác xử lý khi từ chối yêu cầu
     };
 
-
-
+    useEffect(() => {
+        fetchUserInfo(accessToken);
+    }, [])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -142,6 +144,32 @@ function MainNavigation() {
 
         </div >
     );
+
+    async function fetchUserInfo(token) {
+        try {
+            const response = await fetch(`http://localhost/api/user/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                dispatch(setUserInfo({
+                    id: userData.id,
+                    username: userData.username,
+                    phone: userData.phone,
+                    gender: userData.gender,
+                    image_url: userData.image_url
+                }));
+            } else {
+                console.log("Error retrieving user info.");
+            }
+        } catch (error) {
+            console.log("Error retrieving user info:" + error);
+        }
+    };
 }
 
 export default MainNavigation;
