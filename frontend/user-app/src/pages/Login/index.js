@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { setAuthUser } from '../../redux/slices/authSlice';
@@ -19,6 +19,7 @@ const loginSchema = yup.object({
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const dest = useSelector((state) => state.auth.destination);
 
     const loginFormik = useFormik({
         initialValues: {
@@ -40,11 +41,17 @@ const Login = () => {
 
             if (response.ok) {
                 const userData = await response.json();
-                const token = userData.accessToken.replace('Bearer ', '');
+                const token = userData.accessToken.replace('Bearer%20', '');
                 dispatch(setAuthUser(token));
                 Cookies.set("userToken", userData.accessToken, { expires: 7 });
                 toast.success('Đăng nhập thành công.');
-                navigate('/');
+
+                if (dest === null || dest === undefined || dest === '') {
+                    navigate("/");
+                }
+                else {
+                    navigate(dest);
+                }
             } else {
                 toast.error('Thông tin đăng nhập không hợp lệ.');
             }

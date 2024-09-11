@@ -127,10 +127,10 @@ function MainNavigation() {
                                 className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                                 <li>
                                     <NavLink to="/profile" className="justify-between">
-                                        Profile
+                                        Hồ sơ
                                     </NavLink>
                                 </li>
-                                <li><button onClick={handleLogout}>Log out</button></li>
+                                <li><button onClick={handleLogout}>Đăng xuất</button></li>
                             </ul>
                         </div>
                     </div>

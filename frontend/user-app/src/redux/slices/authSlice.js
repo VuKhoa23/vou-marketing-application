@@ -16,8 +16,11 @@ const authSlice = createSlice({
             state.accessToken = null;
             Cookies.remove("userToken");
         },
+        setDestination: (state, action) => {
+            state.destination = action.payload;
+        }
     },
 });
 
-export const { setAuthUser, logout } = authSlice.actions;
+export const { setAuthUser, logout, setDestination } = authSlice.actions;
 export default authSlice.reducer;
