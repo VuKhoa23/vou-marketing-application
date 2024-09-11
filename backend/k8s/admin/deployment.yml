@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
       - name: admin-service-cont
-        image: vukhoa23/admin-service:7
+        image: vukhoa23/admin-service:8
