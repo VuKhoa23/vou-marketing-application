@@ -26,11 +26,11 @@ public class Brand {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "longitude")
-    private String longitude;
+    @Column(name = "lon")
+    private String lon;
 
-    @Column(name = "latitude")
-    private String latitude;
+    @Column(name = "lat")
+    private String lat;
   
     @Column(name = "state")
     private boolean state = false;

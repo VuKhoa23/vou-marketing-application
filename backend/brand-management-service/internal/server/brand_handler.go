@@ -3,16 +3,19 @@ package server
 import (
 	"brand-management-service/internal/model"
 	"brand-management-service/internal/repository"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type BrandReq struct {
 	Username string  `json:"username"`
 	Password string  `json:"password"`
 	Category *string `json:"category"`
+	Lon      string  `json:"lon"`
+	Lat      string  `json:"lat"`
 	State    bool    `json:"state"`
 }
 
@@ -56,7 +59,7 @@ func (s *Server) createBrandHandler(c *gin.Context) {
 		})
 		return
 	}
-	_, err = repository.CreateBrand(model.Brand{Username: req.Username, Category: *req.Category, Password: string(hashedPassword), State: req.State})
+	_, err = repository.CreateBrand(model.Brand{Username: req.Username, Category: *req.Category, Password: string(hashedPassword), Lon: req.Lon, Lat: req.Lat, State: req.State})
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

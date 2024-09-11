@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: brand-management
-          image: tricker14/brand-management-service:2
+          image: tricker14/brand-management-service:3
           env:
           - name: PORT
             value: "8082"

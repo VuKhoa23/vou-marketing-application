@@ -10,8 +10,8 @@ public class RegisterDTO {
     private String confirmation;
     private String category;
     private String address;
-    private String longitude;
-    private String latitude;
+    private String lon;
+    private String lat;
     private boolean isShaking;
     private boolean isTrivia;
 }
