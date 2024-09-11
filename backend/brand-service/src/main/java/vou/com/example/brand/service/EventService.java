@@ -111,6 +111,7 @@ public class EventService {
         Voucher voucher = new Voucher();
 
         voucher.setVoucherQuantities(voucherDTO.getVoucherQuantities());
+        voucher.setVoucherLeft(voucherDTO.getVoucherQuantities());
         voucher.setImageURL(voucherImage);
         voucher.setValue(voucherDTO.getValue());
         voucher.setDescription(voucherDTO.getDescription());
@@ -170,6 +171,7 @@ public class EventService {
                 voucherDTO.setVoucherValue(voucher.getValue());
                 voucherDTO.setVoucherDescription(voucher.getDescription());
                 voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherLeft(voucher.getVoucherLeft());
                 voucherDTO.setVoucherEndDate(voucher.getEndDate());
                 voucherDTO.setVoucherStatus(voucher.isStatus());
             }
@@ -209,6 +211,7 @@ public class EventService {
                 voucherDTO.setVoucherValue(voucher.getValue());
                 voucherDTO.setVoucherDescription(voucher.getDescription());
                 voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherLeft(voucher.getVoucherLeft());
                 voucherDTO.setVoucherEndDate(voucher.getEndDate());
                 voucherDTO.setVoucherStatus(voucher.isStatus());
             }
@@ -248,6 +251,7 @@ public class EventService {
                 voucherDTO.setVoucherValue(voucher.getValue());
                 voucherDTO.setVoucherDescription(voucher.getDescription());
                 voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+                voucherDTO.setVoucherLeft(voucher.getVoucherLeft());
                 voucherDTO.setVoucherEndDate(voucher.getEndDate());
                 voucherDTO.setVoucherStatus(voucher.isStatus());
             }
@@ -284,6 +288,7 @@ public class EventService {
             voucherDTO.setVoucherValue(voucher.getValue());
             voucherDTO.setVoucherDescription(voucher.getDescription());
             voucherDTO.setVoucherQuantities(voucher.getVoucherQuantities());
+            voucherDTO.setVoucherLeft(voucher.getVoucherLeft());
             voucherDTO.setVoucherEndDate(voucher.getEndDate());
             voucherDTO.setVoucherStatus(voucher.isStatus());
         }
