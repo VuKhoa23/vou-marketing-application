@@ -52,7 +52,8 @@ func AddVoucher(userVoucher model.UserVoucher) error {
 	queryVoucherUpdate := "UPDATE user_voucher SET voucher_quantities = ? WHERE user_id = ? AND voucher_id = ?"
 	_, err = db.Exec(queryVoucherUpdate, newVoucherQuantities, userVoucher.UserID, userVoucher.VoucherID)
 	if err != nil {
-    return err
+		return err
+	}
 
 	// Prepare data for the updateVoucher API
 	updateData := map[string]interface{}{
