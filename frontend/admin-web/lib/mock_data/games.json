@@ -4,13 +4,13 @@
         "name": "Lắc Xì",
         "type": "Trò chơi lắc đổi quà",
         "allowsTrade": true,
-        "instructions": "Hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn..."
+        "instructions": "Người chơi thực hiện \"lắc\" để nhận được một số xu ngẫu nhiên. Sử dụng xu nhận được để quy đổi thành nhiều voucher ưu đãi hấp dẫn khác."
     },
     {
         "id": 2,
         "name": "Cahoot",
         "type": "Trò chơi trivia",
         "allowsTrade": false,
-        "instructions": "Hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn hướng dẫn..."
+        "instructions": "Người chơi trả lời câu hỏi trivia được đưa ra theo thời gian thực. Mỗi câu trả lời đúng sẽ thưởng một số xu nhất định cho người chơi. Sử dụng xu nhận được để quy đổi thành nhiều voucher ưu đãi hấp dẫn khác."
     }
 ]
