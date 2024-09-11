@@ -110,3 +110,51 @@ func (s *Server) enableBrandHandler(c *gin.Context) {
 		"message": "Successfully enabled brand: " + c.Param("brandId"),
 	})
 }
+
+func (s *Server) updateBrandHandler(c *gin.Context) {
+	brandId, err := strconv.Atoi(c.Param("brandId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot update brand: " + err.Error(),
+		})
+	}
+
+	var req model.UpdateBrandRequest
+	err = c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err = repository.UpdateBrand(int64(brandId), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully update brand: " + c.Param("brandId"),
+	})
+}
+
+func (s *Server) deleteBrandhandler(c *gin.Context) {
+	brandId, err := strconv.Atoi(c.Param("brandId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Cannot update brand: " + err.Error(),
+		})
+	}
+
+	err = repository.DeleteBrand(brandId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully delete brand: " + c.Param("brandId"),
+	})
+}

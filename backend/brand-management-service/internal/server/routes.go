@@ -34,5 +34,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.POST("/api/brand-management/enable/:brandId", s.enableBrandHandler)
 
+	r.PUT("/api/brand-management/update/:brandId", s.updateBrandHandler)
+
+	r.DELETE("/api/brand-management/delete/:brandId", s.deleteBrandhandler)
 	return r
 }

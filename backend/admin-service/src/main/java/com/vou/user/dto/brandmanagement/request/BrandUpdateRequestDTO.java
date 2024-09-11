@@ -1,4 +1,4 @@
-package com.vou.user.dto.brandmanagement.response;
+package com.vou.user.dto.brandmanagement.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class BrandResponseDTO {
-    private Integer id;
-    private String username;
+public class BrandUpdateRequestDTO {
     private String category;
+    private String address;
     private String lat;
     private String lon;
-    private Boolean state;
-    private String address;
 }
