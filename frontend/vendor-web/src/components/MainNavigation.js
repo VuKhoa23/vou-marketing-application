@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDestination } from '../store/slices/authSlice'; // Import action setDestination
+import { setDestination, logout } from '../store/slices/authSlice';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -37,6 +37,11 @@ function MainNavigation() {
 
     const handleLoginClick = () => {
         dispatch(setDestination('/stats'));
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/login");
     };
 
     return (
@@ -88,11 +93,7 @@ function MainNavigation() {
                                         Hồ sơ
                                     </NavLink>
                                 </li>
-                                <li>
-                                    <NavLink to="/login" onClick={closeDropdown}>
-                                        Đăng xuất
-                                    </NavLink>
-                                </li>
+                                <li><button onClick={handleLogout}>Đăng xuất</button></li>
                             </ul>
                         )}
                     </div>

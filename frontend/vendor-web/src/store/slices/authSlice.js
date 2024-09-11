@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import Cookies from "js-cookie";
 
 const initialState = {
     accessToken: null,
@@ -14,6 +15,7 @@ const authSlice = createSlice({
         },
         logout: (state) => {
             state.accessToken = null;
+            Cookies.remove("vendorToken");
         },
         setDestination: (state, action) => {
             state.destination = action.payload;
