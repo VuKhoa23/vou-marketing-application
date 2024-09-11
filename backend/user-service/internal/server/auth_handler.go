@@ -13,7 +13,7 @@ type RegisterReq struct {
 	Password string `json:"password"`
 	Phone    string `json:"phone"`
 	Gender   string `json:"gender"`
-	ImageURL string `json:"imageURL"`
+	ImageURL string `json:"image_url"`
 }
 
 type LoginReq struct {
