@@ -11,8 +11,6 @@ function MainNavigation() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const accessToken = useSelector((state) => state.auth.accessToken);
     const [request, setRequest] = useState([
-        { id: 1 },
-        { id: 2 }
     ]);
 
     const dispatch = useDispatch();
@@ -24,6 +22,34 @@ function MainNavigation() {
         dispatch(logout());
         navigate("/login");
     };
+
+    useEffect(() => {
+        async function getRequest(token) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/get-turn-request`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data)
+
+                    const filteredData = data.filter(item => item.state === false);
+                    console.log("Filtered data:", filteredData);
+
+                    setRequest(filteredData);
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error get request:", response.status, response.statusText, errorData);
+                }
+            } catch (error) {
+                console.error("Error fetching game ID:", error);
+            }
+        }
+        getRequest(accessToken);
+    }, [accessToken])
 
     const toggleDropdown = () => {
         setIsDropdownOpen(prevState => !prevState);
@@ -37,12 +63,7 @@ function MainNavigation() {
         setRequest((prevRequests) => prevRequests.filter((req) => req.id !== id));
         console.log(`Chấp nhận yêu cầu từ ${id}`);
         // Logic khác xử lý khi chấp nhận yêu cầu
-    };
-
-    const handleReject = (id) => {
-        setRequest((prevRequests) => prevRequests.filter((req) => req.id !== id));
-        console.log(`Từ chối yêu cầu từ ${id}`);
-        // Logic khác xử lý khi từ chối yêu cầu
+        acceptRequest(accessToken, parseInt(id, 10));
     };
 
     useEffect(() => {
@@ -51,7 +72,7 @@ function MainNavigation() {
             fetchUserInfo(accessToken);
             setFetched(true);
         }
-    }, [accessToken, dispatch, fetchUserInfo, fetched]);
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -111,19 +132,13 @@ function MainNavigation() {
                                 className="dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 shadow">
                                 {request.map((req) => (
                                     <li key={req.id} className="flex flex-col justify-between items-center p-2 border-b round-lg">
-                                        <span>{`Người bạn với id là ${req.id} xin lượt chơi game lắc xu từ bạn`}</span>
+                                        <span>{`${req.id}/Có người xin 1 lượt chơi game lắc xu từ bạn`}</span>
                                         <div>
                                             <button
                                                 className="btn btn-xs btn-success mr-2"
                                                 onClick={() => handleAccept(req.id)}
                                             >
                                                 Chấp nhận
-                                            </button>
-                                            <button
-                                                className="btn btn-xs btn-error"
-                                                onClick={() => handleReject(req.id)}
-                                            >
-                                                Từ chối
                                             </button>
                                         </div>
                                     </li>
@@ -192,3 +207,26 @@ function MainNavigation() {
 }
 
 export default MainNavigation;
+
+async function acceptRequest(token, requestId) {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/accept-turn-request`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: requestId
+            })
+        });
+        if (response.ok) {
+
+        } else {
+            const errorData = await response.json();
+            console.error("Error accept request:", response.status, response.statusText, errorData);
+        }
+    } catch (error) {
+        console.error("Error fetching game ID:", error);
+    }
+}

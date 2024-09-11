@@ -175,8 +175,7 @@ async function exchageVoucher(token, voucherId, voucherCount, eventId, coin) {
                 voucherId: voucherId,
                 voucherQuantities: voucherCount,
                 eventId: eventId,
-                coin: coin,
-                userId: 1
+                coin: coin
             }),
         });
         if (response.ok) {
