@@ -155,7 +155,7 @@ func (s *Server) GetTurnRequestHandler(c *gin.Context) {
 
 	requests, err := repository.GetTurnRequest(userIdInt64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

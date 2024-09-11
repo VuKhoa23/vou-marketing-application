@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Event from '../Home/components/Event';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import { Flex, Image, Text, Box } from '@chakra-ui/react';
 
 const Profile = () => {
     const user = useSelector((state) => state.user);
@@ -10,7 +11,24 @@ const Profile = () => {
     const [favoriteEvents, setFavoriteEvents] = useState([]);
     // const dispatch = useDispatch();
 
-    console.log(user);
+    const [vouchers, setVouchers] = useState([
+        {
+            id: 1,
+            image: "/vc1.jpg",
+            quantity: 2,
+            description: "Voucher giảm giá 10% cho tổng hóa đơn",
+            value: "10%",
+            expiryDate: "31-12-2024"
+        },
+        {
+            id: 2,
+            image: "/vc6.jpg",
+            quantity: 1,
+            description: "Voucher giảm giá 20% cho đơn hàng từ 500k",
+            value: "20%",
+            expiryDate: "30-11-2024"
+        }
+    ]);
 
     useEffect(() => {
         async function fetchFavoriteEvents(token) {
@@ -82,6 +100,29 @@ const Profile = () => {
 
                 <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Voucher của tôi</h3>
+                    <ul className='flex flex-wrap justify-center'>
+                        {vouchers.map((voucher) => {
+                            return (
+                                <li key={voucher.id} className='m-4 p-4 border rounded-lg hover:shadow-lg'>
+                                    <Flex direction="column" align="left">
+                                        <Image
+                                            src={voucher.image}
+                                            alt='Voucher Image'
+                                            objectFit="cover"
+                                            mb={4}
+                                            background="transparent"
+                                        />
+                                        <Box textAlign="left" mb={4}>
+                                            <Text fontSize="lg" textAlign="center" fontWeight="semibold">{voucher.description}</Text>
+                                            <Text fontSize="md">Giá trị: <b>giảm giá {voucher.value} cho tổng hóa đơn</b></Text>
+                                            <Text fontSize="md">Hạn sử dụng: <b>{voucher.expiryDate}</b></Text>
+                                            <Text fontSize="md">Sở hữu: <b>{voucher.quantity} cái</b></Text>
+                                        </Box>
+                                    </Flex>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </div>
                 <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Sự kiện yêu thích</h3>
