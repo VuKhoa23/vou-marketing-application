@@ -19,6 +19,7 @@ const loginSchema = yup.object({
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const dest = useSelector((state) => state.auth.destination);
 
     const loginFormik = useFormik({
         initialValues: {
@@ -46,7 +47,7 @@ const Login = () => {
 
                 fetchBrandInfo(token);
 
-                navigate('/');
+                navigate(dest);
             } else {
                 toast.error('Thông tin đăng nhập không hợp lệ.');
             }

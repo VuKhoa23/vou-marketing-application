@@ -50,7 +50,7 @@ export default function EventList() {
   const tableData = useSelector(state => state.events);
 
   useEffect(() => {
-    async function fetchEvents() {
+    async function fetchEvents(brandId) {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/event/events-and-vouchers?brandId=${brandId}`);
       if (response.ok) {
         const apiData = await response.json();
@@ -62,8 +62,8 @@ export default function EventList() {
     //   fetchEvents();
     // }
 
-    fetchEvents();
-  }, [dispatch, tableData]);
+    fetchEvents(brandId);
+  }, [brandId]);
 
   function handleInputChange(identifier, value) {
     // Dispatch the update to Redux store
@@ -100,13 +100,11 @@ export default function EventList() {
 
     switch (identifier) {
       case 'name':
-        console.log("check name");
         if (!value) {
           errorMessage = 'Tên sự kiện không được bỏ trống.';
         }
         break;
       case 'startDate':
-        console.log("check sd");
         if (!value) {
           errorMessage = 'Ngày bắt đầu không được bỏ trống.';
         } else if (eventModalData.endDate && new Date(value) > new Date(eventModalData.endDate)) {
@@ -114,7 +112,6 @@ export default function EventList() {
         }
         break;
       case 'endDate':
-        console.log("check ed");
         if (!value) {
           errorMessage = 'Ngày kết thúc không được bỏ trống.';
         } else if (eventModalData.startDate && new Date(value) < new Date(eventModalData.startDate)) {
@@ -122,7 +119,6 @@ export default function EventList() {
         }
         break;
       case 'gameType':
-        console.log("");
         if (!value) {
           errorMessage = 'Bạn phải chọn loại trò chơi.';
         }
@@ -234,25 +230,25 @@ export default function EventList() {
         </Text>
       ),
     }),
-    columnHelper.accessor('participants', {
-      id: 'participants',
-      header: () => (
-        <Text
-          justifyContent="space-between"
-          align="center"
-          fontSize={{ sm: '10px', lg: '12px' }}
-          color="gray.400"
-        >
-          SỐ LƯỢNG NGƯỜI THAM GIA
-        </Text>
-      ),
-      cell: (info) => (
-        <Text color={textColor} fontSize="sm" fontWeight="700">
-          {/* {info.getValue()} */}
-          {2}
-        </Text>
-      ),
-    }),
+    // columnHelper.accessor('participants', {
+    //   id: 'participants',
+    //   header: () => (
+    //     <Text
+    //       justifyContent="space-between"
+    //       align="center"
+    //       fontSize={{ sm: '10px', lg: '12px' }}
+    //       color="gray.400"
+    //     >
+    //       SỐ LƯỢNG NGƯỜI THAM GIA
+    //     </Text>
+    //   ),
+    //   cell: (info) => (
+    //     <Text color={textColor} fontSize="sm" fontWeight="700">
+    //       {/* {info.getValue()} */}
+    //       {2}
+    //     </Text>
+    //   ),
+    // }),
     columnHelper.accessor('quantity', {
       id: 'quantity',
       header: () => (
@@ -354,7 +350,6 @@ export default function EventList() {
               endDate: new Date(info.row.original.endDate.split("-").reverse().join("-")),
             }));
             eventModalDisclosure.onOpen();
-            console.log(eventModalData);
           }}
         >
           Chỉnh sửa
@@ -501,7 +496,6 @@ export default function EventList() {
         body: JSON.stringify(payload),
       });
 
-      console.log(payload);
 
       const gameTypes = [];
       if (isShaking) gameTypes.push('Lắc xu');
