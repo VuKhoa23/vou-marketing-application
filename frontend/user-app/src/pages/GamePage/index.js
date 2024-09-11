@@ -39,10 +39,10 @@ function GamePage() {
     const [isCounting, setIsCounting] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [attemp, setAttemp] = useState(0);
-    const [adsTurn, setAdsTurn] = useState(3);
+    const [adsTurn, setAdsTurn] = useState(1);
     const [coinReward, setCoinReward] = useState(0);
     const [userCoin, setUserCoin] = useState(0);
-    const [userVoucher, setUserVoucher] = useState(10);
+    const [userVoucher, setUserVoucher] = useState(0);
     const adsRef = useRef(null);
     const videoRef = useRef(null);
     const bonusSectionRef = useRef(null);
