@@ -68,11 +68,9 @@ function MainNavigation() {
 
     useEffect(() => {
         if (!fetched) {
-            dispatch(setAuthUser(Cookies.get("userToken")));
             fetchUserInfo(accessToken);
-            setFetched(true);
         }
-    }, []);
+    }, [accessToken]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -190,6 +188,7 @@ function MainNavigation() {
 
             if (response.ok) {
                 const userData = await response.json();
+
                 dispatch(setUserInfo({
                     id: userData.id,
                     username: userData.username,
@@ -197,6 +196,8 @@ function MainNavigation() {
                     gender: userData.gender,
                     image_url: userData.image_url
                 }));
+
+                setFetched(true);
             } else {
                 console.log("Error retrieving user info.");
             }
