@@ -8,3 +8,22 @@ type User struct {
 	Gender   string `json:"gender"`
 	ImageURL string `json:"image_url"`
 }
+
+type UserRequestCoinReq struct {
+	TargetId int64 `json:"target_id"`
+	EventId  int64 `json:"event_id"`
+}
+
+type UserGetAllResponses struct {
+	Id       int64  `json:"id"`
+	Username string `json:"username"`
+}
+
+type TurnRequestRes struct {
+	RequestId int64 `json:"request_id"`
+	EventId   int64 `json:"event_id"`
+}
+
+type AcceptTurnReq struct {
+	Id int64 `json:"id"`
+}

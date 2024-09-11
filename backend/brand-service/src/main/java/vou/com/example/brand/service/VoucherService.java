@@ -98,7 +98,10 @@ public class VoucherService {
     public void updateVoucherQuantities(Long eventId, int quantities) {
         Voucher voucher = voucherRepository.findByEvent_Id(eventId);
 
+        int additionalVoucher = quantities - voucher.getVoucherQuantities();
         voucher.setVoucherQuantities(quantities);
+        voucher.setVoucherLeft(voucher.getVoucherLeft() + additionalVoucher);
+
         voucherRepository.save(voucher);
     }
 
@@ -108,6 +111,7 @@ public class VoucherService {
 
         int newQuantities = voucher.getVoucherQuantities() + quantities;
         voucher.setVoucherQuantities(newQuantities);
+        voucher.setVoucherLeft(voucher.getVoucherLeft() + quantities);
         voucherRepository.save(voucher);
     }
 
@@ -115,14 +119,14 @@ public class VoucherService {
         Voucher voucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
 
-        int newQuantities = voucher.getVoucherQuantities() - quantities;
+        int newQuantities = voucher.getVoucherLeft() - quantities;
 
         if (newQuantities < 0) {
             throw new InvalidArgumentException("Insufficient voucher quantities. Current quantities: "
-                    + voucher.getVoucherQuantities());
+                    + voucher.getVoucherLeft());
         }
 
-        voucher.setVoucherQuantities(newQuantities);
+        voucher.setVoucherLeft(newQuantities);
         voucherRepository.save(voucher);
     }
 
@@ -135,10 +139,11 @@ public class VoucherService {
                 .sum();
     }
 
+    // get voucher quantities left
     public Integer getVoucherQuantitiesById(Long voucherId){
         Voucher voucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new NotFoundException("Voucher not found with id: " + voucherId));
-        return voucher.getVoucherQuantities();
+        return voucher.getVoucherLeft();
     }
 }
 

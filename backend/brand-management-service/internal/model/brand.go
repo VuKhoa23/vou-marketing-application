@@ -10,3 +10,10 @@ type Brand struct {
 	Lat      string `json:"lat,omitempty"`
 	State    bool   `json:"state"`
 }
+
+type UpdateBrandRequest struct {
+	Category string `json:"category,omitempty"`
+	Address  string `json:"address,omitempty"`
+	Lon      string `json:"lon,omitempty"`
+	Lat      string `json:"lat,omitempty"`
+}

@@ -11,6 +11,7 @@ public class VoucherDTOResponse {
     int voucherValue;
     String voucherDescription;
     int voucherQuantities;
+    int voucherLeft;
     Date voucherEndDate;
     boolean voucherStatus;
 }

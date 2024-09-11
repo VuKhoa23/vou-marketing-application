@@ -3,6 +3,7 @@ package repository
 import (
 	"brand-management-service/internal/model"
 	"database/sql"
+	"fmt"
 )
 
 func GetAllBrands() ([]model.Brand, error) {
@@ -61,6 +62,39 @@ func CreateBrand(brand model.Brand) (model.Brand, error) {
 	return brand, nil
 }
 
+func UpdateBrand(brandID int64, update model.UpdateBrandRequest) error {
+	query := "UPDATE brand SET "
+	var params []interface{}
+
+	if update.Category != "" {
+		query += "category = ?, "
+		params = append(params, update.Category)
+	}
+	if update.Address != "" {
+		query += "address = ?, "
+		params = append(params, update.Address)
+	}
+	if update.Lon != "" {
+		query += "lon = ?, "
+		params = append(params, update.Lon)
+	}
+	if update.Lat != "" {
+		query += "lat = ?, "
+		params = append(params, update.Lat)
+	}
+
+	query = query[:len(query)-2]
+	query += " WHERE id = ?"
+	params = append(params, brandID)
+
+	_, err := db.Exec(query, params...)
+	if err != nil {
+		return fmt.Errorf("failed to update brand: %v", err)
+	}
+
+	return nil
+}
+
 func DisableBrand(id int) error {
 	query := "UPDATE brand SET state = ? WHERE id = ?"
 	_, err := db.Exec(query, 0, id)
@@ -73,6 +107,15 @@ func DisableBrand(id int) error {
 func EnableBrand(id int) error {
 	query := "UPDATE brand SET state = ? WHERE id = ?"
 	_, err := db.Exec(query, 1, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteBrand(id int) error {
+	query := "DELETE FROM brand WHERE id = ?"
+	_, err := db.Exec(query, id)
 	if err != nil {
 		return err
 	}

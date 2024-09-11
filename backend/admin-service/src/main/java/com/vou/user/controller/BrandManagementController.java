@@ -2,6 +2,7 @@ package com.vou.user.controller;
 
 import com.vou.user.dto.ResponseDTO;
 import com.vou.user.dto.brandmanagement.request.BrandRequestDTO;
+import com.vou.user.dto.brandmanagement.request.BrandUpdateRequestDTO;
 import com.vou.user.dto.brandmanagement.response.BrandResponseDTO;
 import org.hibernate.jdbc.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,47 @@ public class BrandManagementController {
 
     @Autowired
     public RestTemplate restTemplate;
+
+    @DeleteMapping("delete/{brandId}")
+    public ResponseEntity<ResponseDTO<?>> deleteBrand(@PathVariable("brandId") Integer brandId) {
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    brandUrl + "/delete/" + brandId,
+                    HttpMethod.DELETE,
+                    null,
+                    Void.class
+            );
+            if (response.getStatusCode().is2xxSuccessful()){
+                return new ResponseEntity<>(ResponseDTO.builder().message("Delete brand succeed").build(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseDTO.builder().message("Delete brand failed").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(ResponseDTO.builder().message("Delete brand failed: " + e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("update/{brandId}")
+    public ResponseEntity<ResponseDTO<?>> updateBrand(@RequestBody(required = false) BrandUpdateRequestDTO brandRequestDTO,
+                                                        @PathVariable("brandId") Integer brandId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<BrandUpdateRequestDTO> requestEntity = new HttpEntity<>(brandRequestDTO, headers);
+
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    brandUrl + "/update/" + brandId,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    Void.class
+            );
+            if (response.getStatusCode().is2xxSuccessful()){
+                return new ResponseEntity<>(ResponseDTO.builder().message("Update brand succeed").build(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseDTO.builder().message("Update brand failed").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(ResponseDTO.builder().message("Update brand failed: " + e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDTO<?>> createBrand(@RequestBody(required = false) BrandRequestDTO brandRequestDTO) {
