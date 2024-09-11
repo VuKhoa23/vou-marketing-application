@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDestination, logout } from '../store/slices/authSlice';
+import { setDestination, logout, setAuthUser } from '../store/slices/authSlice';
+import { setBrandInfo } from '../store/slices/brandSlice';
+import Cookies from 'js-cookie';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -23,6 +27,14 @@ function MainNavigation() {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
+    }, []);
+
+    useEffect(() => {
+        if (!fetched) {
+            dispatch(setAuthUser(Cookies.get("vendorToken")));
+            fetchBrandInfo(Cookies.get("vendorToken"));
+            setFetched(true);
+        }
     }, []);
 
     const token = useSelector((state) => state.auth.accessToken);
@@ -103,6 +115,31 @@ function MainNavigation() {
             }
         </div>
     );
+
+    async function fetchBrandInfo(token) {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const brandData = await response.json();
+                dispatch(setBrandInfo({
+                    id: brandData.id,
+                    username: brandData.username,
+                    category: brandData.category,
+                    address: brandData.address,
+                }));
+            } else {
+                console.log('Không thể lấy thông tin thương hiệu.');
+            }
+        } catch (error) {
+            console.log('Đã có lỗi xảy ra khi lấy thông tin thương hiệu.');
+        }
+    };
 }
 
 export default MainNavigation;

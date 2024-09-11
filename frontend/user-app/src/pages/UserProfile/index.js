@@ -83,7 +83,7 @@ const Profile = () => {
                 <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Voucher của tôi</h3>
                 </div>
-                <div className='col-span-4 border-4'>
+                <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Sự kiện yêu thích</h3>
                     <ul className='flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-10'>
                         {favoriteEvents.map((event) => {

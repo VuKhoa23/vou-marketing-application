@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/slices/authSlice';
+import { logout, setAuthUser } from '../redux/slices/authSlice';
 import { FaBell } from 'react-icons/fa';
 import { setUserInfo } from '../redux/slices/userSlice';
+import Cookies from "js-cookie";
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -15,6 +16,8 @@ function MainNavigation() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [fetched, setFetched] = useState(false);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -34,8 +37,12 @@ function MainNavigation() {
     };
 
     useEffect(() => {
-        fetchUserInfo(accessToken);
-    }, [])
+        if (!fetched) {
+            dispatch(setAuthUser(Cookies.get("userToken")));
+            fetchUserInfo(accessToken);
+            setFetched(true);
+        }
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
