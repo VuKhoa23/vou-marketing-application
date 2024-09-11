@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user-service-cont
-        image: vukhoa23/user-service:4
+        image: tricker14/user-service:10
         env:
           - name: PORT
             value: "8083"
