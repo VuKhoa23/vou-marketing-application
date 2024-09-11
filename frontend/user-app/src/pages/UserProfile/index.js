@@ -197,7 +197,7 @@ const Profile = () => {
                     </form>
                 </div>
 
-                <div className='col-span-6'>
+                <div className='col-span-4'>
                     <h3 className="font-bold text-xl">Voucher của tôi</h3>
                 </div>
                 <div className='col-span-4 border-4'>
