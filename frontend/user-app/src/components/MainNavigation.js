@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/slices/authSlice';
+import { logout, setAuthUser } from '../redux/slices/authSlice';
 import { FaBell } from 'react-icons/fa';
+import { setUserInfo } from '../redux/slices/userSlice';
+import Cookies from "js-cookie";
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const accessToken = useSelector((state) => state.auth.accessToken);
-    const [request, setRequest] = useState([
-    ]);
+    const user = useSelector((state) => state.user);
+    const [request, setRequest] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [fetched, setFetched] = useState(false);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -33,7 +38,7 @@ function MainNavigation() {
 
                     const filteredData = data.filter(item => item.state === false);
                     console.log("Filtered data:", filteredData);
-                
+
                     setRequest(filteredData);
                 } else {
                     const errorData = await response.json();
@@ -46,6 +51,14 @@ function MainNavigation() {
         getRequest(accessToken);
     }, [accessToken])
 
+    const toggleDropdown = () => {
+        setIsDropdownOpen(prevState => !prevState);
+    };
+
+    const closeDropdown = () => {
+        setIsDropdownOpen(false);
+    };
+
     const handleAccept = (id) => {
         setRequest((prevRequests) => prevRequests.filter((req) => req.id !== id));
         console.log(`Chấp nhận yêu cầu từ ${id}`);
@@ -53,6 +66,12 @@ function MainNavigation() {
         acceptRequest(accessToken, parseInt(id, 10));
     };
 
+    useEffect(() => {
+        if (!fetched) {
+            dispatch(setAuthUser(Cookies.get("userToken")));
+            fetchUserInfo(Cookies.get("userToken"));
+        }
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -128,23 +147,26 @@ function MainNavigation() {
                     </div>
                     <div className="flex-none">
                         <div className="dropdown dropdown-end ">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={toggleDropdown}>
                                 <div className="w-10 rounded-full">
                                     <img
                                         alt="Tailwind CSS Navbar component"
-                                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                        src={user.image_url} />
                                 </div>
                             </div>
-                            <ul
-                                tabIndex={0}
-                                className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                                <li>
-                                    <NavLink to="/profile" className="justify-between">
-                                        Profile
-                                    </NavLink>
-                                </li>
-                                <li><button onClick={handleLogout}>Log out</button></li>
-                            </ul>
+                            {isDropdownOpen && (
+                                <ul
+                                    tabIndex={0}
+                                    className="menu menu-sm dropdown-content bg-base-100 text-slate-800 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+                                >
+                                    <li>
+                                        <NavLink to='/profile' className="justify-between" onClick={closeDropdown}>
+                                            Hồ sơ
+                                        </NavLink>
+                                    </li>
+                                    <li><button onClick={handleLogout}>Đăng xuất</button></li>
+                                </ul>
+                            )}
                         </div>
                     </div>
 
@@ -155,6 +177,35 @@ function MainNavigation() {
 
         </div >
     );
+
+    async function fetchUserInfo(token) {
+        try {
+            const response = await fetch(`http://localhost/api/user/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+
+                dispatch(setUserInfo({
+                    id: userData.id,
+                    username: userData.username,
+                    phone: userData.phone,
+                    gender: userData.gender,
+                    image_url: userData.image_url
+                }));
+
+                setFetched(true);
+            } else {
+                console.log("Error retrieving user info.");
+            }
+        } catch (error) {
+            console.log("Error retrieving user info:" + error);
+        }
+    };
 }
 
 export default MainNavigation;

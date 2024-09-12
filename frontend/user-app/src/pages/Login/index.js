@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { setAuthUser } from '../../redux/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import { setUserInfo } from '../../redux/slices/userSlice';
 
 const loginSchema = yup.object({
     username: yup
@@ -19,6 +20,7 @@ const loginSchema = yup.object({
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const dest = useSelector((state) => state.auth.destination);
 
     const loginFormik = useFormik({
         initialValues: {
@@ -40,11 +42,20 @@ const Login = () => {
 
             if (response.ok) {
                 const userData = await response.json();
-                const token = userData.accessToken.replace('Bearer ', '');
+                const token = userData.accessToken.replace('Bearer%20', '').replace('Bearer ', '');
                 dispatch(setAuthUser(token));
-                Cookies.set("userToken", userData.accessToken, { expires: 7 });
+                Cookies.set("userToken", token, { expires: 7 });
+
+                fetchUserInfo(token);
+
                 toast.success('Đăng nhập thành công.');
-                navigate('/');
+
+                if (dest === null || dest === undefined || dest === '') {
+                    navigate("/");
+                }
+                else {
+                    navigate(dest);
+                }
             } else {
                 toast.error('Thông tin đăng nhập không hợp lệ.');
             }
@@ -117,6 +128,32 @@ const Login = () => {
             </div>
         </div>
     );
+
+    async function fetchUserInfo(token) {
+        try {
+            const response = await fetch(`http://localhost/api/user/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                dispatch(setUserInfo({
+                    id: userData.id,
+                    username: userData.username,
+                    phone: userData.phone,
+                    gender: userData.gender,
+                    image_url: userData.image_url
+                }));
+            } else {
+                console.log("Error retrieving user info.");
+            }
+        } catch (error) {
+            console.log("Error retrieving user info:" + error);
+        }
+    };
 };
 
 export default Login;

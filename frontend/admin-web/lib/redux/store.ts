@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import { usersReducer } from './slices/usersSlice';
+import { partnersReducer } from './slices/partnersSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       auth: authReducer,
       users: usersReducer,
+      partners: partnersReducer
     },
   });
 }

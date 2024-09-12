@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDestination } from '../store/slices/authSlice'; // Import action setDestination
+import { setDestination, logout, setAuthUser } from '../store/slices/authSlice';
+import { setBrandInfo } from '../store/slices/brandSlice';
+import Cookies from 'js-cookie';
 
 function MainNavigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
+    const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -25,6 +29,13 @@ function MainNavigation() {
         };
     }, []);
 
+    useEffect(() => {
+        if (!fetched) {
+            dispatch(setAuthUser(Cookies.get("vendorToken")));
+            fetchBrandInfo(Cookies.get("vendorToken"));
+        }
+    }, []);
+
     const token = useSelector((state) => state.auth.accessToken);
 
     const toggleDropdown = () => {
@@ -37,6 +48,11 @@ function MainNavigation() {
 
     const handleLoginClick = () => {
         dispatch(setDestination('/stats'));
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/login");
     };
 
     const handleLogin = () => {
@@ -79,7 +95,7 @@ function MainNavigation() {
                             onClick={toggleDropdown}
                         >
                             <div className="w-10 rounded-full">
-                                <img alt="Tailwind CSS Navbar component" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                <img alt="Tailwind CSS Navbar component" src="https://th.bing.com/th/id/R.65f99c0fc75e15cb680e152e384b629b?rik=d5kPFD1MEy6ZDA&pid=ImgRaw&r=0" />
                             </div>
                         </div>
                         {isDropdownOpen && (
@@ -92,11 +108,7 @@ function MainNavigation() {
                                         Hồ sơ
                                     </NavLink>
                                 </li>
-                                <li>
-                                    <NavLink to="/login" onClick={closeDropdown}>
-                                        Đăng xuất
-                                    </NavLink>
-                                </li>
+                                <li><button onClick={handleLogout}>Đăng xuất</button></li>
                             </ul>
                         )}
                     </div>
@@ -106,6 +118,34 @@ function MainNavigation() {
             }
         </div>
     );
+
+    async function fetchBrandInfo(token) {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/brand/info`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const brandData = await response.json();
+
+                dispatch(setBrandInfo({
+                    id: brandData.id,
+                    username: brandData.username,
+                    category: brandData.category,
+                    address: brandData.address,
+                }));
+
+                setFetched(true);
+            } else {
+                console.log('Không thể lấy thông tin thương hiệu.');
+            }
+        } catch (error) {
+            console.log('Đã có lỗi xảy ra khi lấy thông tin thương hiệu.');
+        }
+    };
 }
 
 export default MainNavigation;

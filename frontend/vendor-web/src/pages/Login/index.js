@@ -6,6 +6,7 @@ import { useFormik } from 'formik';
 import { setAuthUser } from '../../store/slices/authSlice';
 import { setBrandInfo } from '../../store/slices/brandSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 const loginSchema = yup.object({
     username: yup
@@ -40,14 +41,20 @@ const Login = () => {
             });
 
             if (response.ok) {
-                const userData = await response.json();
-                const token = userData.accessToken.replace('Bearer ', '');
+                const vendorData = await response.json();
+                const token = vendorData.accessToken.replace('Bearer%20', '');
                 dispatch(setAuthUser(token));
+                Cookies.set("vendorToken", vendorData.accessToken, { expires: 7 });
                 toast.success('Đăng nhập thành công.');
 
                 fetchBrandInfo(token);
 
-                navigate(dest);
+                if (dest === null || dest === undefined || dest === '') {
+                    navigate("/");
+                }
+                else {
+                    navigate(dest);
+                }
             } else {
                 toast.error('Thông tin đăng nhập không hợp lệ.');
             }
@@ -88,7 +95,7 @@ const Login = () => {
                 <h1 className="text-3xl font-bold self-center">Đăng nhập vào VOU</h1>
 
                 <span className="self-center">
-                    <a href="/signup" className="link link-primary ml-1">Đăng ký tài khoản doanh nghiệp</a>
+                    <a href="/signup" className="link link-primary ml-1">Đăng ký tài khoản thương hiệu</a>
                 </span>
 
                 <form
