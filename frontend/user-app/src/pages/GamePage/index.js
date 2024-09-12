@@ -63,6 +63,7 @@ function GamePage() {
                 isClosable: true,
             });
             // Gọi API để gửi request ở đây
+            requestTurn(token, parseInt(friendId, 10), parseInt(eventId, 10));
             onFriendModalClose();
         } else {
             toast({
@@ -114,7 +115,7 @@ function GamePage() {
             duration: 3000,
             isClosable: true,
         });
-        addTurn(token, eventId, 1);
+        addTurn(token, parseInt(eventId, 10), 1);
     };
 
 
@@ -513,6 +514,30 @@ async function addTurn(token, eventId, turn) {
             body: JSON.stringify({
                 eventId: eventId,
                 turn: turn
+            }),
+        });
+        if (response.ok) {
+            console.log("Lượt chơi đã được cộng thành công");
+        } else {
+            const errorData = await response.json();
+            console.error("Error adding turn:", response.status, response.statusText, errorData);
+        }
+    } catch (error) {
+        console.error("Error adding turn:", error);
+    }
+}
+
+async function requestTurn(token, targetId, eventId) {
+    try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/request-turn`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                target_id: targetId,
+                event_id: eventId
             }),
         });
         if (response.ok) {

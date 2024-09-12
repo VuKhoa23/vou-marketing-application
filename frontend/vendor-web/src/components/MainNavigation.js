@@ -33,7 +33,6 @@ function MainNavigation() {
         if (!fetched) {
             dispatch(setAuthUser(Cookies.get("vendorToken")));
             fetchBrandInfo(Cookies.get("vendorToken"));
-            setFetched(true);
         }
     }, []);
 
@@ -54,6 +53,10 @@ function MainNavigation() {
     const handleLogout = () => {
         dispatch(logout());
         navigate("/login");
+    };
+
+    const handleLogin = () => {
+        dispatch(setDestination('/'));
     };
 
     return (
@@ -92,7 +95,7 @@ function MainNavigation() {
                             onClick={toggleDropdown}
                         >
                             <div className="w-10 rounded-full">
-                                <img alt="Tailwind CSS Navbar component" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                <img alt="Tailwind CSS Navbar component" src="https://th.bing.com/th/id/R.65f99c0fc75e15cb680e152e384b629b?rik=d5kPFD1MEy6ZDA&pid=ImgRaw&r=0" />
                             </div>
                         </div>
                         {isDropdownOpen && (
@@ -111,7 +114,7 @@ function MainNavigation() {
                     </div>
                 </div>
                 :
-                <NavLink to="/login" className="btn btn-ghost btn-rectangle">Đăng nhập</NavLink>
+                <NavLink to="/login" className="btn btn-ghost btn-rectangle" onClick={() => handleLogin()}>Đăng nhập</NavLink>
             }
         </div>
     );
@@ -127,12 +130,15 @@ function MainNavigation() {
 
             if (response.ok) {
                 const brandData = await response.json();
+
                 dispatch(setBrandInfo({
                     id: brandData.id,
                     username: brandData.username,
                     category: brandData.category,
                     address: brandData.address,
                 }));
+
+                setFetched(true);
             } else {
                 console.log('Không thể lấy thông tin thương hiệu.');
             }
