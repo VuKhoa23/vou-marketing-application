@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { setAuthUser } from '../../redux/slices/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import * as AWS from "aws-sdk";
+
+// S3 bucket name
+const bucketName = "first-time-using-s3-bucket";
 
 const signupSchema = yup.object({
     username: yup
@@ -26,6 +28,8 @@ const signupSchema = yup.object({
 const Signup = () => {
     const navigate = useNavigate();
 
+    const [avatarToAdd, setAvatarToAdd] = useState();
+
     const signupFormik = useFormik({
         initialValues: {
             username: '',
@@ -40,10 +44,24 @@ const Signup = () => {
 
     const handleSubmit = async (values) => {
         try {
+            let imgUrl = "";
+
+            if (avatarToAdd !== undefined) {
+                imgUrl = await uploadToS3(avatarToAdd, bucketName);
+            }
+
+            const newUser = {
+                username: values.username,
+                password: values.password,
+                phone: values.phone,
+                gender: values.gender,
+                image_url: imgUrl,
+            };
+
             const response = await fetch('http://localhost/api/user/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
+                body: JSON.stringify(newUser),
 
             });
 
@@ -162,6 +180,20 @@ const Signup = () => {
                         </div>
                     </label>
 
+                    <label className="form-control w-full mt-3">
+                        <div className="label">
+                            <span className="label-text font-bold">Ảnh đại diện</span>
+                        </div>
+                        <input
+                            type="file"
+                            accept=".jpg, .jpeg, .png"
+                            multiple={false}
+                            className="file-input file-input-bordered w-full"
+                            onChange={handleImgInputChange}
+                        />
+                        <div className="label"></div>
+                    </label>
+
                     <button
                         className="btn btn-primary mt-6"
                         type="submit"
@@ -176,6 +208,41 @@ const Signup = () => {
             </div>
         </div>
     );
+
+    function handleImgInputChange(e) {
+        const file = e.target.files[0];
+
+        if (file) {
+            setAvatarToAdd(file);
+        }
+    }
+
+    async function uploadToS3(file, bucketName) {
+        AWS.config.update({
+            accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
+            secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY,
+            region: "ap-southeast-2",
+        });
+        const s3 = new AWS.S3({
+            apiVersion: "2012-10-17",
+            params: { Bucket: bucketName },
+        });
+
+        const params = {
+            Bucket: bucketName,
+            Key: `${file.name}`,
+            Body: file,
+            ContentType: file.type,
+        };
+
+        try {
+            const data = await s3.upload(params).promise();
+            return data.Location;
+        } catch (error) {
+            console.error("Error uploading to S3: ", error);
+            throw error;
+        }
+    }
 };
 
 export default Signup;

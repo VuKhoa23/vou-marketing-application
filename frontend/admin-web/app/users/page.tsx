@@ -180,7 +180,6 @@ export default function Users() {
     const addFormik = useFormik({
         initialValues: {
             username: "",
-            email: "",
             phone: "",
             gender: "male",
         },
@@ -196,7 +195,6 @@ export default function Users() {
                 const newUser = {
                     username: values.username!,
                     password: "initpass",
-                    email: values.email!,
                     phone: values.phone!,
                     gender: values.gender!,
                     image_url: imgUrl,
