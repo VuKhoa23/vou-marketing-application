@@ -1,3 +1,3 @@
 ### VOU Marketing Application
-#### Front end: NextJs
-#### Backend: Java, Go. (Microservice with Kubernetes)
+## Provides loyalty services for brands, allowing them to create events, and organize reward games for redeeming vouchers, etc.
+
